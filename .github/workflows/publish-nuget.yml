@@ -42,7 +42,7 @@ jobs:
 
       - name: 打包 Esri.Geometry.Core
         run: |
-          dotnet pack src/Esri.Geometry.Core/Esri.Geometry.Core.csproj \
+          dotnet pack src/OpenGIS.Esri.Geometry.Core/OpenGIS.Esri.Geometry.Core.csproj \
             --configuration Release \
             --no-build \
             --output ./packages \
@@ -50,7 +50,7 @@ jobs:
 
       - name: 打包 Esri.Geometry.Json
         run: |
-          dotnet pack src/Esri.Geometry.Json/Esri.Geometry.Json.csproj \
+          dotnet pack src/OpenGIS.Esri.Geometry.Json/OpenGIS.Esri.Geometry.Json.csproj \
             --configuration Release \
             --no-build \
             --output ./packages \

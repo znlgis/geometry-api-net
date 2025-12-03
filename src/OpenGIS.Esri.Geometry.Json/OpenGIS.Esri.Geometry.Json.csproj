@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <Authors>znlgis</Authors>
+    <Description>OpenGIS Esri Geometry API for .NET - JSON serialization support</Description>
+    <PackageLicenseExpression>LGPL-2.1-only</PackageLicenseExpression>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Text.Json" Version="8.0.6" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\OpenGIS.Esri.Geometry.Core\OpenGIS.Esri.Geometry.Core.csproj" />
+  </ItemGroup>
+
+</Project>
