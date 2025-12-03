@@ -88,6 +88,29 @@
 
 ### 安装
 
+#### 通过 NuGet 安装（推荐）
+
+```bash
+# 安装核心库
+dotnet add package Esri.Geometry.Core
+
+# 安装 JSON 支持
+dotnet add package Esri.Geometry.Json
+```
+
+或在 .csproj 文件中添加：
+
+```xml
+<ItemGroup>
+  <PackageReference Include="Esri.Geometry.Core" Version="*" />
+  <PackageReference Include="Esri.Geometry.Json" Version="*" />
+</ItemGroup>
+```
+
+**提示**: 将 `Version="*"` 替换为具体的版本号，如 `Version="1.0.0"`。
+
+#### 通过项目引用安装
+
 在项目中添加对核心库的引用：
 
 ```xml
@@ -570,6 +593,32 @@ dotnet test --logger "console;verbosity=detailed"
 - 方法参数和返回值的说明
 
 这使得中文开发者能够更容易地理解和使用该库。
+
+## 发布和版本管理
+
+本项目使用 GitHub Actions 自动发布 NuGet 包。当创建新的版本标签（tag）时，会自动构建、测试并发布包到 NuGet.org。
+
+### 自动发布流程
+
+1. 创建新的版本标签（例如：`v1.0.0`）
+2. GitHub Actions 自动触发发布工作流
+3. 构建项目并运行所有测试
+4. 打包两个 NuGet 包：`Esri.Geometry.Core` 和 `Esri.Geometry.Json`
+5. 发布到 NuGet.org
+6. 创建 GitHub Release
+
+### 发布新版本
+
+```bash
+# 创建版本标签
+git tag v1.0.0
+
+# 推送标签到远程仓库触发自动发布
+git push origin v1.0.0
+```
+
+详细的发布说明和配置，请参阅 [GitHub Actions 工作流文档](.github/workflows/README.md)。
+
 
 ## 贡献
 
