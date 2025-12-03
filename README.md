@@ -102,10 +102,12 @@ dotnet add package Esri.Geometry.Json
 
 ```xml
 <ItemGroup>
-  <PackageReference Include="Esri.Geometry.Core" Version="1.0.0" />
-  <PackageReference Include="Esri.Geometry.Json" Version="1.0.0" />
+  <PackageReference Include="Esri.Geometry.Core" Version="*" />
+  <PackageReference Include="Esri.Geometry.Json" Version="*" />
 </ItemGroup>
 ```
+
+**提示**: 将 `Version="*"` 替换为具体的版本号，如 `Version="1.0.0"`。
 
 #### 通过项目引用安装
 
