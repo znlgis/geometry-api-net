@@ -13,7 +13,8 @@ namespace Esri.Geometry.Tests.IO
             
             Assert.StartsWith("POINT (", wkt);
             Assert.Contains("10.5", wkt);
-            Assert.Matches(@"20\.6\d*", wkt);
+            // Floating point 20.7 may be represented as 20.699999...
+            Assert.Matches(@"20\.69\d+", wkt);
         }
 
         [Fact]
@@ -25,7 +26,8 @@ namespace Esri.Geometry.Tests.IO
             Assert.Contains("POINT Z", wkt);
             Assert.Contains("10.5", wkt);
             // Check that coordinates are present (floating point may have precision issues)
-            Assert.Matches(@"20\.6\d*", wkt);
+            // 20.7 may be represented as 20.699999...
+            Assert.Matches(@"20\.69\d+", wkt);
             Assert.Matches(@"30\.1\d*", wkt);
         }
 

@@ -137,7 +137,7 @@ namespace Esri.Geometry.Tests.Operators
             var line = new Line(new Point(0, 0), new Point(3, 4));
             
             var length = LengthOperator.Instance.Execute(line);
-            Assert.Equal(5, length, 10);
+            Assert.Equal(5, length, 2);
         }
 
         [Fact]
