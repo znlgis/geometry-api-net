@@ -35,8 +35,14 @@ This library provides a complete set of geometry types and spatial operations co
 - **Area** - Calculate area of polygons and envelopes
 - **Length** - Calculate length/perimeter of geometries
 
+#### Additional Operators
+- **Simplify** - Simplify geometries using Douglas-Peucker algorithm
+- **Centroid** - Calculate center of mass for geometries
+- **Boundary** - Compute boundary per OGC specification
+
 ### Import/Export Formats
 - **WKT (Well-Known Text)** - Full import and export support for all geometry types
+- **WKB (Well-Known Binary)** - Binary format import/export with endianness support
 - **JSON** - Point serialization with System.Text.Json
 
 ### Spatial Reference System
@@ -174,6 +180,34 @@ var polygon = new Polygon();
 // ... add rings to polygon
 double area = AreaOperator.Instance.Execute(polygon);
 double perimeter = LengthOperator.Instance.Execute(polygon);
+
+// Simplify a polyline
+var polyline = new Polyline();
+// ... add paths
+var simplified = SimplifyOperator.Instance.Execute(polyline, tolerance: 0.5);
+
+// Calculate centroid
+var centroid = CentroidOperator.Instance.Execute(polygon);
+
+// Get boundary
+var boundary = BoundaryOperator.Instance.Execute(polygon); // Returns Polyline
+```
+
+### WKB Import/Export
+
+```csharp
+using Esri.Geometry.Core.IO;
+
+// Export to WKB (binary format)
+var point = new Point(10.5, 20.7);
+byte[] wkb = WkbExportOperator.ExportToWkb(point);
+
+// Export with big-endian byte order
+byte[] wkbBigEndian = WkbExportOperator.ExportToWkb(point, bigEndian: true);
+
+// Import from WKB
+var geometry = WkbImportOperator.ImportFromWkb(wkb);
+var parsedPoint = (Point)geometry;
 ```
 
 ## Project Structure
@@ -185,7 +219,7 @@ Esri.Geometry.Api/
 │   │   ├── Geometries/               # Geometry types
 │   │   ├── Operators/                # Geometry operators
 │   │   ├── SpatialReference/         # Spatial reference system
-│   │   └── IO/                       # WKT import/export
+│   │   └── IO/                       # WKT and WKB import/export
 │   └── Esri.Geometry.Json/           # JSON serialization support
 ├── tests/
 │   └── Esri.Geometry.Tests/          # Unit tests (xUnit)
@@ -241,20 +275,34 @@ dotnet test --logger "console;verbosity=detailed"
 ### Completed Features ✅
 - [x] All 9 spatial relationship operators (Contains, Intersects, Distance, Equals, Disjoint, Within, Crosses, Touches, Overlaps)
 - [x] WKT (Well-Known Text) import/export for all geometry types
+- [x] WKB (Well-Known Binary) import/export with endianness support
 - [x] Buffer operator (simplified square/rectangular buffers)
 - [x] Convex hull computation (Graham scan algorithm)
 - [x] Area and Length calculation operators
+- [x] Simplify operator (Douglas-Peucker algorithm)
+- [x] Centroid calculation (center of mass)
+- [x] Boundary computation (OGC specification)
+
+### Test Coverage
+- **123 tests passing** with comprehensive coverage
+- 28 geometry type tests
+- 14 spatial relationship operator tests
+- 13 additional operator tests (Simplify, Centroid, Boundary)
+- 12 geometry operation tests (Buffer, ConvexHull, Area, Length)
+- 17 WKT import/export tests
+- 10 WKB import/export tests
+- 4 JSON serialization tests
 
 ### Planned Features
 - [ ] Union, Intersection, Difference, SymmetricDifference (requires polygon clipping algorithms)
-- [ ] WKB (Well-Known Binary) import/export
-- [ ] Enhanced GeoJSON import/export
+- [ ] Enhanced GeoJSON import/export (beyond Point)
 - [ ] Projection/transformation support
-- [ ] Simplification and generalization algorithms
 - [ ] Clip operator
-- [ ] Geodesic calculations
+- [ ] Geodesic distance and area calculations
 - [ ] Performance optimizations using Span<T> and Memory<T>
-- [ ] Circular buffer generation
+- [ ] Circular buffer generation (currently only square/rectangular)
+- [ ] Densify operator
+- [ ] Offset operator
 
 ## Contributing
 
