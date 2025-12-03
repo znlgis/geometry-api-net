@@ -1,54 +1,54 @@
 namespace Esri.Geometry.Core.SpatialReference;
 
 /// <summary>
-///   Represents a spatial reference system for geometries.
+///   表示几何对象的空间参考系统。
 /// </summary>
 public class SpatialReference
 {
     /// <summary>
-    ///   Initializes a new instance of the <see cref="SpatialReference" /> class.
+    ///   初始化 <see cref="SpatialReference" /> 类的新实例。
     /// </summary>
     public SpatialReference()
   {
   }
 
     /// <summary>
-    ///   Initializes a new instance of the <see cref="SpatialReference" /> class with a WKID.
+    ///   使用 WKID 初始化 <see cref="SpatialReference" /> 类的新实例。
     /// </summary>
-    /// <param name="wkid">The well-known ID.</param>
+    /// <param name="wkid">众所周知的 ID。</param>
     public SpatialReference(int wkid)
   {
     Wkid = wkid;
   }
 
     /// <summary>
-    ///   Gets or sets the well-known ID (WKID) of the spatial reference.
+    ///   获取或设置空间参考的众所周知的 ID (WKID)。
     /// </summary>
     public int? Wkid { get; set; }
 
     /// <summary>
-    ///   Gets or sets the latest well-known ID for the spatial reference.
+    ///   获取或设置空间参考的最新众所周知的 ID。
     /// </summary>
     public int? LatestWkid { get; set; }
 
     /// <summary>
-    ///   Gets or sets the well-known text (WKT) representation of the spatial reference.
+    ///   获取或设置空间参考的 Well-Known Text (WKT) 表示。
     /// </summary>
     public string? Wkt { get; set; }
 
     /// <summary>
-    ///   Creates a spatial reference for WGS 84 (EPSG:4326).
+    ///   创建 WGS 84 (EPSG:4326) 的空间参考。
     /// </summary>
-    /// <returns>A WGS 84 spatial reference.</returns>
+    /// <returns>WGS 84 空间参考。</returns>
     public static SpatialReference Wgs84()
   {
     return new SpatialReference(4326);
   }
 
     /// <summary>
-    ///   Creates a spatial reference for Web Mercator (EPSG:3857).
+    ///   创建 Web Mercator (EPSG:3857) 的空间参考。
     /// </summary>
-    /// <returns>A Web Mercator spatial reference.</returns>
+    /// <returns>Web Mercator 空间参考。</returns>
     public static SpatialReference WebMercator()
   {
     return new SpatialReference(3857);

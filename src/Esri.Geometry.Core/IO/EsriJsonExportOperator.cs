@@ -7,7 +7,7 @@ using Esri.Geometry.Core.Operators;
 namespace Esri.Geometry.Core.IO;
 
 /// <summary>
-///   Exports geometries to Esri JSON format.
+///   将几何对象导出为 Esri JSON 格式.
 ///   Esri JSON is similar to GeoJSON but with Esri-specific extensions.
 /// </summary>
 public class EsriJsonExportOperator : IGeometryOperator<string>

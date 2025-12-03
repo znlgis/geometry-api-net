@@ -6,7 +6,7 @@ using Esri.Geometry.Core.Geometries;
 namespace Esri.Geometry.Json.Converters;
 
 /// <summary>
-///   JSON converter for Point geometry.
+///   Point 几何对象的 JSON 转换器。
 /// </summary>
 public class PointJsonConverter : JsonConverter<Point>
 {

@@ -5,24 +5,23 @@ using Esri.Geometry.Core.IO;
 namespace Esri.Geometry.Core;
 
 /// <summary>
-///   The MapGeometry class bundles a geometry with its spatial reference together.
-///   To work with a geometry object in a map, it is necessary to have a spatial
-///   reference defined for this geometry.
+///   MapGeometry 类将几何对象与其空间参考捆绑在一起。
+///   要在地图中使用几何对象，必须为该几何对象定义空间参考。
 /// </summary>
 public class MapGeometry : IEquatable<MapGeometry>
 {
     /// <summary>
-    ///   Constructs an empty MapGeometry instance.
+    ///   构造空的 MapGeometry 实例。
     /// </summary>
     public MapGeometry()
   {
   }
 
     /// <summary>
-    ///   Constructs a MapGeometry instance using the specified geometry and spatial reference.
+    ///   使用指定的几何对象和空间参考构造 MapGeometry 实例。
     /// </summary>
-    /// <param name="geometry">The geometry to construct the new MapGeometry object.</param>
-    /// <param name="spatialReference">The spatial reference of the geometry.</param>
+    /// <param name="geometry">用于构造新 MapGeometry 对象的几何对象。</param>
+    /// <param name="spatialReference">几何对象的空间参考。</param>
     public MapGeometry(Geometries.Geometry? geometry, SpatialReference.SpatialReference? spatialReference)
   {
     Geometry = geometry;
@@ -30,17 +29,17 @@ public class MapGeometry : IEquatable<MapGeometry>
   }
 
     /// <summary>
-    ///   Gets or sets the geometry.
+    ///   获取或设置几何对象。
     /// </summary>
     public Geometries.Geometry? Geometry { get; set; }
 
     /// <summary>
-    ///   Gets or sets the spatial reference.
+    ///   获取或设置空间参考。
     /// </summary>
     public SpatialReference.SpatialReference? SpatialReference { get; set; }
 
     /// <summary>
-    ///   Determines whether this MapGeometry is equal to another MapGeometry.
+    ///   判断此 MapGeometry 是否等于另一个 MapGeometry。
     /// </summary>
     public bool Equals(MapGeometry? other)
   {
@@ -50,7 +49,7 @@ public class MapGeometry : IEquatable<MapGeometry>
     if (ReferenceEquals(this, other))
       return true;
 
-    // Compare spatial references
+    // 比较空间参考
     var srEqual = false;
     if (SpatialReference == null && other.SpatialReference == null)
     {
@@ -58,7 +57,7 @@ public class MapGeometry : IEquatable<MapGeometry>
     }
     else if (SpatialReference != null && other.SpatialReference != null)
     {
-      // Compare by WKID if both have it
+      // 如果两者都有 WKID，则通过 WKID 比较
       if (SpatialReference.Wkid.HasValue && other.SpatialReference.Wkid.HasValue)
         srEqual = SpatialReference.Wkid.Value == other.SpatialReference.Wkid.Value;
       else if (SpatialReference.Wkt != null && other.SpatialReference.Wkt != null)
@@ -70,22 +69,22 @@ public class MapGeometry : IEquatable<MapGeometry>
     if (!srEqual)
       return false;
 
-    // Compare geometries
+    // 比较几何对象
     if (Geometry == null && other.Geometry == null)
       return true;
 
     if (Geometry == null || other.Geometry == null)
       return false;
 
-    // For Point geometries, use value-based comparison
+    // 对于 Point 几何对象，使用基于值的比较
     if (Geometry is Point point1 && other.Geometry is Point point2) return point1.Equals(point2);
 
-    // For other geometries, use reference comparison for now
+    // 对于其他几何对象，目前使用引用比较
     return ReferenceEquals(Geometry, other.Geometry);
   }
 
     /// <summary>
-    ///   Returns a string representation of this MapGeometry for debugging purposes.
+    ///   返回此 MapGeometry 的字符串表示，用于调试目的。
     /// </summary>
     public override string ToString()
   {
@@ -105,7 +104,7 @@ public class MapGeometry : IEquatable<MapGeometry>
   }
 
     /// <summary>
-    ///   Determines whether this MapGeometry is equal to another object.
+    ///   判断此 MapGeometry 是否等于另一个对象。
     /// </summary>
     public override bool Equals(object? obj)
   {
@@ -113,7 +112,7 @@ public class MapGeometry : IEquatable<MapGeometry>
   }
 
     /// <summary>
-    ///   Returns the hash code for this MapGeometry.
+    ///   返回此 MapGeometry 的哈希码。
     /// </summary>
     public override int GetHashCode()
   {
@@ -129,7 +128,7 @@ public class MapGeometry : IEquatable<MapGeometry>
   }
 
     /// <summary>
-    ///   Equality operator for MapGeometry.
+    ///   MapGeometry 的相等运算符。
     /// </summary>
     public static bool operator ==(MapGeometry? left, MapGeometry? right)
   {
@@ -143,7 +142,7 @@ public class MapGeometry : IEquatable<MapGeometry>
   }
 
     /// <summary>
-    ///   Inequality operator for MapGeometry.
+    ///   MapGeometry 的不等运算符。
     /// </summary>
     public static bool operator !=(MapGeometry? left, MapGeometry? right)
   {

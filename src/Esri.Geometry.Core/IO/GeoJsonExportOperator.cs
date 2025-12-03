@@ -21,9 +21,9 @@ public class GeoJsonExportOperator : IGeometryOperator<string>
   public static GeoJsonExportOperator Instance { get; } = new();
 
   /// <summary>
-  ///   Exports a geometry to GeoJSON format.
+  ///   将几何对象导出为 GeoJSON 格式.
   /// </summary>
-  /// <param name="geometry">The geometry to export.</param>
+  /// <param name="geometry">要导出的几何对象.</param>
   /// <param name="spatialReference">Optional spatial reference (not used in basic GeoJSON).</param>
   /// <returns>GeoJSON string representation of the geometry.</returns>
   public string Execute(Geometries.Geometry geometry, SpatialReference.SpatialReference? spatialReference = null)
@@ -35,9 +35,9 @@ public class GeoJsonExportOperator : IGeometryOperator<string>
   }
 
   /// <summary>
-  ///   Exports a geometry to GeoJSON format.
+  ///   将几何对象导出为 GeoJSON 格式.
   /// </summary>
-  /// <param name="geometry">The geometry to export.</param>
+  /// <param name="geometry">要导出的几何对象.</param>
   /// <returns>GeoJSON string representation.</returns>
   public static string ExportToGeoJson(Geometries.Geometry geometry)
   {

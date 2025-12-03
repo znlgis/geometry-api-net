@@ -11,7 +11,7 @@ namespace Esri.Geometry.Core.IO;
 public class GeoJsonImportOperator
 {
     /// <summary>
-    ///   Imports a geometry from GeoJSON format.
+    ///   从 GeoJSON 格式导入几何对象.
     /// </summary>
     /// <param name="geoJson">The GeoJSON string to parse.</param>
     /// <returns>The parsed geometry.</returns>
