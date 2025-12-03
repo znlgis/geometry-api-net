@@ -3,12 +3,12 @@ using System;
 namespace Esri.Geometry.Core.Geometries;
 
 /// <summary>
-///   Represents an axis-aligned bounding rectangle.
+///   表示轴对齐的边界矩形。
 /// </summary>
 public class Envelope : Geometry
 {
     /// <summary>
-    ///   Initializes a new instance of the <see cref="Envelope" /> class.
+    ///   初始化 <see cref="Envelope" /> 类的新实例。
     /// </summary>
     public Envelope()
   {
@@ -19,12 +19,12 @@ public class Envelope : Geometry
   }
 
     /// <summary>
-    ///   Initializes a new instance of the <see cref="Envelope" /> class with specified bounds.
+    ///   使用指定的边界初始化 <see cref="Envelope" /> 类的新实例。
     /// </summary>
-    /// <param name="xMin">The minimum X coordinate.</param>
-    /// <param name="yMin">The minimum Y coordinate.</param>
-    /// <param name="xMax">The maximum X coordinate.</param>
-    /// <param name="yMax">The maximum Y coordinate.</param>
+    /// <param name="xMin">最小 X 坐标。</param>
+    /// <param name="yMin">最小 Y 坐标。</param>
+    /// <param name="xMax">最大 X 坐标。</param>
+    /// <param name="yMax">最大 Y 坐标。</param>
     public Envelope(double xMin, double yMin, double xMax, double yMax)
   {
     XMin = xMin;
@@ -34,22 +34,22 @@ public class Envelope : Geometry
   }
 
     /// <summary>
-    ///   Gets or sets the minimum X coordinate.
+    ///   获取或设置最小 X 坐标。
     /// </summary>
     public double XMin { get; set; }
 
     /// <summary>
-    ///   Gets or sets the minimum Y coordinate.
+    ///   获取或设置最小 Y 坐标。
     /// </summary>
     public double YMin { get; set; }
 
     /// <summary>
-    ///   Gets or sets the maximum X coordinate.
+    ///   获取或设置最大 X 坐标。
     /// </summary>
     public double XMax { get; set; }
 
     /// <summary>
-    ///   Gets or sets the maximum Y coordinate.
+    ///   获取或设置最大 Y 坐标。
     /// </summary>
     public double YMax { get; set; }
 
@@ -64,22 +64,22 @@ public class Envelope : Geometry
     public override int Dimension => 2;
 
     /// <summary>
-    ///   Gets the width of the envelope.
+    ///   获取包络的宽度。
     /// </summary>
     public double Width => IsEmpty ? 0 : XMax - XMin;
 
     /// <summary>
-    ///   Gets the height of the envelope.
+    ///   获取包络的高度。
     /// </summary>
     public double Height => IsEmpty ? 0 : YMax - YMin;
 
     /// <summary>
-    ///   Gets the center point of the envelope.
+    ///   获取包络的中心点。
     /// </summary>
     public Point Center => IsEmpty ? new Point() : new Point((XMin + XMax) / 2, (YMin + YMax) / 2);
 
     /// <summary>
-    ///   Gets the area of the envelope.
+    ///   获取包络的面积。
     /// </summary>
     public double Area => IsEmpty ? 0 : Width * Height;
 
@@ -90,10 +90,10 @@ public class Envelope : Geometry
   }
 
     /// <summary>
-    ///   Determines whether this envelope contains a point.
+    ///   判断此包络是否包含某个点。
     /// </summary>
-    /// <param name="point">The point to test.</param>
-    /// <returns>True if the envelope contains the point, false otherwise.</returns>
+    /// <param name="point">要测试的点。</param>
+    /// <returns>如果包络包含该点则返回 true，否则返回 false。</returns>
     public bool Contains(Point point)
   {
     if (point == null || point.IsEmpty || IsEmpty) return false;
@@ -102,10 +102,10 @@ public class Envelope : Geometry
   }
 
     /// <summary>
-    ///   Determines whether this envelope intersects another envelope.
+    ///   判断此包络是否与另一个包络相交。
     /// </summary>
-    /// <param name="other">The other envelope.</param>
-    /// <returns>True if the envelopes intersect, false otherwise.</returns>
+    /// <param name="other">另一个包络。</param>
+    /// <returns>如果包络相交则返回 true，否则返回 false。</returns>
     public bool Intersects(Envelope other)
   {
     if (other == null || IsEmpty || other.IsEmpty) return false;
@@ -114,9 +114,9 @@ public class Envelope : Geometry
   }
 
     /// <summary>
-    ///   Merges this envelope with another point.
+    ///   将此包络与另一个点合并。
     /// </summary>
-    /// <param name="point">The point to merge.</param>
+    /// <param name="point">要合并的点。</param>
     public void Merge(Point point)
   {
     if (point == null || point.IsEmpty) return;
@@ -136,9 +136,9 @@ public class Envelope : Geometry
   }
 
     /// <summary>
-    ///   Merges this envelope with another envelope.
+    ///   将此包络与另一个包络合并。
     /// </summary>
-    /// <param name="other">The envelope to merge.</param>
+    /// <param name="other">要合并的包络。</param>
     public void Merge(Envelope other)
   {
     if (other == null || other.IsEmpty) return;

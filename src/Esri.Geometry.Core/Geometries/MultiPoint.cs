@@ -5,14 +5,14 @@ using System.Linq;
 namespace Esri.Geometry.Core.Geometries;
 
 /// <summary>
-///   Represents a collection of points.
+///   表示点的集合。
 /// </summary>
 public class MultiPoint : Geometry
 {
   private readonly List<Point> _points;
 
   /// <summary>
-  ///   Initializes a new instance of the <see cref="MultiPoint" /> class.
+  ///   初始化 <see cref="MultiPoint" /> 类的新实例。
   /// </summary>
   public MultiPoint()
   {
@@ -20,9 +20,9 @@ public class MultiPoint : Geometry
   }
 
   /// <summary>
-  ///   Initializes a new instance of the <see cref="MultiPoint" /> class with specified points.
+  ///   使用指定的点集合初始化 <see cref="MultiPoint" /> 类的新实例。
   /// </summary>
-  /// <param name="points">The collection of points.</param>
+  /// <param name="points">点的集合。</param>
   public MultiPoint(IEnumerable<Point> points)
   {
     _points = points?.ToList() ?? new List<Point>();
@@ -38,15 +38,15 @@ public class MultiPoint : Geometry
   public override int Dimension => 0;
 
   /// <summary>
-  ///   Gets the number of points in the multi-point.
+  ///   获取多点集合中的点数量。
   /// </summary>
   public int Count => _points.Count;
 
   /// <summary>
-  ///   Gets the point at the specified index.
+  ///   获取指定索引处的点。
   /// </summary>
-  /// <param name="index">The index of the point.</param>
-  /// <returns>The point at the specified index.</returns>
+  /// <param name="index">点的索引。</param>
+  /// <returns>指定索引处的点。</returns>
   public Point GetPoint(int index)
   {
     if (index < 0 || index >= _points.Count) throw new ArgumentOutOfRangeException(nameof(index));
@@ -54,9 +54,9 @@ public class MultiPoint : Geometry
   }
 
   /// <summary>
-  ///   Adds a point to the multi-point.
+  ///   向多点集合添加一个点。
   /// </summary>
-  /// <param name="point">The point to add.</param>
+  /// <param name="point">要添加的点。</param>
   public void Add(Point point)
   {
     if (point == null) throw new ArgumentNullException(nameof(point));
@@ -64,9 +64,9 @@ public class MultiPoint : Geometry
   }
 
   /// <summary>
-  ///   Gets all points in the multi-point.
+  ///   获取多点集合中的所有点。
   /// </summary>
-  /// <returns>An enumerable collection of points.</returns>
+  /// <returns>点的可枚举集合。</returns>
   public IEnumerable<Point> GetPoints()
   {
     return _points;
