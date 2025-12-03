@@ -53,6 +53,10 @@ This library provides a complete set of geometry types and spatial operations co
 - **GeodesicDistance** - Calculate great circle distance on WGS84 ellipsoid (Vincenty's formula)
 - **GeodesicArea** - Calculate geodesic area on WGS84 ellipsoid using spherical excess formula
 - **Offset** - Create offset curves/polygons at specified distance (perpendicular displacement)
+- **Proximity2D** - Find nearest coordinates and vertices on geometries (GetNearestCoordinate, GetNearestVertex, GetNearestVertices)
+
+#### Convenience API
+- **GeometryEngine** - Simplified static API wrapping all operators with convenient methods
 
 ### Import/Export Formats
 - **WKT (Well-Known Text)** - Full import and export support for all geometry types
@@ -117,6 +121,47 @@ var dist = distanceOp.Execute(point1, point2);
 
 var containsOp = ContainsOperator.Instance;
 var result = containsOp.Execute(envelope, testPoint);
+```
+
+### GeometryEngine - Simplified API
+
+The `GeometryEngine` class provides a simplified, static API for all geometry operations:
+
+```csharp
+using Esri.Geometry.Core;
+using Esri.Geometry.Core.Geometries;
+
+// All operations available as static methods
+var point1 = new Point(0, 0);
+var point2 = new Point(3, 4);
+
+// Spatial relationships
+bool contains = GeometryEngine.Contains(envelope, point);
+bool intersects = GeometryEngine.Intersects(geom1, geom2);
+double distance = GeometryEngine.Distance(point1, point2);  // 5.0
+
+// Set operations
+var union = GeometryEngine.Union(geom1, geom2);
+var intersection = GeometryEngine.Intersection(geom1, geom2);
+var difference = GeometryEngine.Difference(geom1, geom2);
+
+// Geometry operations
+var buffer = GeometryEngine.Buffer(point, 10.0);
+var hull = GeometryEngine.ConvexHull(multiPoint);
+double area = GeometryEngine.Area(polygon);
+double length = GeometryEngine.Length(polyline);
+
+// Import/Export
+string wkt = GeometryEngine.GeometryToWkt(geometry);
+var geom = GeometryEngine.GeometryFromWkt(wkt);
+
+string geoJson = GeometryEngine.GeometryToGeoJson(geometry);
+var geom2 = GeometryEngine.GeometryFromGeoJson(geoJson);
+
+// Proximity operations
+var result = GeometryEngine.GetNearestCoordinate(geometry, queryPoint);
+Console.WriteLine($"Nearest point: ({result.Coordinate.X}, {result.Coordinate.Y})");
+Console.WriteLine($"Distance: {result.Distance}");
 ```
 
 ### Working with Polygons
@@ -323,6 +368,71 @@ var importedGeometry = GeoJsonImportOperator.ImportFromGeoJson(geoJson);
 var importedPoint = (Point)importedGeometry;
 ```
 
+### Proximity Operations
+
+```csharp
+using Esri.Geometry.Core;
+using Esri.Geometry.Core.Geometries;
+using Esri.Geometry.Core.Operators;
+
+// Find nearest coordinate on a geometry to a query point
+var polyline = new Polyline();
+polyline.AddPath(new[] {
+    new Point(0, 0),
+    new Point(10, 0),
+    new Point(10, 10)
+});
+
+var queryPoint = new Point(5, 5);
+
+// Using GeometryEngine (recommended)
+var result = GeometryEngine.GetNearestCoordinate(polyline, queryPoint);
+Console.WriteLine($"Nearest coordinate: ({result.Coordinate.X}, {result.Coordinate.Y})");
+Console.WriteLine($"Distance: {result.Distance}");
+Console.WriteLine($"Vertex index: {result.VertexIndex}");
+
+// Using operator directly
+var proximity = Proximity2DOperator.Instance;
+var result2 = proximity.GetNearestVertex(polyline, queryPoint);
+Console.WriteLine($"Nearest vertex: ({result2.Coordinate.X}, {result2.Coordinate.Y})");
+
+// Find multiple vertices within search radius
+var multiPoint = new MultiPoint();
+multiPoint.Add(new Point(0, 0));
+multiPoint.Add(new Point(10, 10));
+multiPoint.Add(new Point(20, 20));
+
+var results = GeometryEngine.GetNearestVertices(
+    multiPoint, 
+    queryPoint,
+    searchRadius: 15.0,
+    maxVertexCount: 5
+);
+
+foreach (var r in results)
+{
+    Console.WriteLine($"Point: ({r.Coordinate.X}, {r.Coordinate.Y}), Distance: {r.Distance}");
+}
+
+// Test if point is inside polygon
+var polygon = new Polygon();
+polygon.AddRing(new[] {
+    new Point(0, 0),
+    new Point(100, 0),
+    new Point(100, 100),
+    new Point(0, 100),
+    new Point(0, 0)
+});
+
+var testPoint = new Point(50, 50);
+var nearestResult = GeometryEngine.GetNearestCoordinate(polygon, testPoint, testPolygonInterior: true);
+
+if (nearestResult.Distance == 0)
+{
+    Console.WriteLine("Point is inside the polygon");
+}
+```
+
 ## Project Structure
 
 ```
@@ -400,14 +510,18 @@ dotnet test --logger "console;verbosity=detailed"
 - [x] Set operations (Union, Intersection, Difference, SymmetricDifference)
 - [x] Generalize operator (remove vertices while preserving shape)
 - [x] Densify operator (add vertices to line segments)
+- [x] Proximity2D operator (find nearest coordinates and vertices)
+- [x] GeometryEngine convenience class (simplified static API)
+- [x] Point-in-polygon test using ray casting algorithm
 
 ### Test Coverage
-- **191 tests passing** with comprehensive coverage
+- **215 tests passing** with comprehensive coverage
 - 28 geometry type tests
 - 14 spatial relationship operator tests
 - 23 additional operator tests (Simplify, Centroid, Boundary, Generalize, Densify)
 - 12 geometry operation tests (Buffer, ConvexHull, Area, Length)
 - 20 advanced operator tests (Clip, GeodesicDistance, GeodesicArea, Offset, Esri JSON)
+- 24 proximity and GeometryEngine tests
 - 23 set operation tests (Union, Intersection, Difference, SymmetricDifference)
 - 17 WKT import/export tests
 - 10 WKB import/export tests
@@ -426,6 +540,9 @@ dotnet test --logger "console;verbosity=detailed"
 - [x] Offset operator (create offset curves/polygons)
 - [x] ESRI JSON import/export (proprietary Esri format)
 - [x] Geodesic area calculations (WGS84 ellipsoid)
+- [x] **GeometryEngine** - Simplified static API for all operators (NEW!)
+- [x] **Proximity2D operator** - Find nearest coordinates and vertices (NEW!)
+- [x] **Point-in-polygon test** - Ray casting algorithm for Contains operator (NEW!)
 
 ## Contributing
 
