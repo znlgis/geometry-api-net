@@ -40,6 +40,10 @@ This library provides a complete set of geometry types and spatial operations co
 - **Centroid** - Calculate center of mass for geometries
 - **Boundary** - Compute boundary per OGC specification
 
+#### Advanced Operators
+- **Clip** - Clip geometries to envelope using Cohen-Sutherland algorithm
+- **GeodesicDistance** - Calculate great circle distance on WGS84 ellipsoid (Vincenty's formula)
+
 ### Import/Export Formats
 - **WKT (Well-Known Text)** - Full import and export support for all geometry types
 - **WKB (Well-Known Binary)** - Binary format import/export with endianness support
@@ -191,6 +195,16 @@ var centroid = CentroidOperator.Instance.Execute(polygon);
 
 // Get boundary
 var boundary = BoundaryOperator.Instance.Execute(polygon); // Returns Polyline
+
+// Clip geometry to envelope
+var clipEnvelope = new Envelope(0, 0, 100, 100);
+var clipped = ClipOperator.Instance.Execute(polyline, clipEnvelope);
+
+// Calculate geodesic distance (great circle on Earth)
+var newYork = new Point(-74.0060, 40.7128);  // Lon, Lat
+var london = new Point(-0.1278, 51.5074);
+double distanceMeters = GeodesicDistanceOperator.Instance.Execute(newYork, london);
+// Result: ~5,570,000 meters (5,570 km)
 ```
 
 ### WKB Import/Export
@@ -282,13 +296,16 @@ dotnet test --logger "console;verbosity=detailed"
 - [x] Simplify operator (Douglas-Peucker algorithm)
 - [x] Centroid calculation (center of mass)
 - [x] Boundary computation (OGC specification)
+- [x] Clip operator (Cohen-Sutherland line clipping)
+- [x] Geodesic distance (Vincenty's formula on WGS84 ellipsoid)
 
 ### Test Coverage
-- **123 tests passing** with comprehensive coverage
+- **134 tests passing** with comprehensive coverage
 - 28 geometry type tests
 - 14 spatial relationship operator tests
 - 13 additional operator tests (Simplify, Centroid, Boundary)
 - 12 geometry operation tests (Buffer, ConvexHull, Area, Length)
+- 11 advanced operator tests (Clip, GeodesicDistance)
 - 17 WKT import/export tests
 - 10 WKB import/export tests
 - 4 JSON serialization tests
@@ -297,8 +314,7 @@ dotnet test --logger "console;verbosity=detailed"
 - [ ] Union, Intersection, Difference, SymmetricDifference (requires polygon clipping algorithms)
 - [ ] Enhanced GeoJSON import/export (beyond Point)
 - [ ] Projection/transformation support
-- [ ] Clip operator
-- [ ] Geodesic distance and area calculations
+- [ ] Geodesic area calculations
 - [ ] Performance optimizations using Span<T> and Memory<T>
 - [ ] Circular buffer generation (currently only square/rectangular)
 - [ ] Densify operator
