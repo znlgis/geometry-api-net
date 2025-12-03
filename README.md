@@ -35,15 +35,18 @@ This library provides a complete set of geometry types and spatial operations co
 - **Area** - Calculate area of polygons and envelopes
 - **Length** - Calculate length/perimeter of geometries
 
-#### Set Operations
+#### Set Operations (4 operators)
 - **Union** - Combine two geometries (all points in either geometry)
 - **Intersection** - Find common areas (all points in both geometries)
 - **Difference** - Subtract one geometry from another (geometry1 - geometry2)
+- **SymmetricDifference** - Find exclusive regions ((A-B) ∪ (B-A))
 
-#### Additional Operators
+#### Additional Operators (5 operators)
 - **Simplify** - Simplify geometries using Douglas-Peucker algorithm
 - **Centroid** - Calculate center of mass for geometries
 - **Boundary** - Compute boundary per OGC specification
+- **Generalize** - Remove vertices while preserving general shape
+- **Densify** - Add vertices to ensure no segment exceeds maximum length
 
 #### Advanced Operators
 - **Clip** - Clip geometries to envelope using Cohen-Sutherland algorithm
@@ -210,6 +213,12 @@ var newYork = new Point(-74.0060, 40.7128);  // Lon, Lat
 var london = new Point(-0.1278, 51.5074);
 double distanceMeters = GeodesicDistanceOperator.Instance.Execute(newYork, london);
 // Result: ~5,570,000 meters (5,570 km)
+
+// Generalize - remove vertices while preserving shape
+var generalizedPolyline = GeneralizeOperator.Instance.Execute(polyline, maxDeviation: 0.5);
+
+// Densify - add vertices to ensure no segment exceeds max length
+var densifiedPolyline = DensifyOperator.Instance.Execute(polyline, maxSegmentLength: 5.0);
 ```
 
 ### Set Operations
@@ -344,12 +353,14 @@ dotnet test --logger "console;verbosity=detailed"
 - [x] Clip operator (Cohen-Sutherland line clipping)
 - [x] Geodesic distance (Vincenty's formula on WGS84 ellipsoid)
 - [x] Set operations (Union, Intersection, Difference, SymmetricDifference)
+- [x] Generalize operator (remove vertices while preserving shape)
+- [x] Densify operator (add vertices to line segments)
 
 ### Test Coverage
-- **157 tests passing** with comprehensive coverage
+- **167 tests passing** with comprehensive coverage
 - 28 geometry type tests
 - 14 spatial relationship operator tests
-- 13 additional operator tests (Simplify, Centroid, Boundary)
+- 23 additional operator tests (Simplify, Centroid, Boundary, Generalize, Densify)
 - 12 geometry operation tests (Buffer, ConvexHull, Area, Length)
 - 11 advanced operator tests (Clip, GeodesicDistance)
 - 23 set operation tests (Union, Intersection, Difference, SymmetricDifference)
@@ -358,14 +369,12 @@ dotnet test --logger "console;verbosity=detailed"
 - 4 JSON serialization tests
 
 ### Planned Features
-- [ ] Generalize operator (different from Simplify, removes vertices within deviation threshold)
-- [ ] Densify operator (add vertices to long segments)
 - [ ] Offset operator (create offset curves/polygons)
 - [ ] Cut operator (cut geometries with polylines)
 - [ ] Enhanced GeoJSON import/export (beyond Point)
 - [ ] ESRI JSON import/export
 - [ ] Projection/transformation support
-- [ ] Geodesic area and length calculations
+- [ ] Geodesic area calculations
 - [ ] Relate operator (DE-9IM spatial relationships)
 - [ ] Performance optimizations using Span<T> and Memory<T>
 - [ ] Circular buffer generation (currently only square/rectangular)
