@@ -6,8 +6,28 @@ namespace Esri.Geometry.Core.Operators;
 
 /// <summary>
 ///   Operator for finding the nearest coordinates and vertices on geometries.
-///   Provides 2D proximity operations to find points closest to a given input point.
+///   Provides 2D proximity operations to find points closest to a given query point.
 /// </summary>
+/// <remarks>
+///   Proximity operations are essential for:
+///   - Snapping operations (finding nearest vertex for alignment)
+///   - Distance queries (finding closest point on a geometry)
+///   - Point-in-polygon testing (zero distance indicates interior point)
+///   - Spatial analysis (nearest neighbor searches)
+///   
+///   Two main operations:
+///   1. GetNearestCoordinate: Finds the closest point anywhere on the geometry
+///      - For lines: may return a point between vertices
+///      - For polygons: can test interior or boundary only
+///   
+///   2. GetNearestVertex: Finds the closest existing vertex
+///      - Only returns actual vertices, not interpolated points
+///      - Useful for snapping to existing geometry points
+///   
+///   Supported geometry types: Point, MultiPoint, Envelope, Polyline, Polygon
+///   
+///   Time Complexity: O(n) where n is the number of vertices/segments
+/// </remarks>
 public class Proximity2DOperator
 {
   private static readonly Lazy<Proximity2DOperator> _instance = new(() => new Proximity2DOperator());
@@ -22,15 +42,34 @@ public class Proximity2DOperator
   public static Proximity2DOperator Instance => _instance.Value;
 
   /// <summary>
-  ///   Returns the nearest coordinate on the geometry to the given input point.
+  ///   Returns the nearest coordinate on the geometry to the given query point.
+  ///   For line segments, this may return a point between vertices (interpolated).
   /// </summary>
-  /// <param name="geometry">The input geometry.</param>
-  /// <param name="inputPoint">The query point.</param>
+  /// <param name="geometry">The input geometry to search. Supports all geometry types.</param>
+  /// <param name="inputPoint">The query point to find the nearest coordinate to.</param>
   /// <param name="testPolygonInterior">
-  ///   When true and geometry is a polygon, tests if the input point is inside the polygon.
-  ///   Points inside the polygon have zero distance. When false, only determines proximity to the boundary.
+  ///   When true and geometry is a polygon/envelope, tests if the input point is inside.
+  ///   Points inside return zero distance with the input point as the result.
+  ///   When false, only finds the nearest point on the boundary.
   /// </param>
-  /// <returns>Result containing the nearest coordinate and distance information.</returns>
+  /// <returns>
+  ///   A Proximity2DResult containing:
+  ///   - Coordinate: The nearest point on the geometry
+  ///   - Distance: The 2D Euclidean distance to that point
+  ///   - VertexIndex: Index information (if applicable)
+  ///   Returns empty result if geometry is empty.
+  /// </returns>
+  /// <exception cref="ArgumentNullException">Thrown when geometry or inputPoint is null.</exception>
+  /// <exception cref="ArgumentException">Thrown for unsupported geometry types.</exception>
+  /// <example>
+  ///   <code>
+  ///   var polyline = new Polyline();
+  ///   polyline.AddPath(new[] { new Point(0,0), new Point(10,0) });
+  ///   var query = new Point(5, 5);
+  ///   var result = Proximity2DOperator.Instance.GetNearestCoordinate(polyline, query);
+  ///   // Result: Coordinate = (5, 0), Distance = 5
+  ///   </code>
+  /// </example>
   public Proximity2DResult GetNearestCoordinate(Geometries.Geometry geometry, Point inputPoint,
     bool testPolygonInterior = false)
   {
@@ -63,11 +102,30 @@ public class Proximity2DOperator
   }
 
   /// <summary>
-  ///   Returns the nearest vertex of the geometry to the given input point.
+  ///   Returns the nearest vertex of the geometry to the given query point.
+  ///   Only considers actual vertices, not interpolated points on line segments.
   /// </summary>
-  /// <param name="geometry">The input geometry.</param>
-  /// <param name="inputPoint">The query point.</param>
-  /// <returns>Result containing the nearest vertex and distance information.</returns>
+  /// <param name="geometry">The input geometry to search. Supports all geometry types.</param>
+  /// <param name="inputPoint">The query point to find the nearest vertex to.</param>
+  /// <returns>
+  ///   A Proximity2DResult containing:
+  ///   - Coordinate: The nearest vertex point
+  ///   - Distance: The 2D Euclidean distance to that vertex
+  ///   - VertexIndex: Index of the nearest vertex in the geometry
+  ///   Returns empty result if geometry is empty.
+  /// </returns>
+  /// <exception cref="ArgumentNullException">Thrown when geometry or inputPoint is null.</exception>
+  /// <exception cref="ArgumentException">Thrown for unsupported geometry types.</exception>
+  /// <example>
+  ///   <code>
+  ///   var multiPoint = new MultiPoint();
+  ///   multiPoint.Add(new Point(0, 0));
+  ///   multiPoint.Add(new Point(10, 10));
+  ///   var query = new Point(6, 6);
+  ///   var result = Proximity2DOperator.Instance.GetNearestVertex(multiPoint, query);
+  ///   // Result: Coordinate = (10, 10), Distance ≈ 5.66, VertexIndex = 1
+  ///   </code>
+  /// </example>
   public Proximity2DResult GetNearestVertex(Geometries.Geometry geometry, Point inputPoint)
   {
     if (geometry == null || inputPoint == null)

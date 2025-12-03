@@ -6,8 +6,25 @@ namespace Esri.Geometry.Core.Operators;
 /// <summary>
 ///   Operator for computing the union of two geometries.
 ///   Returns a geometry that represents all points in either geometry.
-///   Uses envelope-based union for simple cases and point aggregation for complex cases.
 /// </summary>
+/// <remarks>
+///   Union operation (A ∪ B) combines two geometries into one containing all points from both.
+///   
+///   Supported combinations:
+///   - Point ∪ Point → Point (if equal) or MultiPoint (if different)
+///   - Point ∪ MultiPoint → MultiPoint (aggregated points)
+///   - MultiPoint ∪ MultiPoint → MultiPoint (all points combined)
+///   - Envelope ∪ Envelope → Envelope (bounding rectangle of both)
+///   - Other combinations → Simplified envelope-based result
+///   
+///   Implementation notes:
+///   - This is a simplified implementation for basic geometry types
+///   - Full polygon union requires complex topology algorithms (not yet implemented)
+///   - For envelopes, returns the minimum bounding rectangle of both
+///   - For points, aggregates into MultiPoint collections
+///   
+///   Time Complexity: O(n + m) where n and m are the number of points in each geometry
+/// </remarks>
 public sealed class UnionOperator : IBinaryGeometryOperator<Geometries.Geometry>
 {
   private static readonly Lazy<UnionOperator> _instance = new(() => new UnionOperator());
@@ -22,12 +39,33 @@ public sealed class UnionOperator : IBinaryGeometryOperator<Geometries.Geometry>
   public static UnionOperator Instance => _instance.Value;
 
   /// <summary>
-  ///   Computes the union of two geometries.
+  ///   Computes the union of two geometries (all points in either geometry).
   /// </summary>
-  /// <param name="geometry1">First geometry</param>
-  /// <param name="geometry2">Second geometry</param>
-  /// <param name="spatialReference">Optional spatial reference (not used in this implementation)</param>
-  /// <returns>Union of the two geometries</returns>
+  /// <param name="geometry1">First geometry to union.</param>
+  /// <param name="geometry2">Second geometry to union.</param>
+  /// <param name="spatialReference">Optional spatial reference (currently not used).</param>
+  /// <returns>
+  ///   A geometry representing the union of the inputs:
+  ///   - Point or MultiPoint for point-based inputs
+  ///   - Envelope for envelope-based inputs
+  ///   - Simplified envelope union for complex geometry combinations
+  /// </returns>
+  /// <exception cref="ArgumentNullException">Thrown when either geometry is null.</exception>
+  /// <example>
+  ///   <code>
+  ///   // Union of two points
+  ///   var p1 = new Point(0, 0);
+  ///   var p2 = new Point(10, 10);
+  ///   var union = UnionOperator.Instance.Execute(p1, p2);
+  ///   // Result: MultiPoint with both points
+  ///   
+  ///   // Union of two envelopes
+  ///   var env1 = new Envelope(0, 0, 10, 10);
+  ///   var env2 = new Envelope(5, 5, 15, 15);
+  ///   var envUnion = UnionOperator.Instance.Execute(env1, env2);
+  ///   // Result: Envelope(0, 0, 15, 15)
+  ///   </code>
+  /// </example>
   public Geometries.Geometry Execute(Geometries.Geometry geometry1, Geometries.Geometry geometry2,
     SpatialReference.SpatialReference? spatialReference = null)
   {

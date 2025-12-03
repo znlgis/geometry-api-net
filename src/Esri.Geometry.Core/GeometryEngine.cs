@@ -7,44 +7,75 @@ namespace Esri.Geometry.Core;
 
 /// <summary>
 ///   Provides a simplified, static API for geometry operations.
-///   This class wraps all the operator instances with convenient static methods.
+///   This convenience class wraps all operator instances with easy-to-use static methods.
 /// </summary>
 /// <remarks>
-///   GeometryEngine provides a simpler API compared to using operators directly.
-///   For advanced scenarios or better performance with batch operations,
-///   consider using the operator classes directly (e.g., UnionOperator, BufferOperator).
+///   GeometryEngine is the recommended entry point for most geometry operations.
+///   It provides a clean, intuitive API that's easier to use than accessing operators directly.
+///   
+///   Key benefits:
+///   - Simpler method signatures (no need to access .Instance on operators)
+///   - Consistent naming and parameter ordering
+///   - All operations available in one place
+///   - Ideal for most common use cases
+///   
+///   When to use operators directly:
+///   - Batch processing many geometries (reusing the same operator instance)
+///   - Advanced scenarios requiring operator-specific configuration
+///   - Performance-critical code where method call overhead matters
+///   
+///   Available operation categories:
+///   - Spatial Relationships: Contains, Intersects, Distance, Equals, Disjoint, Within, Crosses, Touches, Overlaps
+///   - Set Operations: Union, Intersection, Difference, SymmetricDifference
+///   - Geometry Operations: Buffer, ConvexHull, Simplify, SimplifyOGC, Centroid, Boundary, Generalize, Densify, Offset
+///   - Measurements: Area, Length, GeodesicDistance, GeodesicArea
+///   - Clipping: Clip
+///   - Proximity: GetNearestCoordinate, GetNearestVertex, GetNearestVertices
+///   - Import/Export: WKT, WKB, GeoJSON, Esri JSON
 /// </remarks>
 public static class GeometryEngine
 {
   #region Spatial Relationship Operations
 
   /// <summary>
-  ///   Tests if geometry1 contains geometry2.
+  ///   Tests if geometry1 completely contains geometry2.
   /// </summary>
+  /// <param name="geometry1">The container geometry.</param>
+  /// <param name="geometry2">The geometry to test if it's contained.</param>
+  /// <returns>True if geometry1 contains geometry2, false otherwise.</returns>
   public static bool Contains(Geometries.Geometry geometry1, Geometries.Geometry geometry2)
   {
     return ContainsOperator.Instance.Execute(geometry1, geometry2);
   }
 
   /// <summary>
-  ///   Tests if two geometries intersect.
+  ///   Tests if two geometries have any points in common.
   /// </summary>
+  /// <param name="geometry1">First geometry.</param>
+  /// <param name="geometry2">Second geometry.</param>
+  /// <returns>True if the geometries intersect (share at least one point), false otherwise.</returns>
   public static bool Intersects(Geometries.Geometry geometry1, Geometries.Geometry geometry2)
   {
     return IntersectsOperator.Instance.Execute(geometry1, geometry2);
   }
 
   /// <summary>
-  ///   Calculates the distance between two geometries.
+  ///   Calculates the minimum 2D Euclidean distance between two geometries.
   /// </summary>
+  /// <param name="geometry1">First geometry.</param>
+  /// <param name="geometry2">Second geometry.</param>
+  /// <returns>The minimum distance between the geometries. Zero if they intersect or touch.</returns>
   public static double Distance(Geometries.Geometry geometry1, Geometries.Geometry geometry2)
   {
     return DistanceOperator.Instance.Execute(geometry1, geometry2);
   }
 
   /// <summary>
-  ///   Tests if two geometries are spatially equal.
+  ///   Tests if two geometries are spatially equal (represent the same set of points).
   /// </summary>
+  /// <param name="geometry1">First geometry.</param>
+  /// <param name="geometry2">Second geometry.</param>
+  /// <returns>True if the geometries are spatially equal within tolerance, false otherwise.</returns>
   public static bool Equals(Geometries.Geometry geometry1, Geometries.Geometry geometry2)
   {
     return EqualsOperator.Instance.Execute(geometry1, geometry2);
