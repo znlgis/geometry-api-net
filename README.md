@@ -35,6 +35,11 @@ This library provides a complete set of geometry types and spatial operations co
 - **Area** - Calculate area of polygons and envelopes
 - **Length** - Calculate length/perimeter of geometries
 
+#### Set Operations
+- **Union** - Combine two geometries (all points in either geometry)
+- **Intersection** - Find common areas (all points in both geometries)
+- **Difference** - Subtract one geometry from another (geometry1 - geometry2)
+
 #### Additional Operators
 - **Simplify** - Simplify geometries using Douglas-Peucker algorithm
 - **Centroid** - Calculate center of mass for geometries
@@ -207,6 +212,35 @@ double distanceMeters = GeodesicDistanceOperator.Instance.Execute(newYork, londo
 // Result: ~5,570,000 meters (5,570 km)
 ```
 
+### Set Operations
+
+```csharp
+using Esri.Geometry.Core.Operators;
+
+// Union - combine geometries
+var point1 = new Point(0, 0);
+var point2 = new Point(10, 10);
+var union = UnionOperator.Instance.Execute(point1, point2); // Returns MultiPoint
+
+var env1 = new Envelope(0, 0, 10, 10);
+var env2 = new Envelope(5, 5, 15, 15);
+var envUnion = UnionOperator.Instance.Execute(env1, env2); // Returns Envelope(0, 0, 15, 15)
+
+// Intersection - find common areas
+var intersection = IntersectionOperator.Instance.Execute(env1, env2); // Returns Envelope(5, 5, 10, 10)
+
+var testPoint = new Point(7, 7);
+var ptIntersection = IntersectionOperator.Instance.Execute(testPoint, env1); // Returns Point(7, 7)
+
+// Difference - subtract one geometry from another
+var mp = new MultiPoint();
+mp.Add(new Point(2, 2));
+mp.Add(new Point(5, 5));
+mp.Add(new Point(12, 12));
+
+var difference = DifferenceOperator.Instance.Execute(mp, env1); // Returns Point(12, 12) - points outside env1
+```
+
 ### WKB Import/Export
 
 ```csharp
@@ -300,18 +334,19 @@ dotnet test --logger "console;verbosity=detailed"
 - [x] Geodesic distance (Vincenty's formula on WGS84 ellipsoid)
 
 ### Test Coverage
-- **134 tests passing** with comprehensive coverage
+- **152 tests passing** with comprehensive coverage
 - 28 geometry type tests
 - 14 spatial relationship operator tests
 - 13 additional operator tests (Simplify, Centroid, Boundary)
 - 12 geometry operation tests (Buffer, ConvexHull, Area, Length)
 - 11 advanced operator tests (Clip, GeodesicDistance)
+- 18 set operation tests (Union, Intersection, Difference)
 - 17 WKT import/export tests
 - 10 WKB import/export tests
 - 4 JSON serialization tests
 
 ### Planned Features
-- [ ] Union, Intersection, Difference, SymmetricDifference (requires polygon clipping algorithms)
+- [ ] SymmetricDifference operator
 - [ ] Enhanced GeoJSON import/export (beyond Point)
 - [ ] Projection/transformation support
 - [ ] Geodesic area calculations
