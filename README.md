@@ -55,6 +55,7 @@ This library provides a complete set of geometry types and spatial operations co
 ### Import/Export Formats
 - **WKT (Well-Known Text)** - Full import and export support for all geometry types
 - **WKB (Well-Known Binary)** - Binary format import/export with endianness support
+- **GeoJSON** - Complete GeoJSON import/export for all geometry types
 - **JSON** - Point serialization with System.Text.Json
 
 ### Spatial Reference System
@@ -278,6 +279,47 @@ var geometry = WkbImportOperator.ImportFromWkb(wkb);
 var parsedPoint = (Point)geometry;
 ```
 
+### GeoJSON Import/Export
+
+```csharp
+using Esri.Geometry.Core.IO;
+
+// Export to GeoJSON
+var point = new Point(10.5, 20.3, 30.7);
+string geoJson = GeoJsonExportOperator.ExportToGeoJson(point);
+// Result: {"type":"Point","coordinates":[10.5,20.3,30.7]}
+
+// Export MultiPoint
+var multiPoint = new MultiPoint();
+multiPoint.Add(new Point(10, 20));
+multiPoint.Add(new Point(30, 40));
+string mpGeoJson = GeoJsonExportOperator.ExportToGeoJson(multiPoint);
+// Result: {"type":"MultiPoint","coordinates":[[10,20],[30,40]]}
+
+// Export Polyline (single path becomes LineString)
+var polyline = new Polyline();
+polyline.AddPath(new List<Point> { new Point(0, 0), new Point(10, 10) });
+string lineGeoJson = GeoJsonExportOperator.ExportToGeoJson(polyline);
+// Result: {"type":"LineString","coordinates":[[0,0],[10,10]]}
+
+// Export Polygon
+var polygon = new Polygon();
+polygon.AddRing(new List<Point> 
+{ 
+    new Point(0, 0), 
+    new Point(10, 0), 
+    new Point(10, 10), 
+    new Point(0, 10), 
+    new Point(0, 0) 
+});
+string polygonGeoJson = GeoJsonExportOperator.ExportToGeoJson(polygon);
+// Result: {"type":"Polygon","coordinates":[[[0,0],[10,0],[10,10],[0,10],[0,0]]]}
+
+// Import from GeoJSON
+var importedGeometry = GeoJsonImportOperator.ImportFromGeoJson(geoJson);
+var importedPoint = (Point)importedGeometry;
+```
+
 ## Project Structure
 
 ```
@@ -357,7 +399,7 @@ dotnet test --logger "console;verbosity=detailed"
 - [x] Densify operator (add vertices to line segments)
 
 ### Test Coverage
-- **167 tests passing** with comprehensive coverage
+- **175 tests passing** with comprehensive coverage
 - 28 geometry type tests
 - 14 spatial relationship operator tests
 - 23 additional operator tests (Simplify, Centroid, Boundary, Generalize, Densify)
@@ -366,13 +408,13 @@ dotnet test --logger "console;verbosity=detailed"
 - 23 set operation tests (Union, Intersection, Difference, SymmetricDifference)
 - 17 WKT import/export tests
 - 10 WKB import/export tests
+- 8 GeoJSON import/export tests
 - 4 JSON serialization tests
 
 ### Planned Features
 - [ ] Offset operator (create offset curves/polygons)
 - [ ] Cut operator (cut geometries with polylines)
-- [ ] Enhanced GeoJSON import/export (beyond Point)
-- [ ] ESRI JSON import/export
+- [ ] ESRI JSON import/export (proprietary Esri format)
 - [ ] Projection/transformation support
 - [ ] Geodesic area calculations
 - [ ] Relate operator (DE-9IM spatial relationships)
