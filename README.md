@@ -51,11 +51,14 @@ This library provides a complete set of geometry types and spatial operations co
 #### Advanced Operators
 - **Clip** - Clip geometries to envelope using Cohen-Sutherland algorithm
 - **GeodesicDistance** - Calculate great circle distance on WGS84 ellipsoid (Vincenty's formula)
+- **GeodesicArea** - Calculate geodesic area on WGS84 ellipsoid using spherical excess formula
+- **Offset** - Create offset curves/polygons at specified distance (perpendicular displacement)
 
 ### Import/Export Formats
 - **WKT (Well-Known Text)** - Full import and export support for all geometry types
 - **WKB (Well-Known Binary)** - Binary format import/export with endianness support
 - **GeoJSON** - Complete GeoJSON import/export for all geometry types
+- **Esri JSON** - Esri-specific JSON format import/export (x/y properties vs GeoJSON coordinates array)
 - **JSON** - Point serialization with System.Text.Json
 
 ### Spatial Reference System
@@ -399,12 +402,12 @@ dotnet test --logger "console;verbosity=detailed"
 - [x] Densify operator (add vertices to line segments)
 
 ### Test Coverage
-- **175 tests passing** with comprehensive coverage
+- **191 tests passing** with comprehensive coverage
 - 28 geometry type tests
 - 14 spatial relationship operator tests
 - 23 additional operator tests (Simplify, Centroid, Boundary, Generalize, Densify)
 - 12 geometry operation tests (Buffer, ConvexHull, Area, Length)
-- 11 advanced operator tests (Clip, GeodesicDistance)
+- 20 advanced operator tests (Clip, GeodesicDistance, GeodesicArea, Offset, Esri JSON)
 - 23 set operation tests (Union, Intersection, Difference, SymmetricDifference)
 - 17 WKT import/export tests
 - 10 WKB import/export tests
@@ -412,14 +415,17 @@ dotnet test --logger "console;verbosity=detailed"
 - 4 JSON serialization tests
 
 ### Planned Features
-- [ ] Offset operator (create offset curves/polygons)
-- [ ] Cut operator (cut geometries with polylines)
-- [ ] ESRI JSON import/export (proprietary Esri format)
-- [ ] Projection/transformation support
-- [ ] Geodesic area calculations
-- [ ] Relate operator (DE-9IM spatial relationships)
+- [ ] Cut operator (cut geometries with polylines - requires complex topology algorithms)
+- [ ] Projection/transformation support (requires external projection library)
+- [ ] Relate operator (DE-9IM spatial relationships - requires complex topology computation)
 - [ ] Performance optimizations using Span<T> and Memory<T>
 - [ ] Circular buffer generation (currently only square/rectangular)
+- [ ] Full polygon clipping for Union/Intersection/Difference (currently simplified for complex polygons)
+
+### Recently Implemented ✅
+- [x] Offset operator (create offset curves/polygons)
+- [x] ESRI JSON import/export (proprietary Esri format)
+- [x] Geodesic area calculations (WGS84 ellipsoid)
 
 ## Contributing
 
