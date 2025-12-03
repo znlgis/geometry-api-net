@@ -3,8 +3,27 @@ using System;
 namespace Esri.Geometry.Core.Geometries;
 
 /// <summary>
-///   Represents an axis-aligned bounding rectangle.
+///   Represents an axis-aligned bounding rectangle (AABR).
+///   Also known as a Minimum Bounding Rectangle (MBR) or bounding box.
 /// </summary>
+/// <remarks>
+///   An envelope is defined by its minimum and maximum X and Y coordinates,
+///   forming a rectangle with sides parallel to the coordinate axes.
+///   
+///   Common uses:
+///   - Spatial indexing (quick bounds checking before detailed tests)
+///   - Viewport/window clipping
+///   - Rough containment tests (faster than precise geometry tests)
+///   - Geometry simplification (representing complex shapes)
+///   
+///   Properties:
+///   - Always axis-aligned (cannot be rotated)
+///   - Empty envelopes have NaN coordinates
+///   - Can be degenerate (point or line if XMin=XMax or YMin=YMax)
+///   
+///   Performance note: Envelope operations are typically O(1) and very fast,
+///   making them ideal for preliminary spatial filtering.
+/// </remarks>
 public class Envelope : Geometry
 {
     /// <summary>
@@ -21,10 +40,14 @@ public class Envelope : Geometry
     /// <summary>
     ///   Initializes a new instance of the <see cref="Envelope" /> class with specified bounds.
     /// </summary>
-    /// <param name="xMin">The minimum X coordinate.</param>
-    /// <param name="yMin">The minimum Y coordinate.</param>
-    /// <param name="xMax">The maximum X coordinate.</param>
-    /// <param name="yMax">The maximum Y coordinate.</param>
+    /// <param name="xMin">The minimum X coordinate (left edge).</param>
+    /// <param name="yMin">The minimum Y coordinate (bottom edge).</param>
+    /// <param name="xMax">The maximum X coordinate (right edge).</param>
+    /// <param name="yMax">The maximum Y coordinate (top edge).</param>
+    /// <remarks>
+    ///   Note: This constructor does not validate that xMin ≤ xMax and yMin ≤ yMax.
+    ///   Callers should ensure proper ordering of coordinates.
+    /// </remarks>
     public Envelope(double xMin, double yMin, double xMax, double yMax)
   {
     XMin = xMin;
@@ -64,23 +87,39 @@ public class Envelope : Geometry
     public override int Dimension => 2;
 
     /// <summary>
-    ///   Gets the width of the envelope.
+    ///   Gets the width of the envelope (XMax - XMin).
     /// </summary>
+    /// <remarks>
+    ///   Returns 0 for empty envelopes.
+    ///   Can be 0 for degenerate envelopes (vertical line).
+    /// </remarks>
     public double Width => IsEmpty ? 0 : XMax - XMin;
 
     /// <summary>
-    ///   Gets the height of the envelope.
+    ///   Gets the height of the envelope (YMax - YMin).
     /// </summary>
+    /// <remarks>
+    ///   Returns 0 for empty envelopes.
+    ///   Can be 0 for degenerate envelopes (horizontal line).
+    /// </remarks>
     public double Height => IsEmpty ? 0 : YMax - YMin;
 
     /// <summary>
     ///   Gets the center point of the envelope.
     /// </summary>
+    /// <remarks>
+    ///   Calculated as the midpoint: ((XMin+XMax)/2, (YMin+YMax)/2).
+    ///   Returns an empty point for empty envelopes.
+    /// </remarks>
     public Point Center => IsEmpty ? new Point() : new Point((XMin + XMax) / 2, (YMin + YMax) / 2);
 
     /// <summary>
-    ///   Gets the area of the envelope.
+    ///   Gets the area of the envelope (Width × Height).
     /// </summary>
+    /// <remarks>
+    ///   Returns 0 for empty or degenerate envelopes.
+    ///   Always non-negative.
+    /// </remarks>
     public double Area => IsEmpty ? 0 : Width * Height;
 
     /// <inheritdoc />
@@ -93,7 +132,12 @@ public class Envelope : Geometry
     ///   Determines whether this envelope contains a point.
     /// </summary>
     /// <param name="point">The point to test.</param>
-    /// <returns>True if the envelope contains the point, false otherwise.</returns>
+    /// <returns>True if the point lies within or on the boundary of the envelope, false otherwise.</returns>
+    /// <remarks>
+    ///   A point is considered contained if:
+    ///   XMin ≤ point.X ≤ XMax AND YMin ≤ point.Y ≤ YMax
+    ///   Returns false for null, empty points, or empty envelopes.
+    /// </remarks>
     public bool Contains(Point point)
   {
     if (point == null || point.IsEmpty || IsEmpty) return false;

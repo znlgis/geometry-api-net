@@ -9,14 +9,57 @@ namespace Esri.Geometry.Core.IO;
 
 /// <summary>
 ///   Imports geometries from Well-Known Text (WKT) format.
+///   WKT is a text markup language for representing vector geometry objects (ISO 19125-1).
 /// </summary>
+/// <remarks>
+///   Supported WKT geometry types:
+///   - POINT, POINT Z (2D and 3D points)
+///   - LINESTRING (converted to Polyline)
+///   - POLYGON (with optional interior rings/holes)
+///   - MULTIPOINT (collection of points)
+///   - MULTILINESTRING (converted to Polyline with multiple paths)
+///   - EMPTY geometries (e.g., "POINT EMPTY")
+///   
+///   WKT format examples:
+///   - POINT (10 20)
+///   - POINT Z (10 20 30)
+///   - LINESTRING (0 0, 10 10, 20 20)
+///   - POLYGON ((0 0, 10 0, 10 10, 0 10, 0 0))
+///   - POLYGON ((0 0, 100 0, 100 100, 0 100, 0 0), (20 20, 80 20, 80 80, 20 80, 20 20))
+///   - MULTIPOINT ((0 0), (10 10))
+///   
+///   Parsing approach:
+///   - Uses regular expressions for tokenization
+///   - Supports scientific notation (e.g., 1.5e+10)
+///   - Case-insensitive parsing
+///   - Invariant culture for number parsing (uses . as decimal separator)
+///   
+///   Limitations:
+///   - M values (measure) are not supported
+///   - GEOMETRYCOLLECTION is not yet supported
+///   - Some extended WKT variants may not be supported
+/// </remarks>
 public static class WktImportOperator
 {
     /// <summary>
-    ///   Imports a geometry from WKT format.
+    ///   Imports a geometry from WKT (Well-Known Text) format string.
     /// </summary>
-    /// <param name="wkt">The WKT string to parse.</param>
-    /// <returns>The parsed geometry.</returns>
+    /// <param name="wkt">The WKT string to parse (e.g., "POINT (10 20)").</param>
+    /// <returns>The parsed geometry object (Point, Polyline, Polygon, or MultiPoint).</returns>
+    /// <exception cref="ArgumentException">Thrown when WKT string is null, empty, or whitespace.</exception>
+    /// <exception cref="FormatException">Thrown when WKT format is invalid or unsupported.</exception>
+    /// <example>
+    ///   <code>
+    ///   // Parse a point
+    ///   var point = WktImportOperator.ImportFromWkt("POINT (10.5 20.7)");
+    ///   
+    ///   // Parse a polygon
+    ///   var polygon = WktImportOperator.ImportFromWkt("POLYGON ((0 0, 10 0, 10 10, 0 10, 0 0))");
+    ///   
+    ///   // Parse an empty geometry
+    ///   var emptyPoint = WktImportOperator.ImportFromWkt("POINT EMPTY");
+    ///   </code>
+    /// </example>
     public static Geometries.Geometry ImportFromWkt(string wkt)
   {
     if (string.IsNullOrWhiteSpace(wkt)) throw new ArgumentException("WKT string cannot be null or empty.", nameof(wkt));
