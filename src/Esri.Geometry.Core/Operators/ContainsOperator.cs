@@ -37,8 +37,71 @@ namespace Esri.Geometry.Core.Operators
                 return env.Contains(p);
             }
 
+            // Point in Polygon test using ray casting algorithm
+            if (geometry1 is Polygon poly && geometry2 is Point pt)
+            {
+                return IsPointInPolygon(poly, pt);
+            }
+
             // For other geometry types, this would require more complex implementations
             throw new NotImplementedException($"Contains test between {geometry1.Type} and {geometry2.Type} is not yet implemented.");
+        }
+
+        /// <summary>
+        /// Tests if a point is inside a polygon using the ray casting algorithm.
+        /// </summary>
+        private static bool IsPointInPolygon(Polygon polygon, Point point)
+        {
+            if (polygon.IsEmpty || polygon.RingCount == 0)
+                return false;
+
+            bool inside = false;
+            double x = point.X;
+            double y = point.Y;
+
+            // Test the first ring (exterior ring)
+            var ring = polygon.GetRing(0);
+            if (ring.Count < 3)
+                return false;
+
+            for (int i = 0, j = ring.Count - 1; i < ring.Count; j = i++)
+            {
+                double xi = ring[i].X, yi = ring[i].Y;
+                double xj = ring[j].X, yj = ring[j].Y;
+
+                if (((yi > y) != (yj > y)) &&
+                    (x < (xj - xi) * (y - yi) / (yj - yi) + xi))
+                {
+                    inside = !inside;
+                }
+            }
+
+            // If we have holes (subsequent rings), check if point is in any hole
+            for (int ringIndex = 1; ringIndex < polygon.RingCount; ringIndex++)
+            {
+                var holeRing = polygon.GetRing(ringIndex);
+                if (holeRing.Count < 3)
+                    continue;
+
+                bool inHole = false;
+                for (int i = 0, j = holeRing.Count - 1; i < holeRing.Count; j = i++)
+                {
+                    double xi = holeRing[i].X, yi = holeRing[i].Y;
+                    double xj = holeRing[j].X, yj = holeRing[j].Y;
+
+                    if (((yi > y) != (yj > y)) &&
+                        (x < (xj - xi) * (y - yi) / (yj - yi) + xi))
+                    {
+                        inHole = !inHole;
+                    }
+                }
+
+                // If point is in a hole, it's not in the polygon
+                if (inHole)
+                    return false;
+            }
+
+            return inside;
         }
     }
 }
