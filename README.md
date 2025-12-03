@@ -1,92 +1,94 @@
 # Esri Geometry API for .NET
 
-A C# port of the [Esri Geometry API for Java](https://github.com/Esri/geometry-api-java) targeting .NET Standard 2.0, providing comprehensive geometry operations for spatial data analysis.
+[Esri Geometry API for Java](https://github.com/Esri/geometry-api-java) 的 C# 移植版本，针对 .NET Standard 2.0，为空间数据分析提供全面的几何操作功能。
 
-## Overview
+## 概述
 
-This library provides a complete set of geometry types and spatial operations compatible with Esri's geometry model. It is designed for cross-platform use with .NET Core, .NET Framework 4.6.1+, Xamarin, and other .NET Standard 2.0 compatible platforms.
+本库提供了一套完整的几何类型和空间操作，与 Esri 的几何模型兼容。设计用于跨平台使用，支持 .NET Core、.NET Framework 4.6.1+、Xamarin 以及其他 .NET Standard 2.0 兼容平台。
 
-## Features
+**注意**：所有源代码注释均为中文，便于中文开发者阅读和维护。
 
-### Geometry Types
-- **Point** - Represents a point with X, Y coordinates (optional Z and M values)
-- **MultiPoint** - Collection of points
-- **Polyline** - One or more connected paths
-- **Polygon** - One or more rings forming polygons
-- **Envelope** - Axis-aligned bounding rectangle
-- **Line** - Line segment between two points
+## 功能特性
 
-### Spatial Operators
+### 几何类型
+- **Point（点）** - 表示具有 X、Y 坐标的点（可选 Z 和 M 值）
+- **MultiPoint（多点）** - 点的集合
+- **Polyline（折线）** - 一条或多条连接的路径
+- **Polygon（多边形）** - 一个或多个环形成的多边形
+- **Envelope（包络）** - 轴对齐的边界矩形
+- **Line（线段）** - 两点之间的线段
 
-#### Spatial Relationship Operators (9 operators)
-- **Contains** - Test if one geometry contains another
-- **Intersects** - Test if geometries intersect  
-- **Distance** - Calculate distance between geometries
-- **Equals** - Test if two geometries are spatially equal
-- **Disjoint** - Test if geometries don't intersect
-- **Within** - Test if geometry1 is within geometry2
-- **Crosses** - Test if geometries cross
-- **Touches** - Test if geometries touch at boundaries
-- **Overlaps** - Test if geometries of same dimension overlap
+### 空间操作符
 
-#### Geometry Operations
-- **Buffer** - Create buffer (offset polygon) around geometry
-- **ConvexHull** - Compute convex hull using Graham scan algorithm
-- **Area** - Calculate area of polygons and envelopes
-- **Length** - Calculate length/perimeter of geometries
+#### 空间关系操作符（9 个操作符）
+- **Contains（包含）** - 测试一个几何对象是否包含另一个
+- **Intersects（相交）** - 测试几何对象是否相交
+- **Distance（距离）** - 计算几何对象之间的距离
+- **Equals（相等）** - 测试两个几何对象在空间上是否相等
+- **Disjoint（分离）** - 测试几何对象是否不相交
+- **Within（内部）** - 测试 geometry1 是否在 geometry2 内部
+- **Crosses（交叉）** - 测试几何对象是否交叉
+- **Touches（相接）** - 测试几何对象是否在边界处相接
+- **Overlaps（重叠）** - 测试相同维度的几何对象是否重叠
 
-#### Geometry Helper Methods (NEW!)
-- **CalculateArea2D()** - Calculate 2D area directly on geometry
-- **CalculateLength2D()** - Calculate 2D length/perimeter directly on geometry  
-- **Copy()** - Create deep copy of geometry with all attributes
-- **IsValid()** - Check if geometry is valid (not null and not empty)
-- **IsPoint, IsLinear, IsArea** - Type checking properties for geometries
+#### 几何操作
+- **Buffer（缓冲区）** - 在几何对象周围创建缓冲区（偏移多边形）
+- **ConvexHull（凸包）** - 使用 Graham 扫描算法计算凸包
+- **Area（面积）** - 计算多边形和包络的面积
+- **Length（长度）** - 计算几何对象的长度/周长
 
-#### Set Operations (4 operators)
-- **Union** - Combine two geometries (all points in either geometry)
-- **Intersection** - Find common areas (all points in both geometries)
-- **Difference** - Subtract one geometry from another (geometry1 - geometry2)
-- **SymmetricDifference** - Find exclusive regions ((A-B) ∪ (B-A))
+#### 几何辅助方法（新增！）
+- **CalculateArea2D()** - 直接计算几何对象的 2D 面积
+- **CalculateLength2D()** - 直接计算几何对象的 2D 长度/周长
+- **Copy()** - 创建包含所有属性的几何对象深层副本
+- **IsValid()** - 检查几何对象是否有效（非 null 且非空）
+- **IsPoint, IsLinear, IsArea** - 几何对象类型检查属性
 
-#### Additional Operators (6 operators)
-- **Simplify** - Simplify geometries using Douglas-Peucker algorithm
-- **SimplifyOGC** - Simplify geometries according to OGC specification (NEW!)
-- **Centroid** - Calculate center of mass for geometries
-- **Boundary** - Compute boundary per OGC specification
-- **Generalize** - Remove vertices while preserving general shape
-- **Densify** - Add vertices to ensure no segment exceeds maximum length
+#### 集合操作（4 个操作符）
+- **Union（并集）** - 合并两个几何对象（任一几何对象中的所有点）
+- **Intersection（交集）** - 查找公共区域（两个几何对象中的所有点）
+- **Difference（差集）** - 从一个几何对象中减去另一个（geometry1 - geometry2）
+- **SymmetricDifference（对称差）** - 查找排他区域（(A-B) ∪ (B-A)）
 
-#### Advanced Operators
-- **Clip** - Clip geometries to envelope using Cohen-Sutherland algorithm
-- **GeodesicDistance** - Calculate great circle distance on WGS84 ellipsoid (Vincenty's formula)
-- **GeodesicArea** - Calculate geodesic area on WGS84 ellipsoid using spherical excess formula
-- **Offset** - Create offset curves/polygons at specified distance (perpendicular displacement)
-- **Proximity2D** - Find nearest coordinates and vertices on geometries (GetNearestCoordinate, GetNearestVertex, GetNearestVertices)
+#### 其他操作符（6 个操作符）
+- **Simplify（简化）** - 使用 Douglas-Peucker 算法简化几何对象
+- **SimplifyOGC（OGC 简化）** - 根据 OGC 规范简化几何对象（新增！）
+- **Centroid（质心）** - 计算几何对象的质心
+- **Boundary（边界）** - 根据 OGC 规范计算边界
+- **Generalize（概化）** - 删除顶点的同时保持总体形状
+- **Densify（密化）** - 添加顶点以确保没有线段超过最大长度
 
-#### Convenience API
-- **GeometryEngine** - Simplified static API wrapping all operators with convenient methods
-- **MapGeometry** - Bundle geometry with spatial reference (NEW!)
+#### 高级操作符
+- **Clip（裁剪）** - 使用 Cohen-Sutherland 算法将几何对象裁剪到包络
+- **GeodesicDistance（大地测量距离）** - 计算 WGS84 椭球上的大圆距离（Vincenty 公式）
+- **GeodesicArea（大地测量面积）** - 使用球面过量公式计算 WGS84 椭球上的大地测量面积
+- **Offset（偏移）** - 在指定距离处创建偏移曲线/多边形（垂直位移）
+- **Proximity2D（2D 邻近）** - 查找几何对象上的最近坐标和顶点（GetNearestCoordinate、GetNearestVertex、GetNearestVertices）
 
-### Import/Export Formats
-- **WKT (Well-Known Text)** - Full import and export support for all geometry types
-- **WKB (Well-Known Binary)** - Binary format import/export with endianness support
-- **GeoJSON** - Complete GeoJSON import/export for all geometry types
-- **Esri JSON** - Esri-specific JSON format import/export (x/y properties vs GeoJSON coordinates array)
-- **JSON** - Point serialization with System.Text.Json
+#### 便利 API
+- **GeometryEngine** - 使用便利方法包装所有操作符的简化静态 API
+- **MapGeometry** - 将几何对象与空间参考捆绑（新增！）
 
-### Spatial Reference System
-- Support for well-known IDs (WKID)
-- Built-in support for WGS 84 (EPSG:4326) and Web Mercator (EPSG:3857)
+### 导入/导出格式
+- **WKT (Well-Known Text)** - 对所有几何类型的完整导入和导出支持
+- **WKB (Well-Known Binary)** - 支持字节序的二进制格式导入/导出
+- **GeoJSON** - 对所有几何类型的完整 GeoJSON 导入/导出
+- **Esri JSON** - Esri 特定的 JSON 格式导入/导出（x/y 属性 vs GeoJSON 坐标数组）
+- **JSON** - 使用 System.Text.Json 的 Point 序列化
 
-### JSON Serialization
-- System.Text.Json converters for Point geometry
-- Support for X, Y, Z, and M coordinates
+### 空间参考系统
+- 支持众所周知的 ID（WKID）
+- 内置支持 WGS 84（EPSG:4326）和 Web Mercator（EPSG:3857）
 
-## Getting Started
+### JSON 序列化
+- Point 几何对象的 System.Text.Json 转换器
+- 支持 X、Y、Z 和 M 坐标
 
-### Installation
+## 快速开始
 
-Add reference to the core library in your project:
+### 安装
+
+在项目中添加对核心库的引用：
 
 ```xml
 <ItemGroup>
@@ -94,7 +96,7 @@ Add reference to the core library in your project:
 </ItemGroup>
 ```
 
-For JSON support, also reference:
+对于 JSON 支持，还需引用：
 
 ```xml
 <ItemGroup>
@@ -102,29 +104,29 @@ For JSON support, also reference:
 </ItemGroup>
 ```
 
-### Basic Usage
+### 基本用法
 
 ```csharp
 using Esri.Geometry.Core.Geometries;
 using Esri.Geometry.Core.Operators;
 
-// Create points
+// 创建点
 var point1 = new Point(10, 20);
 var point2 = new Point(30, 40);
 
-// Calculate distance
+// 计算距离
 var distance = point1.Distance(point2);
 Console.WriteLine($"Distance: {distance}");
 
-// Create an envelope
+// 创建包络
 var envelope = new Envelope(0, 0, 100, 100);
 
-// Test containment
+// 测试包含关系
 var testPoint = new Point(50, 50);
 bool contains = envelope.Contains(testPoint);
 Console.WriteLine($"Contains: {contains}");
 
-// Use operators
+// 使用操作符
 var distanceOp = DistanceOperator.Instance;
 var dist = distanceOp.Execute(point1, point2);
 
@@ -132,48 +134,48 @@ var containsOp = ContainsOperator.Instance;
 var result = containsOp.Execute(envelope, testPoint);
 ```
 
-### GeometryEngine - Simplified API
+### GeometryEngine - 简化的 API
 
-The `GeometryEngine` class provides a simplified, static API for all geometry operations:
+`GeometryEngine` 类为所有几何操作提供了简化的静态 API：
 
 ```csharp
 using Esri.Geometry.Core;
 using Esri.Geometry.Core.Geometries;
 
-// All operations available as static methods
+// 所有操作都可作为静态方法使用
 var point1 = new Point(0, 0);
 var point2 = new Point(3, 4);
 
-// Spatial relationships
+// 空间关系
 bool contains = GeometryEngine.Contains(envelope, point);
 bool intersects = GeometryEngine.Intersects(geom1, geom2);
 double distance = GeometryEngine.Distance(point1, point2);  // 5.0
 
-// Set operations
+// 集合操作
 var union = GeometryEngine.Union(geom1, geom2);
 var intersection = GeometryEngine.Intersection(geom1, geom2);
 var difference = GeometryEngine.Difference(geom1, geom2);
 
-// Geometry operations
+// 几何操作
 var buffer = GeometryEngine.Buffer(point, 10.0);
 var hull = GeometryEngine.ConvexHull(multiPoint);
 double area = GeometryEngine.Area(polygon);
 double length = GeometryEngine.Length(polyline);
 
-// Import/Export
+// 导入/导出
 string wkt = GeometryEngine.GeometryToWkt(geometry);
 var geom = GeometryEngine.GeometryFromWkt(wkt);
 
 string geoJson = GeometryEngine.GeometryToGeoJson(geometry);
 var geom2 = GeometryEngine.GeometryFromGeoJson(geoJson);
 
-// Proximity operations
+// 邻近操作
 var result = GeometryEngine.GetNearestCoordinate(geometry, queryPoint);
-Console.WriteLine($"Nearest point: ({result.Coordinate.X}, {result.Coordinate.Y})");
-Console.WriteLine($"Distance: {result.Distance}");
+Console.WriteLine($"最近的点: ({result.Coordinate.X}, {result.Coordinate.Y})");
+Console.WriteLine($"距离: {result.Distance}");
 ```
 
-### Working with Polygons
+### 使用多边形
 
 ```csharp
 var polygon = new Polygon();
@@ -187,41 +189,41 @@ var ring = new[] {
 polygon.AddRing(ring);
 
 var area = polygon.Area;
-Console.WriteLine($"Polygon area: {area}");
+Console.WriteLine($"多边形面积: {area}");
 ```
 
-### Spatial Reference
+### 空间参考
 
 ```csharp
 using Esri.Geometry.Core.SpatialReference;
 
-// Create WGS 84 spatial reference
+// 创建 WGS 84 空间参考
 var wgs84 = SpatialReference.Wgs84();
 Console.WriteLine($"WKID: {wgs84.Wkid}");
 
-// Create Web Mercator spatial reference
+// 创建 Web Mercator 空间参考
 var webMercator = SpatialReference.WebMercator();
 ```
 
-### WKT Import/Export
+### WKT 导入/导出
 
 ```csharp
 using Esri.Geometry.Core.IO;
 
-// Export to WKT
+// 导出为 WKT
 var point = new Point(10.5, 20.7);
 var wkt = WktExportOperator.ExportToWkt(point);
-// Result: "POINT (10.5 20.7)"
+// 结果: "POINT (10.5 20.7)"
 
-// Import from WKT
+// 从 WKT 导入
 var geometry = WktImportOperator.ImportFromWkt("POLYGON ((0 0, 10 0, 10 10, 0 10, 0 0))");
 var polygon = (Polygon)geometry;
 ```
 
-### Spatial Relationship Tests
+### 空间关系测试
 
 ```csharp
-// Test various spatial relationships
+// 测试各种空间关系
 var env1 = new Envelope(0, 0, 10, 10);
 var env2 = new Envelope(5, 5, 15, 15);
 
@@ -231,83 +233,83 @@ bool disjoint = DisjointOperator.Instance.Execute(env1, env2);      // false
 bool equals = EqualsOperator.Instance.Execute(env1, env1);          // true
 ```
 
-### Geometry Operations
+### 几何操作
 
 ```csharp
-// Create a buffer around a point
+// 在点周围创建缓冲区
 var point = new Point(10, 20);
 var buffer = BufferOperator.Instance.Execute(point, 5.0);
 
-// Compute convex hull
+// 计算凸包
 var multiPoint = new MultiPoint();
 multiPoint.Add(new Point(0, 0));
 multiPoint.Add(new Point(10, 0));
 multiPoint.Add(new Point(5, 10));
 var hull = ConvexHullOperator.Instance.Execute(multiPoint);
 
-// Calculate area and length
+// 计算面积和长度
 var polygon = new Polygon();
-// ... add rings to polygon
+// ... 向多边形添加环
 double area = AreaOperator.Instance.Execute(polygon);
 double perimeter = LengthOperator.Instance.Execute(polygon);
 
-// Simplify a polyline
+// 简化折线
 var polyline = new Polyline();
-// ... add paths
+// ... 添加路径
 var simplified = SimplifyOperator.Instance.Execute(polyline, tolerance: 0.5);
 
-// Calculate centroid
+// 计算质心
 var centroid = CentroidOperator.Instance.Execute(polygon);
 
-// Get boundary
-var boundary = BoundaryOperator.Instance.Execute(polygon); // Returns Polyline
+// 获取边界
+var boundary = BoundaryOperator.Instance.Execute(polygon); // 返回 Polyline
 
-// Clip geometry to envelope
+// 将几何对象裁剪到包络
 var clipEnvelope = new Envelope(0, 0, 100, 100);
 var clipped = ClipOperator.Instance.Execute(polyline, clipEnvelope);
 
-// Calculate geodesic distance (great circle on Earth)
-var newYork = new Point(-74.0060, 40.7128);  // Lon, Lat
+// 计算大地测量距离（地球上的大圆）
+var newYork = new Point(-74.0060, 40.7128);  // 经度，纬度
 var london = new Point(-0.1278, 51.5074);
 double distanceMeters = GeodesicDistanceOperator.Instance.Execute(newYork, london);
-// Result: ~5,570,000 meters (5,570 km)
+// 结果: ~5,570,000 米（5,570 公里）
 
-// Generalize - remove vertices while preserving shape
+// 概化 - 删除顶点的同时保持形状
 var generalizedPolyline = GeneralizeOperator.Instance.Execute(polyline, maxDeviation: 0.5);
 
-// Densify - add vertices to ensure no segment exceeds max length
+// 密化 - 添加顶点以确保没有线段超过最大长度
 var densifiedPolyline = DensifyOperator.Instance.Execute(polyline, maxSegmentLength: 5.0);
 ```
 
-### Set Operations
+### 集合操作
 
 ```csharp
 using Esri.Geometry.Core.Operators;
 
-// Union - combine geometries
+// 并集 - 合并几何对象
 var point1 = new Point(0, 0);
 var point2 = new Point(10, 10);
-var union = UnionOperator.Instance.Execute(point1, point2); // Returns MultiPoint
+var union = UnionOperator.Instance.Execute(point1, point2); // 返回 MultiPoint
 
 var env1 = new Envelope(0, 0, 10, 10);
 var env2 = new Envelope(5, 5, 15, 15);
-var envUnion = UnionOperator.Instance.Execute(env1, env2); // Returns Envelope(0, 0, 15, 15)
+var envUnion = UnionOperator.Instance.Execute(env1, env2); // 返回 Envelope(0, 0, 15, 15)
 
-// Intersection - find common areas
-var intersection = IntersectionOperator.Instance.Execute(env1, env2); // Returns Envelope(5, 5, 10, 10)
+// 交集 - 查找公共区域
+var intersection = IntersectionOperator.Instance.Execute(env1, env2); // 返回 Envelope(5, 5, 10, 10)
 
 var testPoint = new Point(7, 7);
-var ptIntersection = IntersectionOperator.Instance.Execute(testPoint, env1); // Returns Point(7, 7)
+var ptIntersection = IntersectionOperator.Instance.Execute(testPoint, env1); // 返回 Point(7, 7)
 
-// Difference - subtract one geometry from another
+// 差集 - 从一个几何对象中减去另一个
 var mp = new MultiPoint();
 mp.Add(new Point(2, 2));
 mp.Add(new Point(5, 5));
 mp.Add(new Point(12, 12));
 
-var difference = DifferenceOperator.Instance.Execute(mp, env1); // Returns Point(12, 12) - points outside env1
+var difference = DifferenceOperator.Instance.Execute(mp, env1); // 返回 Point(12, 12) - env1 外的点
 
-// Symmetric Difference - points in either but not both
+// 对称差 - 任一中的点但不同时在两者中
 var mp1 = new MultiPoint();
 mp1.Add(new Point(0, 0));
 mp1.Add(new Point(10, 10));
@@ -316,50 +318,50 @@ var mp2 = new MultiPoint();
 mp2.Add(new Point(10, 10));
 mp2.Add(new Point(20, 20));
 
-var symDiff = SymmetricDifferenceOperator.Instance.Execute(mp1, mp2); // Returns MultiPoint with (0,0) and (20,20)
+var symDiff = SymmetricDifferenceOperator.Instance.Execute(mp1, mp2); // 返回包含 (0,0) 和 (20,20) 的 MultiPoint
 ```
 
-### WKB Import/Export
+### WKB 导入/导出
 
 ```csharp
 using Esri.Geometry.Core.IO;
 
-// Export to WKB (binary format)
+// 导出为 WKB（二进制格式）
 var point = new Point(10.5, 20.7);
 byte[] wkb = WkbExportOperator.ExportToWkb(point);
 
-// Export with big-endian byte order
+// 使用大端字节序导出
 byte[] wkbBigEndian = WkbExportOperator.ExportToWkb(point, bigEndian: true);
 
-// Import from WKB
+// 从 WKB 导入
 var geometry = WkbImportOperator.ImportFromWkb(wkb);
 var parsedPoint = (Point)geometry;
 ```
 
-### GeoJSON Import/Export
+### GeoJSON 导入/导出
 
 ```csharp
 using Esri.Geometry.Core.IO;
 
-// Export to GeoJSON
+// 导出为 GeoJSON
 var point = new Point(10.5, 20.3, 30.7);
 string geoJson = GeoJsonExportOperator.ExportToGeoJson(point);
-// Result: {"type":"Point","coordinates":[10.5,20.3,30.7]}
+// 结果: {"type":"Point","coordinates":[10.5,20.3,30.7]}
 
-// Export MultiPoint
+// 导出 MultiPoint
 var multiPoint = new MultiPoint();
 multiPoint.Add(new Point(10, 20));
 multiPoint.Add(new Point(30, 40));
 string mpGeoJson = GeoJsonExportOperator.ExportToGeoJson(multiPoint);
-// Result: {"type":"MultiPoint","coordinates":[[10,20],[30,40]]}
+// 结果: {"type":"MultiPoint","coordinates":[[10,20],[30,40]]}
 
-// Export Polyline (single path becomes LineString)
+// 导出 Polyline（单路径变为 LineString）
 var polyline = new Polyline();
 polyline.AddPath(new List<Point> { new Point(0, 0), new Point(10, 10) });
 string lineGeoJson = GeoJsonExportOperator.ExportToGeoJson(polyline);
-// Result: {"type":"LineString","coordinates":[[0,0],[10,10]]}
+// 结果: {"type":"LineString","coordinates":[[0,0],[10,10]]}
 
-// Export Polygon
+// 导出 Polygon
 var polygon = new Polygon();
 polygon.AddRing(new List<Point> 
 { 
@@ -370,21 +372,21 @@ polygon.AddRing(new List<Point>
     new Point(0, 0) 
 });
 string polygonGeoJson = GeoJsonExportOperator.ExportToGeoJson(polygon);
-// Result: {"type":"Polygon","coordinates":[[[0,0],[10,0],[10,10],[0,10],[0,0]]]}
+// 结果: {"type":"Polygon","coordinates":[[[0,0],[10,0],[10,10],[0,10],[0,0]]]}
 
-// Import from GeoJSON
+// 从 GeoJSON 导入
 var importedGeometry = GeoJsonImportOperator.ImportFromGeoJson(geoJson);
 var importedPoint = (Point)importedGeometry;
 ```
 
-### Proximity Operations
+### 邻近操作
 
 ```csharp
 using Esri.Geometry.Core;
 using Esri.Geometry.Core.Geometries;
 using Esri.Geometry.Core.Operators;
 
-// Find nearest coordinate on a geometry to a query point
+// 查找几何对象上最接近查询点的坐标
 var polyline = new Polyline();
 polyline.AddPath(new[] {
     new Point(0, 0),
@@ -394,18 +396,18 @@ polyline.AddPath(new[] {
 
 var queryPoint = new Point(5, 5);
 
-// Using GeometryEngine (recommended)
+// 使用 GeometryEngine（推荐）
 var result = GeometryEngine.GetNearestCoordinate(polyline, queryPoint);
-Console.WriteLine($"Nearest coordinate: ({result.Coordinate.X}, {result.Coordinate.Y})");
-Console.WriteLine($"Distance: {result.Distance}");
-Console.WriteLine($"Vertex index: {result.VertexIndex}");
+Console.WriteLine($"最近的坐标: ({result.Coordinate.X}, {result.Coordinate.Y})");
+Console.WriteLine($"距离: {result.Distance}");
+Console.WriteLine($"顶点索引: {result.VertexIndex}");
 
-// Using operator directly
+// 直接使用操作符
 var proximity = Proximity2DOperator.Instance;
 var result2 = proximity.GetNearestVertex(polyline, queryPoint);
-Console.WriteLine($"Nearest vertex: ({result2.Coordinate.X}, {result2.Coordinate.Y})");
+Console.WriteLine($"最近的顶点: ({result2.Coordinate.X}, {result2.Coordinate.Y})");
 
-// Find multiple vertices within search radius
+// 在搜索半径内查找多个顶点
 var multiPoint = new MultiPoint();
 multiPoint.Add(new Point(0, 0));
 multiPoint.Add(new Point(10, 10));
@@ -420,10 +422,10 @@ var results = GeometryEngine.GetNearestVertices(
 
 foreach (var r in results)
 {
-    Console.WriteLine($"Point: ({r.Coordinate.X}, {r.Coordinate.Y}), Distance: {r.Distance}");
+    Console.WriteLine($"点: ({r.Coordinate.X}, {r.Coordinate.Y}), 距离: {r.Distance}");
 }
 
-// Test if point is inside polygon
+// 测试点是否在多边形内部
 var polygon = new Polygon();
 polygon.AddRing(new[] {
     new Point(0, 0),
@@ -438,144 +440,154 @@ var nearestResult = GeometryEngine.GetNearestCoordinate(polygon, testPoint, test
 
 if (nearestResult.Distance == 0)
 {
-    Console.WriteLine("Point is inside the polygon");
+    Console.WriteLine("点在多边形内部");
 }
 ```
 
-## Project Structure
+## 项目结构
 
 ```
 Esri.Geometry.Api/
 ├── src/
-│   ├── Esri.Geometry.Core/          # Core geometry library
-│   │   ├── Geometries/               # Geometry types
-│   │   ├── Operators/                # Geometry operators
-│   │   ├── SpatialReference/         # Spatial reference system
-│   │   └── IO/                       # WKT and WKB import/export
-│   └── Esri.Geometry.Json/           # JSON serialization support
+│   ├── Esri.Geometry.Core/          # 核心几何库
+│   │   ├── Geometries/               # 几何类型
+│   │   ├── Operators/                # 几何操作符
+│   │   ├── SpatialReference/         # 空间参考系统
+│   │   └── IO/                       # WKT 和 WKB 导入/导出
+│   └── Esri.Geometry.Json/           # JSON 序列化支持
 ├── tests/
-│   └── Esri.Geometry.Tests/          # Unit tests (xUnit)
+│   └── Esri.Geometry.Tests/          # 单元测试（xUnit）
 └── samples/
-    └── Esri.Geometry.Samples/        # Sample applications
+    └── Esri.Geometry.Samples/        # 示例应用程序
 ```
 
-## Building the Project
+## 构建项目
 
-### Prerequisites
-- .NET SDK 8.0 or later (for building)
-- The library targets .NET Standard 2.0 for maximum compatibility
+### 前提条件
+- .NET SDK 8.0 或更高版本（用于构建）
+- 该库目标为 .NET Standard 2.0 以实现最大兼容性
 
-### Build Commands
+### 构建命令
 
 ```bash
-# Restore dependencies
+# 还原依赖项
 dotnet restore
 
-# Build all projects
+# 构建所有项目
 dotnet build
 
-# Run tests
+# 运行测试
 dotnet test
 
-# Run the sample application
+# 运行示例应用程序
 cd samples/Esri.Geometry.Samples
 dotnet run
 ```
 
-## Testing
+## 测试
 
-The project uses xUnit for unit testing. Tests are located in the `tests/Esri.Geometry.Tests` directory.
+项目使用 xUnit 进行单元测试。测试位于 `tests/Esri.Geometry.Tests` 目录中。
 
 ```bash
-# Run all tests
+# 运行所有测试
 dotnet test
 
-# Run tests with detailed output
+# 使用详细输出运行测试
 dotnet test --logger "console;verbosity=detailed"
 ```
 
-## Technology Stack
+## 技术栈
 
-- **Target Framework**: .NET Standard 2.0
-- **Language**: C# 7.0+
-- **JSON Library**: System.Text.Json 8.0.6
-- **Testing Framework**: xUnit
-- **License**: LGPL 2.1
+- **目标框架**: .NET Standard 2.0
+- **语言**: C# 7.0+
+- **JSON 库**: System.Text.Json 8.0.6
+- **测试框架**: xUnit
+- **许可证**: LGPL 2.1
 
-## Roadmap
+## 路线图
 
-### Completed Features ✅
-- [x] All 9 spatial relationship operators (Contains, Intersects, Distance, Equals, Disjoint, Within, Crosses, Touches, Overlaps)
-- [x] WKT (Well-Known Text) import/export for all geometry types
-- [x] WKB (Well-Known Binary) import/export with endianness support
-- [x] Buffer operator (simplified square/rectangular buffers)
-- [x] Convex hull computation (Graham scan algorithm)
-- [x] Area and Length calculation operators
-- [x] Simplify operator (Douglas-Peucker algorithm)
-- [x] Centroid calculation (center of mass)
-- [x] Boundary computation (OGC specification)
-- [x] Clip operator (Cohen-Sutherland line clipping)
-- [x] Geodesic distance (Vincenty's formula on WGS84 ellipsoid)
-- [x] Set operations (Union, Intersection, Difference, SymmetricDifference)
-- [x] Generalize operator (remove vertices while preserving shape)
-- [x] Densify operator (add vertices to line segments)
-- [x] Proximity2D operator (find nearest coordinates and vertices)
-- [x] GeometryEngine convenience class (simplified static API)
-- [x] Point-in-polygon test using ray casting algorithm
+### 已完成的功能 ✅
+- [x] 全部 9 个空间关系操作符（Contains、Intersects、Distance、Equals、Disjoint、Within、Crosses、Touches、Overlaps）
+- [x] WKT（Well-Known Text）对所有几何类型的导入/导出
+- [x] WKB（Well-Known Binary）导入/导出，支持字节序
+- [x] Buffer 操作符（简化的正方形/矩形缓冲区）
+- [x] 凸包计算（Graham 扫描算法）
+- [x] 面积和长度计算操作符
+- [x] Simplify 操作符（Douglas-Peucker 算法）
+- [x] 质心计算（质量中心）
+- [x] 边界计算（OGC 规范）
+- [x] Clip 操作符（Cohen-Sutherland 线段裁剪）
+- [x] 大地测量距离（WGS84 椭球上的 Vincenty 公式）
+- [x] 集合操作（Union、Intersection、Difference、SymmetricDifference）
+- [x] Generalize 操作符（删除顶点的同时保持形状）
+- [x] Densify 操作符（向线段添加顶点）
+- [x] Proximity2D 操作符（查找最近的坐标和顶点）
+- [x] GeometryEngine 便利类（简化的静态 API）
+- [x] 使用光线投射算法的点在多边形内测试
 
-### Test Coverage
-- **255 tests passing** with comprehensive coverage
-- 28 geometry type tests
-- 14 spatial relationship operator tests
-- 23 additional operator tests (Simplify, Centroid, Boundary, Generalize, Densify)
-- 12 geometry operation tests (Buffer, ConvexHull, Area, Length)
-- 20 advanced operator tests (Clip, GeodesicDistance, GeodesicArea, Offset, Esri JSON)
-- 24 proximity and GeometryEngine tests
-- 23 set operation tests (Union, Intersection, Difference, SymmetricDifference)
-- 17 WKT import/export tests
-- 10 WKB import/export tests
-- 8 GeoJSON import/export tests
-- 4 JSON serialization tests
-- 10 MapGeometry tests
-- 18 SimplifyOGC operator tests
-- 17 Geometry helper methods tests (NEW!)
+### 测试覆盖率
+- **255 个测试通过**，具有全面的覆盖率
+- 28 个几何类型测试
+- 14 个空间关系操作符测试
+- 23 个附加操作符测试（Simplify、Centroid、Boundary、Generalize、Densify）
+- 12 个几何操作测试（Buffer、ConvexHull、Area、Length）
+- 20 个高级操作符测试（Clip、GeodesicDistance、GeodesicArea、Offset、Esri JSON）
+- 24 个邻近和 GeometryEngine 测试
+- 23 个集合操作测试（Union、Intersection、Difference、SymmetricDifference）
+- 17 个 WKT 导入/导出测试
+- 10 个 WKB 导入/导出测试
+- 8 个 GeoJSON 导入/导出测试
+- 4 个 JSON 序列化测试
+- 10 个 MapGeometry 测试
+- 18 个 SimplifyOGC 操作符测试
+- 17 个几何辅助方法测试（新增！）
 
-### Planned Features
-- [ ] Cut operator (cut geometries with polylines - requires complex topology algorithms)
-- [ ] Projection/transformation support (requires external projection library)
-- [ ] Relate operator (DE-9IM spatial relationships - requires complex topology computation)
-- [ ] Performance optimizations using Span<T> and Memory<T>
-- [ ] Circular buffer generation (currently only square/rectangular)
-- [ ] Full polygon clipping for Union/Intersection/Difference (currently simplified for complex polygons)
+### 计划中的功能
+- [ ] Cut 操作符（使用折线切割几何对象 - 需要复杂的拓扑算法）
+- [ ] 投影/转换支持（需要外部投影库）
+- [ ] Relate 操作符（DE-9IM 空间关系 - 需要复杂的拓扑计算）
+- [ ] 使用 Span<T> 和 Memory<T> 的性能优化
+- [ ] 圆形缓冲区生成（目前仅支持正方形/矩形）
+- [ ] Union/Intersection/Difference 的完整多边形裁剪（目前对复杂多边形进行了简化）
 
-### Recently Implemented ✅
-- [x] Offset operator (create offset curves/polygons)
-- [x] ESRI JSON import/export (proprietary Esri format)
-- [x] Geodesic area calculations (WGS84 ellipsoid)
-- [x] **GeometryEngine** - Simplified static API for all operators
-- [x] **Proximity2D operator** - Find nearest coordinates and vertices
-- [x] **Point-in-polygon test** - Ray casting algorithm for Contains operator
-- [x] **SimplifyOGC operator** - OGC-compliant geometry simplification
-- [x] **MapGeometry** - Bundle geometry with spatial reference
-- [x] **Geometry helper methods** - CalculateArea2D, CalculateLength2D, Copy, IsValid (NEW!)
+### 最近实现的功能 ✅
+- [x] Offset 操作符（创建偏移曲线/多边形）
+- [x] ESRI JSON 导入/导出（Esri 专有格式）
+- [x] 大地测量面积计算（WGS84 椭球）
+- [x] **GeometryEngine** - 所有操作符的简化静态 API
+- [x] **Proximity2D 操作符** - 查找最近的坐标和顶点
+- [x] **点在多边形内测试** - Contains 操作符的光线投射算法
+- [x] **SimplifyOGC 操作符** - 符合 OGC 标准的几何简化
+- [x] **MapGeometry** - 将几何对象与空间参考捆绑
+- [x] **几何辅助方法** - CalculateArea2D、CalculateLength2D、Copy、IsValid（新增！）
 
-## Contributing
+## 代码注释
 
-Contributions are welcome! Please feel free to submit issues and pull requests.
+本项目的所有源代码注释均已翻译为中文，包括：
+- 所有几何类型的 XML 文档注释
+- 所有操作符的完整注释
+- 接口和辅助类的注释
+- 方法参数和返回值的说明
 
-## License
+这使得中文开发者能够更容易地理解和使用该库。
 
-This project is licensed under the GNU Lesser General Public License v2.1 - see the [LICENSE](LICENSE) file for details.
+## 贡献
 
-## Acknowledgments
+欢迎贡献！请随时提交问题和拉取请求。
 
-This project is a C# port of the [Esri Geometry API for Java](https://github.com/Esri/geometry-api-java), which is licensed under the Apache 2.0 license.
+## 许可证
 
-## Related Projects
+本项目采用 GNU Lesser General Public License v2.1 许可 - 有关详细信息，请参阅 [LICENSE](LICENSE) 文件。
 
-- [Esri Geometry API for Java](https://github.com/Esri/geometry-api-java) - The original Java implementation
-- [geometry-api-cs](https://github.com/Esri/geometry-api-cs) - Another .NET implementation by Esri
+## 致谢
 
-## Support
+本项目是 [Esri Geometry API for Java](https://github.com/Esri/geometry-api-java) 的 C# 移植版本，Java 版本采用 Apache 2.0 许可证。
 
-For issues, questions, or contributions, please visit the [GitHub repository](https://github.com/znlgis/geometry-api-net).
+## 相关项目
+
+- [Esri Geometry API for Java](https://github.com/Esri/geometry-api-java) - 原始 Java 实现
+- [geometry-api-cs](https://github.com/Esri/geometry-api-cs) - Esri 的另一个 .NET 实现
+
+## 支持
+
+如有问题、疑问或贡献，请访问 [GitHub 仓库](https://github.com/znlgis/geometry-api-net)。
