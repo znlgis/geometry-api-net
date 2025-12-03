@@ -35,6 +35,13 @@ This library provides a complete set of geometry types and spatial operations co
 - **Area** - Calculate area of polygons and envelopes
 - **Length** - Calculate length/perimeter of geometries
 
+#### Geometry Helper Methods (NEW!)
+- **CalculateArea2D()** - Calculate 2D area directly on geometry
+- **CalculateLength2D()** - Calculate 2D length/perimeter directly on geometry  
+- **Copy()** - Create deep copy of geometry with all attributes
+- **IsValid()** - Check if geometry is valid (not null and not empty)
+- **IsPoint, IsLinear, IsArea** - Type checking properties for geometries
+
 #### Set Operations (4 operators)
 - **Union** - Combine two geometries (all points in either geometry)
 - **Intersection** - Find common areas (all points in both geometries)
@@ -517,7 +524,7 @@ dotnet test --logger "console;verbosity=detailed"
 - [x] Point-in-polygon test using ray casting algorithm
 
 ### Test Coverage
-- **238 tests passing** with comprehensive coverage
+- **255 tests passing** with comprehensive coverage
 - 28 geometry type tests
 - 14 spatial relationship operator tests
 - 23 additional operator tests (Simplify, Centroid, Boundary, Generalize, Densify)
@@ -529,8 +536,9 @@ dotnet test --logger "console;verbosity=detailed"
 - 10 WKB import/export tests
 - 8 GeoJSON import/export tests
 - 4 JSON serialization tests
-- 10 MapGeometry tests (NEW!)
-- 18 SimplifyOGC operator tests (NEW!)
+- 10 MapGeometry tests
+- 18 SimplifyOGC operator tests
+- 17 Geometry helper methods tests (NEW!)
 
 ### Planned Features
 - [ ] Cut operator (cut geometries with polylines - requires complex topology algorithms)
@@ -547,8 +555,9 @@ dotnet test --logger "console;verbosity=detailed"
 - [x] **GeometryEngine** - Simplified static API for all operators
 - [x] **Proximity2D operator** - Find nearest coordinates and vertices
 - [x] **Point-in-polygon test** - Ray casting algorithm for Contains operator
-- [x] **SimplifyOGC operator** - OGC-compliant geometry simplification (NEW!)
-- [x] **MapGeometry** - Bundle geometry with spatial reference (NEW!)
+- [x] **SimplifyOGC operator** - OGC-compliant geometry simplification
+- [x] **MapGeometry** - Bundle geometry with spatial reference
+- [x] **Geometry helper methods** - CalculateArea2D, CalculateLength2D, Copy, IsValid (NEW!)
 
 ## Contributing
 
