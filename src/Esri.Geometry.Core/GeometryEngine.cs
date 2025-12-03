@@ -6,20 +6,20 @@ using SpatialRef = Esri.Geometry.Core.SpatialReference;
 namespace Esri.Geometry.Core;
 
 /// <summary>
-///   Provides a simplified, static API for geometry operations.
-///   This class wraps all the operator instances with convenient static methods.
+///   提供简化的几何操作静态 API。
+///   此类使用方便的静态方法包装所有操作符实例。
 /// </summary>
 /// <remarks>
-///   GeometryEngine provides a simpler API compared to using operators directly.
-///   For advanced scenarios or better performance with batch operations,
-///   consider using the operator classes directly (e.g., UnionOperator, BufferOperator).
+///   GeometryEngine 提供了比直接使用操作符更简单的 API。
+///   对于高级场景或批量操作的更好性能，
+///   请考虑直接使用操作符类（例如 UnionOperator、BufferOperator）。
 /// </remarks>
 public static class GeometryEngine
 {
-  #region Spatial Relationship Operations
+  #region 空间关系操作
 
   /// <summary>
-  ///   Tests if geometry1 contains geometry2.
+  ///   测试 geometry1 是否包含 geometry2。
   /// </summary>
   public static bool Contains(Geometries.Geometry geometry1, Geometries.Geometry geometry2)
   {
@@ -27,7 +27,7 @@ public static class GeometryEngine
   }
 
   /// <summary>
-  ///   Tests if two geometries intersect.
+  ///   测试两个几何对象是否相交。
   /// </summary>
   public static bool Intersects(Geometries.Geometry geometry1, Geometries.Geometry geometry2)
   {
@@ -35,7 +35,7 @@ public static class GeometryEngine
   }
 
   /// <summary>
-  ///   Calculates the distance between two geometries.
+  ///   计算两个几何对象之间的距离。
   /// </summary>
   public static double Distance(Geometries.Geometry geometry1, Geometries.Geometry geometry2)
   {
@@ -43,7 +43,7 @@ public static class GeometryEngine
   }
 
   /// <summary>
-  ///   Tests if two geometries are spatially equal.
+  ///   测试两个几何对象在空间上是否相等。
   /// </summary>
   public static bool Equals(Geometries.Geometry geometry1, Geometries.Geometry geometry2)
   {
@@ -51,7 +51,7 @@ public static class GeometryEngine
   }
 
   /// <summary>
-  ///   Tests if two geometries are disjoint (do not intersect).
+  ///   测试两个几何对象是否不相交（分离）。
   /// </summary>
   public static bool Disjoint(Geometries.Geometry geometry1, Geometries.Geometry geometry2)
   {
@@ -59,7 +59,7 @@ public static class GeometryEngine
   }
 
   /// <summary>
-  ///   Tests if geometry1 is within geometry2.
+  ///   测试 geometry1 是否在 geometry2 内部。
   /// </summary>
   public static bool Within(Geometries.Geometry geometry1, Geometries.Geometry geometry2)
   {
@@ -67,7 +67,7 @@ public static class GeometryEngine
   }
 
   /// <summary>
-  ///   Tests if two geometries cross.
+  ///   测试两个几何对象是否交叉。
   /// </summary>
   public static bool Crosses(Geometries.Geometry geometry1, Geometries.Geometry geometry2)
   {
@@ -75,7 +75,7 @@ public static class GeometryEngine
   }
 
   /// <summary>
-  ///   Tests if two geometries touch at their boundaries.
+  ///   测试两个几何对象是否在边界处相接。
   /// </summary>
   public static bool Touches(Geometries.Geometry geometry1, Geometries.Geometry geometry2)
   {
@@ -83,7 +83,7 @@ public static class GeometryEngine
   }
 
   /// <summary>
-  ///   Tests if two geometries of the same dimension overlap.
+  ///   测试相同维度的两个几何对象是否重叠。
   /// </summary>
   public static bool Overlaps(Geometries.Geometry geometry1, Geometries.Geometry geometry2)
   {
@@ -92,10 +92,10 @@ public static class GeometryEngine
 
   #endregion
 
-  #region Set Operations
+  #region 集合操作
 
   /// <summary>
-  ///   Computes the union of two geometries.
+  ///   计算两个几何对象的并集。
   /// </summary>
   public static Geometries.Geometry Union(Geometries.Geometry geometry1, Geometries.Geometry geometry2)
   {
@@ -103,7 +103,7 @@ public static class GeometryEngine
   }
 
   /// <summary>
-  ///   Computes the intersection of two geometries.
+  ///   计算两个几何对象的交集。
   /// </summary>
   public static Geometries.Geometry Intersection(Geometries.Geometry geometry1, Geometries.Geometry geometry2)
   {
@@ -111,7 +111,7 @@ public static class GeometryEngine
   }
 
   /// <summary>
-  ///   Computes the difference of two geometries (geometry1 - geometry2).
+  ///   计算两个几何对象的差集（geometry1 - geometry2）。
   /// </summary>
   public static Geometries.Geometry Difference(Geometries.Geometry geometry1, Geometries.Geometry geometry2)
   {
@@ -119,7 +119,7 @@ public static class GeometryEngine
   }
 
   /// <summary>
-  ///   Computes the symmetric difference of two geometries.
+  ///   计算两个几何对象的对称差。
   /// </summary>
   public static Geometries.Geometry SymmetricDifference(Geometries.Geometry geometry1, Geometries.Geometry geometry2)
   {
@@ -128,10 +128,10 @@ public static class GeometryEngine
 
   #endregion
 
-  #region Geometry Operations
+  #region 几何操作
 
   /// <summary>
-  ///   Creates a buffer around a geometry.
+  ///   围绕几何对象创建缓冲区。
   /// </summary>
   public static Geometries.Geometry Buffer(Geometries.Geometry geometry, double distance)
   {
@@ -139,7 +139,7 @@ public static class GeometryEngine
   }
 
   /// <summary>
-  ///   Computes the convex hull of a geometry.
+  ///   计算几何对象的凸包。
   /// </summary>
   public static Geometries.Geometry ConvexHull(Geometries.Geometry geometry)
   {
@@ -147,7 +147,7 @@ public static class GeometryEngine
   }
 
   /// <summary>
-  ///   Calculates the area of a geometry.
+  ///   计算几何对象的面积。
   /// </summary>
   public static double Area(Geometries.Geometry geometry)
   {
@@ -155,7 +155,7 @@ public static class GeometryEngine
   }
 
   /// <summary>
-  ///   Calculates the length or perimeter of a geometry.
+  ///   计算几何对象的长度或周长。
   /// </summary>
   public static double Length(Geometries.Geometry geometry)
   {
@@ -163,7 +163,7 @@ public static class GeometryEngine
   }
 
   /// <summary>
-  ///   Simplifies a geometry.
+  ///   简化几何对象。
   /// </summary>
   public static Geometries.Geometry Simplify(Geometries.Geometry geometry, double tolerance = 0.0)
   {
@@ -171,7 +171,7 @@ public static class GeometryEngine
   }
 
   /// <summary>
-  ///   Simplifies a geometry according to OGC specification.
+  ///   根据 OGC 规范简化几何对象。
   /// </summary>
   public static Geometries.Geometry SimplifyOGC(Geometries.Geometry geometry,
     SpatialRef.SpatialReference? spatialRef = null)
@@ -180,7 +180,7 @@ public static class GeometryEngine
   }
 
   /// <summary>
-  ///   Tests if a geometry is simple according to OGC specification.
+  ///   根据 OGC 规范测试几何对象是否简单。
   /// </summary>
   public static bool IsSimpleOGC(Geometries.Geometry geometry, SpatialRef.SpatialReference? spatialRef = null)
   {
@@ -188,7 +188,7 @@ public static class GeometryEngine
   }
 
   /// <summary>
-  ///   Calculates the centroid (center of mass) of a geometry.
+  ///   计算几何对象的质心（质量中心）。
   /// </summary>
   public static Point Centroid(Geometries.Geometry geometry)
   {
@@ -196,7 +196,7 @@ public static class GeometryEngine
   }
 
   /// <summary>
-  ///   Computes the boundary of a geometry according to OGC specification.
+  ///   根据 OGC 规范计算几何对象的边界。
   /// </summary>
   public static Geometries.Geometry Boundary(Geometries.Geometry geometry)
   {
@@ -204,7 +204,7 @@ public static class GeometryEngine
   }
 
   /// <summary>
-  ///   Generalizes a geometry by removing vertices while preserving its general shape.
+  ///   通过删除顶点来概化几何对象，同时保留其总体形状。
   /// </summary>
   public static Geometries.Geometry Generalize(Geometries.Geometry geometry, double maxDeviation)
   {
@@ -212,7 +212,7 @@ public static class GeometryEngine
   }
 
   /// <summary>
-  ///   Densifies a geometry by adding vertices to ensure no segment exceeds the maximum length.
+  ///   通过添加顶点来密化几何对象，确保没有线段超过最大长度。
   /// </summary>
   public static Geometries.Geometry Densify(Geometries.Geometry geometry, double maxSegmentLength)
   {
@@ -220,7 +220,7 @@ public static class GeometryEngine
   }
 
   /// <summary>
-  ///   Clips a geometry to an envelope.
+  ///   将几何对象裁剪到包络范围内。
   /// </summary>
   public static Geometries.Geometry Clip(Geometries.Geometry geometry, Envelope clipEnvelope)
   {
@@ -228,7 +228,7 @@ public static class GeometryEngine
   }
 
   /// <summary>
-  ///   Creates an offset curve or polygon at the specified distance.
+  ///   在指定距离处创建偏移曲线或多边形。
   /// </summary>
   public static Geometries.Geometry Offset(Geometries.Geometry geometry, double distance)
   {
@@ -237,10 +237,10 @@ public static class GeometryEngine
 
   #endregion
 
-  #region Geodesic Operations
+  #region 大地测量操作
 
   /// <summary>
-  ///   Calculates the geodesic distance between two points on the WGS84 ellipsoid.
+  ///   计算 WGS84 椭球上两点之间的大地测量距离。
   /// </summary>
   public static double GeodesicDistance(Point point1, Point point2)
   {
@@ -248,7 +248,7 @@ public static class GeometryEngine
   }
 
   /// <summary>
-  ///   Calculates the geodesic area of a polygon on the WGS84 ellipsoid.
+  ///   计算 WGS84 椭球上多边形的大地测量面积。
   /// </summary>
   public static double GeodesicArea(Polygon polygon)
   {
@@ -257,17 +257,17 @@ public static class GeometryEngine
 
   #endregion
 
-  #region Proximity Operations
+  #region 邻近操作
 
   /// <summary>
-  ///   Returns the nearest coordinate on the geometry to the given input point.
+  ///   返回几何对象上最接近给定输入点的坐标。
   /// </summary>
-  /// <param name="geometry">The input geometry.</param>
-  /// <param name="inputPoint">The query point.</param>
+  /// <param name="geometry">输入几何对象。</param>
+  /// <param name="inputPoint">查询点。</param>
   /// <param name="testPolygonInterior">
-  ///   When true and geometry is a polygon, tests if the input point is inside the polygon.
+  ///   当为 true 且几何对象是多边形时，测试输入点是否在多边形内部。
   /// </param>
-  /// <returns>Result containing the nearest coordinate and distance information.</returns>
+  /// <returns>包含最近坐标和距离信息的结果。</returns>
   public static Proximity2DResult GetNearestCoordinate(Geometries.Geometry geometry, Point inputPoint,
     bool testPolygonInterior = false)
   {
@@ -275,24 +275,24 @@ public static class GeometryEngine
   }
 
   /// <summary>
-  ///   Returns the nearest vertex of the geometry to the given input point.
+  ///   返回几何对象上最接近给定输入点的顶点。
   /// </summary>
-  /// <param name="geometry">The input geometry.</param>
-  /// <param name="inputPoint">The query point.</param>
-  /// <returns>Result containing the nearest vertex and distance information.</returns>
+  /// <param name="geometry">输入几何对象。</param>
+  /// <param name="inputPoint">查询点。</param>
+  /// <returns>包含最近顶点和距离信息的结果。</returns>
   public static Proximity2DResult GetNearestVertex(Geometries.Geometry geometry, Point inputPoint)
   {
     return Proximity2DOperator.Instance.GetNearestVertex(geometry, inputPoint);
   }
 
   /// <summary>
-  ///   Returns vertices of the geometry that are within the search radius of the given point.
+  ///   返回在给定点的搜索半径内的几何对象顶点。
   /// </summary>
-  /// <param name="geometry">The input geometry.</param>
-  /// <param name="inputPoint">The query point.</param>
-  /// <param name="searchRadius">The maximum distance to the query point.</param>
-  /// <param name="maxVertexCount">The maximum number of vertices to return.</param>
-  /// <returns>Array of results sorted by distance, with the closest vertex first.</returns>
+  /// <param name="geometry">输入几何对象。</param>
+  /// <param name="inputPoint">查询点。</param>
+  /// <param name="searchRadius">到查询点的最大距离。</param>
+  /// <param name="maxVertexCount">返回的最大顶点数量。</param>
+  /// <returns>按距离排序的结果数组，最近的顶点排在最前面。</returns>
   public static Proximity2DResult[] GetNearestVertices(Geometries.Geometry geometry, Point inputPoint,
     double searchRadius, int maxVertexCount = int.MaxValue)
   {
@@ -301,10 +301,10 @@ public static class GeometryEngine
 
   #endregion
 
-  #region Import/Export Operations
+  #region 导入/导出操作
 
   /// <summary>
-  ///   Exports a geometry to Well-Known Text (WKT) format.
+  ///   将几何对象导出为 Well-Known Text (WKT) 格式。
   /// </summary>
   public static string GeometryToWkt(Geometries.Geometry geometry)
   {
@@ -312,7 +312,7 @@ public static class GeometryEngine
   }
 
   /// <summary>
-  ///   Imports a geometry from Well-Known Text (WKT) format.
+  ///   从 Well-Known Text (WKT) 格式导入几何对象。
   /// </summary>
   public static Geometries.Geometry GeometryFromWkt(string wkt)
   {
@@ -320,7 +320,7 @@ public static class GeometryEngine
   }
 
   /// <summary>
-  ///   Exports a geometry to Well-Known Binary (WKB) format.
+  ///   将几何对象导出为 Well-Known Binary (WKB) 格式。
   /// </summary>
   public static byte[] GeometryToWkb(Geometries.Geometry geometry, bool bigEndian = false)
   {
@@ -328,7 +328,7 @@ public static class GeometryEngine
   }
 
   /// <summary>
-  ///   Imports a geometry from Well-Known Binary (WKB) format.
+  ///   从 Well-Known Binary (WKB) 格式导入几何对象。
   /// </summary>
   public static Geometries.Geometry GeometryFromWkb(byte[] wkb)
   {
@@ -336,7 +336,7 @@ public static class GeometryEngine
   }
 
   /// <summary>
-  ///   Exports a geometry to GeoJSON format.
+  ///   将几何对象导出为 GeoJSON 格式。
   /// </summary>
   public static string GeometryToGeoJson(Geometries.Geometry geometry)
   {
@@ -344,7 +344,7 @@ public static class GeometryEngine
   }
 
   /// <summary>
-  ///   Imports a geometry from GeoJSON format.
+  ///   从 GeoJSON 格式导入几何对象。
   /// </summary>
   public static Geometries.Geometry GeometryFromGeoJson(string geoJson)
   {
@@ -352,7 +352,7 @@ public static class GeometryEngine
   }
 
   /// <summary>
-  ///   Exports a geometry to Esri JSON format.
+  ///   将几何对象导出为 Esri JSON 格式。
   /// </summary>
   public static string GeometryToEsriJson(Geometries.Geometry geometry)
   {
@@ -360,7 +360,7 @@ public static class GeometryEngine
   }
 
   /// <summary>
-  ///   Imports a geometry from Esri JSON format.
+  ///   从 Esri JSON 格式导入几何对象。
   /// </summary>
   public static Geometries.Geometry GeometryFromEsriJson(string esriJson)
   {

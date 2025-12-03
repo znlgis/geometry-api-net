@@ -4,7 +4,7 @@ using Esri.Geometry.Core.Geometries;
 namespace Esri.Geometry.Core.Operators;
 
 /// <summary>
-///   Operator for testing if one geometry contains another.
+///   用于测试一个几何对象是否包含另一个几何对象的操作符。
 /// </summary>
 public class ContainsOperator : IBinaryGeometryOperator<bool>
 {
@@ -15,7 +15,7 @@ public class ContainsOperator : IBinaryGeometryOperator<bool>
   }
 
   /// <summary>
-  ///   Gets the singleton instance of the contains operator.
+  ///   获取 ContainsOperator 的单例实例。
   /// </summary>
   public static ContainsOperator Instance => _instance.Value;
 
@@ -38,7 +38,7 @@ public class ContainsOperator : IBinaryGeometryOperator<bool>
   }
 
   /// <summary>
-  ///   Tests if a point is inside a polygon using the ray casting algorithm.
+  ///   使用光线投射算法测试点是否在多边形内部。
   /// </summary>
   private static bool IsPointInPolygon(Polygon polygon, Point point)
   {
