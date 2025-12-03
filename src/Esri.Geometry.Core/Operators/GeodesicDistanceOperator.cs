@@ -5,6 +5,8 @@ namespace Esri.Geometry.Core.Operators
 {
     /// <summary>
     /// Operator for calculating geodesic (great circle) distances on the WGS84 ellipsoid.
+    /// Points are expected to be in geographic coordinates (longitude, latitude) in degrees.
+    /// X coordinate = Longitude (-180 to 180), Y coordinate = Latitude (-90 to 90).
     /// </summary>
     public class GeodesicDistanceOperator : IBinaryGeometryOperator<double>
     {
@@ -52,12 +54,12 @@ namespace Esri.Geometry.Core.Operators
         /// <summary>
         /// Calculates the geodesic distance between two points on the WGS84 ellipsoid using Vincenty's formula.
         /// </summary>
-        /// <param name="point1">First point (lat/lon in degrees).</param>
-        /// <param name="point2">Second point (lat/lon in degrees).</param>
+        /// <param name="point1">First point with coordinates in degrees (X=Longitude, Y=Latitude).</param>
+        /// <param name="point2">Second point with coordinates in degrees (X=Longitude, Y=Latitude).</param>
         /// <returns>Distance in meters.</returns>
         public static double CalculateGeodesicDistance(Point point1, Point point2)
         {
-            // Assuming points are in lon/lat (X, Y) format
+            // Points are in lon/lat (X, Y) format in degrees
             double lon1 = ToRadians(point1.X);
             double lat1 = ToRadians(point1.Y);
             double lon2 = ToRadians(point2.X);

@@ -1,5 +1,6 @@
 using Esri.Geometry.Core.Geometries;
 using Esri.Geometry.Core.Operators;
+using Xunit;
 
 namespace Esri.Geometry.Tests.Operators
 {
