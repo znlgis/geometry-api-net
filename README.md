@@ -41,8 +41,9 @@ This library provides a complete set of geometry types and spatial operations co
 - **Difference** - Subtract one geometry from another (geometry1 - geometry2)
 - **SymmetricDifference** - Find exclusive regions ((A-B) ∪ (B-A))
 
-#### Additional Operators (5 operators)
+#### Additional Operators (6 operators)
 - **Simplify** - Simplify geometries using Douglas-Peucker algorithm
+- **SimplifyOGC** - Simplify geometries according to OGC specification (NEW!)
 - **Centroid** - Calculate center of mass for geometries
 - **Boundary** - Compute boundary per OGC specification
 - **Generalize** - Remove vertices while preserving general shape
@@ -57,6 +58,7 @@ This library provides a complete set of geometry types and spatial operations co
 
 #### Convenience API
 - **GeometryEngine** - Simplified static API wrapping all operators with convenient methods
+- **MapGeometry** - Bundle geometry with spatial reference (NEW!)
 
 ### Import/Export Formats
 - **WKT (Well-Known Text)** - Full import and export support for all geometry types
@@ -515,7 +517,7 @@ dotnet test --logger "console;verbosity=detailed"
 - [x] Point-in-polygon test using ray casting algorithm
 
 ### Test Coverage
-- **215 tests passing** with comprehensive coverage
+- **238 tests passing** with comprehensive coverage
 - 28 geometry type tests
 - 14 spatial relationship operator tests
 - 23 additional operator tests (Simplify, Centroid, Boundary, Generalize, Densify)
@@ -527,6 +529,8 @@ dotnet test --logger "console;verbosity=detailed"
 - 10 WKB import/export tests
 - 8 GeoJSON import/export tests
 - 4 JSON serialization tests
+- 10 MapGeometry tests (NEW!)
+- 18 SimplifyOGC operator tests (NEW!)
 
 ### Planned Features
 - [ ] Cut operator (cut geometries with polylines - requires complex topology algorithms)
@@ -540,9 +544,11 @@ dotnet test --logger "console;verbosity=detailed"
 - [x] Offset operator (create offset curves/polygons)
 - [x] ESRI JSON import/export (proprietary Esri format)
 - [x] Geodesic area calculations (WGS84 ellipsoid)
-- [x] **GeometryEngine** - Simplified static API for all operators (NEW!)
-- [x] **Proximity2D operator** - Find nearest coordinates and vertices (NEW!)
-- [x] **Point-in-polygon test** - Ray casting algorithm for Contains operator (NEW!)
+- [x] **GeometryEngine** - Simplified static API for all operators
+- [x] **Proximity2D operator** - Find nearest coordinates and vertices
+- [x] **Point-in-polygon test** - Ray casting algorithm for Contains operator
+- [x] **SimplifyOGC operator** - OGC-compliant geometry simplification (NEW!)
+- [x] **MapGeometry** - Bundle geometry with spatial reference (NEW!)
 
 ## Contributing
 

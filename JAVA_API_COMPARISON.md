@@ -83,28 +83,30 @@ This document compares the Esri Geometry API for Java with the .NET port to trac
 | Cut | ✅ | ❌ | Not Implemented | Requires GeometryCursor infrastructure |
 | Relate (DE-9IM) | ✅ | ❌ | Not Implemented | Complex topology computation |
 | Project | ✅ | ❌ | Not Implemented | Requires projection library |
-| SimplifyOGC | ✅ | ❌ | Not Implemented | OGC variant of simplify |
+| SimplifyOGC | ✅ | ✅ | **NEW! Complete** | OGC variant of simplify |
 
 ## API Convenience Classes
 | Feature | Java | .NET | Status |
 |---------|------|------|--------|
 | GeometryEngine | ✅ | ✅ | **NEW! Complete** |
 | GeometryCursor | ✅ | ❌ | Not Implemented |
-| MapGeometry | ✅ | ❌ | Not Implemented |
+| MapGeometry | ✅ | ✅ | **NEW! Complete** |
 | OperatorFactory | ✅ | Partial | Singleton pattern used instead |
 
 ## Statistics
-- **Total Operators**: Java has ~45 operators, .NET has 35 operators
-- **Feature Parity**: ~78% complete for core operations
-- **Missing Complex Operations**: 6 operators (Cut, Relate, Project, GeodesicBuffer, GeodeticDensify, ShapePreservingDensify)
-- **Tests**: 215 passing tests in .NET
+- **Total Operators**: Java has ~45 operators, .NET has 36 operators
+- **Feature Parity**: ~80% complete for core operations
+- **Missing Complex Operations**: 5 operators (Cut, Relate, Project, GeodesicBuffer, GeodeticDensify, ShapePreservingDensify)
+- **Tests**: 238 passing tests in .NET
 
 ## Recent Additions (This PR)
 1. ✅ **GeometryEngine** - Simplified static API for all operations
 2. ✅ **Proximity2DOperator** - Find nearest coordinates and vertices
 3. ✅ **Proximity2DResult** - Result class for proximity operations
 4. ✅ **Point-in-Polygon** - Enhanced ContainsOperator with ray casting algorithm
-5. ✅ **24 new tests** - Comprehensive coverage for new features
+5. ✅ **SimplifyOGCOperator** - OGC-compliant geometry simplification (NEW!)
+6. ✅ **MapGeometry** - Bundle geometry with spatial reference (NEW!)
+7. ✅ **47 new tests** - Comprehensive coverage for new features
 
 ## Remaining Work
 ### High Priority (Useful and Feasible)
@@ -117,8 +119,7 @@ This document compares the Esri Geometry API for Java with the .NET port to trac
 2. **Relate operator** - DE-9IM relationships, requires complex topology
 3. **Project operator** - Coordinate transformation, requires external library
 4. **GeodesicBuffer** - True geodesic buffering
-5. **SimplifyOGC** - OGC-compliant variant of simplify
-6. **GeometryCursor** - Iterator pattern for batch operations
+5. **GeometryCursor** - Iterator pattern for batch operations
 
 ### Not Needed (Stubs or Internal)
 1. **GeodeticLength** - Only a stub in Java
@@ -127,4 +128,4 @@ This document compares the Esri Geometry API for Java with the .NET port to trac
 ## Conclusion
 The .NET geometry API has achieved strong feature parity with the Java implementation, covering all essential geometry operations, spatial relationships, and import/export formats. The main gaps are in complex operations that require significant infrastructure (cursors, DE-9IM) or external dependencies (projections).
 
-With the addition of GeometryEngine and Proximity2D operators, the .NET API now provides excellent usability and functionality for most GIS applications.
+With the addition of GeometryEngine, Proximity2D, SimplifyOGC, and MapGeometry, the .NET API now provides excellent usability and functionality for most GIS applications.

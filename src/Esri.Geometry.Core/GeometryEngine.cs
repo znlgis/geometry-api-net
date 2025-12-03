@@ -173,6 +173,22 @@ namespace Esri.Geometry.Core
         }
 
         /// <summary>
+        /// Simplifies a geometry according to OGC specification.
+        /// </summary>
+        public static Geometries.Geometry SimplifyOGC(Geometries.Geometry geometry, SpatialRef.SpatialReference? spatialRef = null)
+        {
+            return Operators.SimplifyOGCOperator.Instance.Execute(geometry, spatialRef);
+        }
+
+        /// <summary>
+        /// Tests if a geometry is simple according to OGC specification.
+        /// </summary>
+        public static bool IsSimpleOGC(Geometries.Geometry geometry, SpatialRef.SpatialReference? spatialRef = null)
+        {
+            return Operators.SimplifyOGCOperator.Instance.IsSimpleOGC(geometry, spatialRef);
+        }
+
+        /// <summary>
         /// Calculates the centroid (center of mass) of a geometry.
         /// </summary>
         public static Geometries.Point Centroid(Geometries.Geometry geometry)
