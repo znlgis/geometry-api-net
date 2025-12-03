@@ -1,42 +1,42 @@
 namespace Esri.Geometry.Core.Geometries;
 
 /// <summary>
-///   Defines the types of geometries supported by the API.
+///   定义 API 支持的几何类型。
 /// </summary>
 public enum GeometryType
 {
     /// <summary>
-    ///   Unknown geometry type.
+    ///   未知几何类型。
     /// </summary>
     Unknown = 0,
 
     /// <summary>
-    ///   A point geometry.
+    ///   点几何类型。
     /// </summary>
     Point = 1,
 
     /// <summary>
-    ///   A line geometry (segment between two points).
+    ///   线几何类型（两点之间的线段）。
     /// </summary>
     Line = 2,
 
     /// <summary>
-    ///   An envelope (bounding rectangle) geometry.
+    ///   包络（边界矩形）几何类型。
     /// </summary>
     Envelope = 3,
 
     /// <summary>
-    ///   A multi-point geometry.
+    ///   多点几何类型。
     /// </summary>
     MultiPoint = 4,
 
     /// <summary>
-    ///   A polyline geometry.
+    ///   折线几何类型。
     /// </summary>
     Polyline = 5,
 
     /// <summary>
-    ///   A polygon geometry.
+    ///   多边形几何类型。
     /// </summary>
     Polygon = 6
 }

@@ -5,7 +5,7 @@ using Esri.Geometry.Core.Geometries;
 namespace Esri.Geometry.Core.Operators;
 
 /// <summary>
-///   Operator for finding the nearest coordinates and vertices on geometries.
+///   用于查找几何对象上最近坐标和顶点的操作符.
 ///   Provides 2D proximity operations to find points closest to a given input point.
 /// </summary>
 public class Proximity2DOperator

@@ -3,12 +3,12 @@ using System;
 namespace Esri.Geometry.Core.Geometries;
 
 /// <summary>
-///   Represents a line segment between two points.
+///   表示两点之间的线段。
 /// </summary>
 public class Line : Geometry
 {
     /// <summary>
-    ///   Initializes a new instance of the <see cref="Line" /> class.
+    ///   初始化 <see cref="Line" /> 类的新实例。
     /// </summary>
     public Line()
   {
@@ -17,10 +17,10 @@ public class Line : Geometry
   }
 
     /// <summary>
-    ///   Initializes a new instance of the <see cref="Line" /> class with specified endpoints.
+    ///   使用指定的端点初始化 <see cref="Line" /> 类的新实例。
     /// </summary>
-    /// <param name="start">The start point.</param>
-    /// <param name="end">The end point.</param>
+    /// <param name="start">起点。</param>
+    /// <param name="end">终点。</param>
     public Line(Point start, Point end)
   {
     Start = start ?? throw new ArgumentNullException(nameof(start));
@@ -28,12 +28,12 @@ public class Line : Geometry
   }
 
     /// <summary>
-    ///   Gets or sets the start point of the line.
+    ///   获取或设置线段的起点。
     /// </summary>
     public Point Start { get; set; }
 
     /// <summary>
-    ///   Gets or sets the end point of the line.
+    ///   获取或设置线段的终点。
     /// </summary>
     public Point End { get; set; }
 
@@ -47,7 +47,7 @@ public class Line : Geometry
     public override int Dimension => 1;
 
     /// <summary>
-    ///   Gets the length of the line.
+    ///   获取线段的长度。
     /// </summary>
     public double Length
   {

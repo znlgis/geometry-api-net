@@ -4,7 +4,7 @@ using Esri.Geometry.Core.Geometries;
 namespace Esri.Geometry.Core.Operators;
 
 /// <summary>
-///   Operator for testing if two geometries are spatially disjoint (do not intersect).
+///   用于测试两个几何对象在空间上是否分离（不相交）的操作符。
 /// </summary>
 public class DisjointOperator : IBinaryGeometryOperator<bool>
 {
@@ -15,7 +15,7 @@ public class DisjointOperator : IBinaryGeometryOperator<bool>
   }
 
   /// <summary>
-  ///   Gets the singleton instance of the disjoint operator.
+  ///   获取 DisjointOperator 的单例实例。
   /// </summary>
   public static DisjointOperator Instance => _instance.Value;
 
@@ -26,19 +26,19 @@ public class DisjointOperator : IBinaryGeometryOperator<bool>
     if (geometry1 == null) throw new ArgumentNullException(nameof(geometry1));
     if (geometry2 == null) throw new ArgumentNullException(nameof(geometry2));
 
-    // Empty geometries are considered disjoint
+    // 空几何对象被认为是分离的
     if (geometry1.IsEmpty || geometry2.IsEmpty) return true;
 
-    // Disjoint is the opposite of intersects
-    // For envelopes, we can use the envelope intersection test
+    // 分离是相交的反义
+    // 对于包络，我们可以使用包络相交测试
     if (geometry1 is Envelope env1 && geometry2 is Envelope env2) return !env1.Intersects(env2);
 
-    // For point-envelope test
+    // 点-包络测试
     if (geometry1 is Point p && geometry2 is Envelope env) return !env.Contains(p);
 
     if (geometry1 is Envelope env3 && geometry2 is Point p2) return !env3.Contains(p2);
 
-    // For other geometry types, use the intersects operator
+    // 对于其他几何类型，使用相交操作符
     try
     {
       return !IntersectsOperator.Instance.Execute(geometry1, geometry2, spatialRef);

@@ -5,7 +5,7 @@ using Esri.Geometry.Core.Geometries;
 namespace Esri.Geometry.Core.Operators;
 
 /// <summary>
-///   Operator for calculating the centroid (center of mass) of a geometry.
+///   用于计算几何对象质心（质量中心）的操作符.
 /// </summary>
 public class CentroidOperator : IGeometryOperator<Point>
 {
@@ -17,7 +17,7 @@ public class CentroidOperator : IGeometryOperator<Point>
   }
 
   /// <summary>
-  ///   Gets the singleton instance of the centroid operator.
+  ///   获取 CentroidOperator 的单例实例.
   /// </summary>
   public static CentroidOperator Instance => _instance.Value;
 

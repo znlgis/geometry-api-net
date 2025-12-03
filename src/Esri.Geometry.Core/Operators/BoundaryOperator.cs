@@ -5,8 +5,8 @@ using Esri.Geometry.Core.Geometries;
 namespace Esri.Geometry.Core.Operators;
 
 /// <summary>
-///   Operator for computing the boundary of a geometry.
-///   The boundary is defined according to the OGC Simple Features specification.
+///   用于计算几何对象边界的操作符.
+///   边界根据 OGC Simple Features 规范定义.
 /// </summary>
 public class BoundaryOperator : IGeometryOperator<Geometries.Geometry>
 {
@@ -17,7 +17,7 @@ public class BoundaryOperator : IGeometryOperator<Geometries.Geometry>
   }
 
   /// <summary>
-  ///   Gets the singleton instance of the boundary operator.
+  ///   获取 BoundaryOperator 的单例实例.
   /// </summary>
   public static BoundaryOperator Instance => _instance.Value;
 

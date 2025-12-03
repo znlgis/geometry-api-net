@@ -3,12 +3,12 @@ using System;
 namespace Esri.Geometry.Core.Geometries;
 
 /// <summary>
-///   Represents a point geometry with X and Y coordinates.
+///   表示具有 X 和 Y 坐标的点几何对象。
 /// </summary>
 public class Point : Geometry
 {
     /// <summary>
-    ///   Initializes a new instance of the <see cref="Point" /> class.
+    ///   初始化 <see cref="Point" /> 类的新实例。
     /// </summary>
     public Point()
   {
@@ -17,10 +17,10 @@ public class Point : Geometry
   }
 
     /// <summary>
-    ///   Initializes a new instance of the <see cref="Point" /> class with specified coordinates.
+    ///   使用指定的坐标初始化 <see cref="Point" /> 类的新实例。
     /// </summary>
-    /// <param name="x">The X coordinate.</param>
-    /// <param name="y">The Y coordinate.</param>
+    /// <param name="x">X 坐标。</param>
+    /// <param name="y">Y 坐标。</param>
     public Point(double x, double y)
   {
     X = x;
@@ -28,11 +28,11 @@ public class Point : Geometry
   }
 
     /// <summary>
-    ///   Initializes a new instance of the <see cref="Point" /> class with specified coordinates and Z value.
+    ///   使用指定的坐标和 Z 值初始化 <see cref="Point" /> 类的新实例。
     /// </summary>
-    /// <param name="x">The X coordinate.</param>
-    /// <param name="y">The Y coordinate.</param>
-    /// <param name="z">The Z coordinate.</param>
+    /// <param name="x">X 坐标。</param>
+    /// <param name="y">Y 坐标。</param>
+    /// <param name="z">Z 坐标。</param>
     public Point(double x, double y, double z)
   {
     X = x;
@@ -41,22 +41,22 @@ public class Point : Geometry
   }
 
     /// <summary>
-    ///   Gets or sets the X coordinate.
+    ///   获取或设置 X 坐标。
     /// </summary>
     public double X { get; set; }
 
     /// <summary>
-    ///   Gets or sets the Y coordinate.
+    ///   获取或设置 Y 坐标。
     /// </summary>
     public double Y { get; set; }
 
     /// <summary>
-    ///   Gets or sets the Z coordinate (optional).
+    ///   获取或设置 Z 坐标（可选）。
     /// </summary>
     public double? Z { get; set; }
 
     /// <summary>
-    ///   Gets or sets the M value (measure, optional).
+    ///   获取或设置 M 值（测量值，可选）。
     /// </summary>
     public double? M { get; set; }
 
@@ -77,10 +77,10 @@ public class Point : Geometry
   }
 
     /// <summary>
-    ///   Calculates the distance to another point.
+    ///   计算到另一个点的距离。
     /// </summary>
-    /// <param name="other">The other point.</param>
-    /// <returns>The distance between the two points.</returns>
+    /// <param name="other">另一个点。</param>
+    /// <returns>两点之间的距离。</returns>
     public double Distance(Point other)
   {
     if (other == null) throw new ArgumentNullException(nameof(other));
@@ -91,11 +91,11 @@ public class Point : Geometry
   }
 
     /// <summary>
-    ///   Determines whether this point is equal to another point.
+    ///   判断此点是否等于另一个点。
     /// </summary>
-    /// <param name="other">The other point.</param>
-    /// <param name="tolerance">The tolerance for comparison.</param>
-    /// <returns>True if the points are equal within the tolerance, false otherwise.</returns>
+    /// <param name="other">另一个点。</param>
+    /// <param name="tolerance">比较容差。</param>
+    /// <returns>如果点在容差范围内相等则返回 true，否则返回 false。</returns>
     public bool Equals(Point other, double tolerance = GeometryConstants.DefaultTolerance)
   {
     if (other == null) return false;

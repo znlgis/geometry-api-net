@@ -17,9 +17,9 @@ public static class WkbExportOperator
   private const byte WKB_MULTILINESTRING = 5;
 
   /// <summary>
-  ///   Exports a geometry to WKB format.
+  ///   将几何对象导出为 WKB 格式.
   /// </summary>
-  /// <param name="geometry">The geometry to export.</param>
+  /// <param name="geometry">要导出的几何对象.</param>
   /// <param name="bigEndian">If true, uses big-endian byte order; otherwise little-endian (default).</param>
   /// <returns>The WKB representation as a byte array.</returns>
   public static byte[] ExportToWkb(Geometries.Geometry geometry, bool bigEndian = false)

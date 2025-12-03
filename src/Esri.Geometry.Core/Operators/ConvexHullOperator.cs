@@ -6,7 +6,7 @@ using Esri.Geometry.Core.Geometries;
 namespace Esri.Geometry.Core.Operators;
 
 /// <summary>
-///   Operator for computing the convex hull of a geometry.
+///   用于计算几何对象凸包的操作符.
 /// </summary>
 public class ConvexHullOperator : IGeometryOperator<Geometries.Geometry>
 {
@@ -17,7 +17,7 @@ public class ConvexHullOperator : IGeometryOperator<Geometries.Geometry>
   }
 
   /// <summary>
-  ///   Gets the singleton instance of the convex hull operator.
+  ///   获取 ConvexHullOperator 的单例实例.
   /// </summary>
   public static ConvexHullOperator Instance => _instance.Value;
 

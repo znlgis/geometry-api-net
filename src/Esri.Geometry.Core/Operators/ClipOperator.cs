@@ -5,7 +5,7 @@ using Esri.Geometry.Core.Geometries;
 namespace Esri.Geometry.Core.Operators;
 
 /// <summary>
-///   Operator for clipping geometries to an envelope.
+///   用于将几何对象裁剪到包络的操作符.
 /// </summary>
 public class ClipOperator : IGeometryOperator<Geometries.Geometry>
 {
@@ -16,7 +16,7 @@ public class ClipOperator : IGeometryOperator<Geometries.Geometry>
   }
 
   /// <summary>
-  ///   Gets the singleton instance of the clip operator.
+  ///   获取 ClipOperator 的单例实例.
   /// </summary>
   public static ClipOperator Instance => _instance.Value;
 

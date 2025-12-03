@@ -17,7 +17,7 @@ public static class WkbImportOperator
   private const byte WKB_MULTILINESTRING = 5;
 
   /// <summary>
-  ///   Imports a geometry from WKB format.
+  ///   从 WKB 格式导入几何对象.
   /// </summary>
   /// <param name="wkb">The WKB byte array to parse.</param>
   /// <returns>The parsed geometry.</returns>

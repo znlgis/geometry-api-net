@@ -5,50 +5,50 @@ using Esri.Geometry.Core.Operators;
 namespace Esri.Geometry.Core.Geometries;
 
 /// <summary>
-///   Base abstract class for all geometry types.
+///   所有几何类型的抽象基类。
 /// </summary>
 public abstract class Geometry
 {
     /// <summary>
-    ///   Gets the type of the geometry.
+    ///   获取几何对象的类型。
     /// </summary>
     public abstract GeometryType Type { get; }
 
     /// <summary>
-    ///   Gets a value indicating whether this geometry is empty.
+    ///   获取一个值，指示此几何对象是否为空。
     /// </summary>
     public abstract bool IsEmpty { get; }
 
     /// <summary>
-    ///   Gets the dimension of the geometry.
-    ///   0 for points, 1 for lines, 2 for polygons.
+    ///   获取几何对象的维度。
+    ///   点为 0，线为 1，多边形为 2。
     /// </summary>
     public abstract int Dimension { get; }
 
     /// <summary>
-    ///   Gets a value indicating whether this geometry represents a point type.
+    ///   获取一个值，指示此几何对象是否为点类型。
     /// </summary>
     public bool IsPoint => Type == GeometryType.Point || Type == GeometryType.MultiPoint;
 
     /// <summary>
-    ///   Gets a value indicating whether this geometry represents a linear type.
+    ///   获取一个值，指示此几何对象是否为线类型。
     /// </summary>
     public bool IsLinear => Type == GeometryType.Line || Type == GeometryType.Polyline;
 
     /// <summary>
-    ///   Gets a value indicating whether this geometry represents an area type.
+    ///   获取一个值，指示此几何对象是否为面类型。
     /// </summary>
     public bool IsArea => Type == GeometryType.Polygon || Type == GeometryType.Envelope;
 
     /// <summary>
-    ///   Gets the envelope (bounding rectangle) of this geometry.
+    ///   获取此几何对象的包络（边界矩形）。
     /// </summary>
-    /// <returns>An Envelope object representing the bounding rectangle.</returns>
+    /// <returns>表示边界矩形的 Envelope 对象。</returns>
     public abstract Envelope GetEnvelope();
 
     /// <summary>
-    ///   Calculates the 2D area of the geometry.
-    ///   Returns 0 for non-area geometries (points, lines).
+    ///   计算几何对象的 2D 面积。
+    ///   对于非面类型几何对象（点、线）返回 0。
     /// </summary>
     public virtual double CalculateArea2D()
   {
@@ -62,8 +62,8 @@ public abstract class Geometry
   }
 
     /// <summary>
-    ///   Calculates the 2D length or perimeter of the geometry.
-    ///   Returns 0 for point geometries.
+    ///   计算几何对象的 2D 长度或周长。
+    ///   对于点几何对象返回 0。
     /// </summary>
     public virtual double CalculateLength2D()
   {
@@ -83,11 +83,11 @@ public abstract class Geometry
   }
 
     /// <summary>
-    ///   Creates a deep copy of this geometry.
+    ///   创建此几何对象的深层副本。
     /// </summary>
     public virtual Geometry Copy()
   {
-    // Default implementation - subclasses can override for better performance
+    // 默认实现 - 子类可以重写以获得更好的性能
     switch (this)
     {
       case Point point:
@@ -174,7 +174,7 @@ public abstract class Geometry
   }
 
     /// <summary>
-    ///   Checks if the geometry is valid (not null and not empty).
+    ///   检查几何对象是否有效（不为 null 且不为空）。
     /// </summary>
     public virtual bool IsValid()
   {

@@ -13,7 +13,7 @@ namespace Esri.Geometry.Core.IO;
 public static class WktImportOperator
 {
     /// <summary>
-    ///   Imports a geometry from WKT format.
+    ///   从 WKT 格式导入几何对象.
     /// </summary>
     /// <param name="wkt">The WKT string to parse.</param>
     /// <returns>The parsed geometry.</returns>

@@ -5,14 +5,14 @@ using System.Linq;
 namespace Esri.Geometry.Core.Geometries;
 
 /// <summary>
-///   Represents a polyline geometry consisting of one or more paths.
+///   表示由一条或多条路径组成的折线几何对象。
 /// </summary>
 public class Polyline : Geometry
 {
   private readonly List<List<Point>> _paths;
 
   /// <summary>
-  ///   Initializes a new instance of the <see cref="Polyline" /> class.
+  ///   初始化 <see cref="Polyline" /> 类的新实例。
   /// </summary>
   public Polyline()
   {
@@ -41,12 +41,12 @@ public class Polyline : Geometry
   public override int Dimension => 1;
 
   /// <summary>
-  ///   Gets the number of paths in the polyline.
+  ///   获取折线中的路径数量。
   /// </summary>
   public int PathCount => _paths.Count;
 
   /// <summary>
-  ///   Calculates the total length of all paths in the polyline.
+  ///   计算折线中所有路径的总长度。
   /// </summary>
   public double Length
   {
@@ -62,9 +62,9 @@ public class Polyline : Geometry
   }
 
   /// <summary>
-  ///   Adds a new path to the polyline.
+  ///   向折线添加新的路径。
   /// </summary>
-  /// <param name="points">The points that make up the path.</param>
+  /// <param name="points">构成路径的点集合。</param>
   public void AddPath(IEnumerable<Point> points)
   {
     if (points == null) throw new ArgumentNullException(nameof(points));
@@ -72,10 +72,10 @@ public class Polyline : Geometry
   }
 
   /// <summary>
-  ///   Gets the path at the specified index.
+  ///   获取指定索引处的路径。
   /// </summary>
-  /// <param name="index">The index of the path.</param>
-  /// <returns>The path at the specified index.</returns>
+  /// <param name="index">路径的索引。</param>
+  /// <returns>指定索引处的路径。</returns>
   public IReadOnlyList<Point> GetPath(int index)
   {
     if (index < 0 || index >= _paths.Count) throw new ArgumentOutOfRangeException(nameof(index));
@@ -83,9 +83,9 @@ public class Polyline : Geometry
   }
 
   /// <summary>
-  ///   Gets all paths in the polyline.
+  ///   获取折线中的所有路径。
   /// </summary>
-  /// <returns>An enumerable collection of paths.</returns>
+  /// <returns>路径的可枚举集合。</returns>
   public IEnumerable<IReadOnlyList<Point>> GetPaths()
   {
     return _paths.Select(p => p.AsReadOnly());

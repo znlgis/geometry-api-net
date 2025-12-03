@@ -1,33 +1,33 @@
 namespace Esri.Geometry.Core.Operators;
 
 /// <summary>
-///   Interface for geometry operators.
+///   几何操作符的接口。
 /// </summary>
-/// <typeparam name="TResult">The result type of the operation.</typeparam>
+/// <typeparam name="TResult">操作的结果类型。</typeparam>
 public interface IGeometryOperator<TResult>
 {
     /// <summary>
-    ///   Executes the operation on a geometry.
+    ///   对几何对象执行操作。
     /// </summary>
-    /// <param name="geometry">The geometry to operate on.</param>
-    /// <param name="spatialRef">The spatial reference (optional).</param>
-    /// <returns>The result of the operation.</returns>
+    /// <param name="geometry">要操作的几何对象。</param>
+    /// <param name="spatialRef">空间参考（可选）。</param>
+    /// <returns>操作的结果。</returns>
     TResult Execute(Geometries.Geometry geometry, SpatialReference.SpatialReference? spatialRef = null);
 }
 
 /// <summary>
-///   Interface for binary geometry operators.
+///   二元几何操作符的接口。
 /// </summary>
-/// <typeparam name="TResult">The result type of the operation.</typeparam>
+/// <typeparam name="TResult">操作的结果类型。</typeparam>
 public interface IBinaryGeometryOperator<TResult>
 {
     /// <summary>
-    ///   Executes the operation on two geometries.
+    ///   对两个几何对象执行操作。
     /// </summary>
-    /// <param name="geometry1">The first geometry.</param>
-    /// <param name="geometry2">The second geometry.</param>
-    /// <param name="spatialRef">The spatial reference (optional).</param>
-    /// <returns>The result of the operation.</returns>
+    /// <param name="geometry1">第一个几何对象。</param>
+    /// <param name="geometry2">第二个几何对象。</param>
+    /// <param name="spatialRef">空间参考（可选）。</param>
+    /// <returns>操作的结果。</returns>
     TResult Execute(Geometries.Geometry geometry1, Geometries.Geometry geometry2,
     SpatialReference.SpatialReference? spatialRef = null);
 }

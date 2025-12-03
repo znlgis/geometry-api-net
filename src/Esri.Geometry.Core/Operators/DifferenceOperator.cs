@@ -4,8 +4,8 @@ using Esri.Geometry.Core.Geometries;
 namespace Esri.Geometry.Core.Operators;
 
 /// <summary>
-///   Operator for computing the difference of two geometries.
-///   Returns a geometry that represents all points in the first geometry that are not in the second geometry.
+///   用于计算两个几何对象差集的操作符.
+///   返回表示第一个几何对象中不在第二个几何对象中的所有点的几何对象.
 ///   Implements difference for basic geometry types.
 /// </summary>
 public sealed class DifferenceOperator : IBinaryGeometryOperator<Geometries.Geometry>
@@ -22,7 +22,7 @@ public sealed class DifferenceOperator : IBinaryGeometryOperator<Geometries.Geom
   public static DifferenceOperator Instance => _instance.Value;
 
   /// <summary>
-  ///   Computes the difference of two geometries (geometry1 - geometry2).
+  ///   计算两个几何对象的差集（geometry1 - geometry2）.
   /// </summary>
   /// <param name="geometry1">First geometry</param>
   /// <param name="geometry2">Second geometry (to subtract)</param>

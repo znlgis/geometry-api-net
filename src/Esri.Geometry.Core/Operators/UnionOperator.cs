@@ -4,9 +4,9 @@ using Esri.Geometry.Core.Geometries;
 namespace Esri.Geometry.Core.Operators;
 
 /// <summary>
-///   Operator for computing the union of two geometries.
-///   Returns a geometry that represents all points in either geometry.
-///   Uses envelope-based union for simple cases and point aggregation for complex cases.
+///   用于计算两个几何对象并集的操作符。
+///   返回表示任一几何对象中所有点的几何对象。
+///   对于简单情况使用基于包络的并集，对于复杂情况使用点聚合。
 /// </summary>
 public sealed class UnionOperator : IBinaryGeometryOperator<Geometries.Geometry>
 {
@@ -22,7 +22,7 @@ public sealed class UnionOperator : IBinaryGeometryOperator<Geometries.Geometry>
   public static UnionOperator Instance => _instance.Value;
 
   /// <summary>
-  ///   Computes the union of two geometries.
+  ///   计算两个几何对象的并集.
   /// </summary>
   /// <param name="geometry1">First geometry</param>
   /// <param name="geometry2">Second geometry</param>

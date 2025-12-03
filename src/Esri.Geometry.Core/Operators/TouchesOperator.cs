@@ -4,7 +4,7 @@ using Esri.Geometry.Core.Geometries;
 namespace Esri.Geometry.Core.Operators;
 
 /// <summary>
-///   Operator for testing if two geometries touch at their boundaries but do not overlap.
+///   用于测试两个几何对象是否在边界处相接但不重叠的操作符。
 /// </summary>
 public class TouchesOperator : IBinaryGeometryOperator<bool>
 {
@@ -15,7 +15,7 @@ public class TouchesOperator : IBinaryGeometryOperator<bool>
   }
 
   /// <summary>
-  ///   Gets the singleton instance of the touches operator.
+  ///   获取 TouchesOperator 的单例实例.
   /// </summary>
   public static TouchesOperator Instance => _instance.Value;
 

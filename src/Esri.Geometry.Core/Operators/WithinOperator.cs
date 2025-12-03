@@ -4,7 +4,7 @@ using Esri.Geometry.Core.Geometries;
 namespace Esri.Geometry.Core.Operators;
 
 /// <summary>
-///   Operator for testing if geometry1 is completely within geometry2.
+///   用于测试 geometry1 是否完全在 geometry2 内部的操作符.
 /// </summary>
 public class WithinOperator : IBinaryGeometryOperator<bool>
 {
@@ -15,7 +15,7 @@ public class WithinOperator : IBinaryGeometryOperator<bool>
   }
 
   /// <summary>
-  ///   Gets the singleton instance of the within operator.
+  ///   获取 WithinOperator 的单例实例.
   /// </summary>
   public static WithinOperator Instance => _instance.Value;
 

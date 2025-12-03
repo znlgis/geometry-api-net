@@ -6,12 +6,12 @@ using Esri.Geometry.Core.Geometries;
 namespace Esri.Geometry.Core.IO;
 
 /// <summary>
-///   Imports geometries from Esri JSON format.
+///   从 Esri JSON 格式导入几何对象.
 /// </summary>
 public static class EsriJsonImportOperator
 {
     /// <summary>
-    ///   Imports a geometry from Esri JSON format.
+    ///   从 Esri JSON 格式导入几何对象.
     /// </summary>
     /// <param name="esriJson">The Esri JSON string</param>
     /// <returns>The parsed geometry</returns>

@@ -11,10 +11,10 @@ namespace Esri.Geometry.Core.IO;
 public static class WktExportOperator
 {
     /// <summary>
-    ///   Exports a geometry to WKT format.
+    ///   将几何对象导出为 WKT 格式.
     /// </summary>
-    /// <param name="geometry">The geometry to export.</param>
-    /// <returns>The WKT representation of the geometry.</returns>
+    /// <param name="geometry">要导出的几何对象.</param>
+    /// <returns>几何对象的 WKT 表示.</returns>
     public static string ExportToWkt(Geometries.Geometry geometry)
   {
     if (geometry == null) throw new ArgumentNullException(nameof(geometry));

@@ -4,7 +4,7 @@ using Esri.Geometry.Core.Geometries;
 namespace Esri.Geometry.Core.Operators;
 
 /// <summary>
-///   Operator for calculating the distance between geometries.
+///   用于计算几何对象之间距离的操作符.
 /// </summary>
 public class DistanceOperator : IBinaryGeometryOperator<double>
 {
@@ -15,7 +15,7 @@ public class DistanceOperator : IBinaryGeometryOperator<double>
   }
 
   /// <summary>
-  ///   Gets the singleton instance of the distance operator.
+  ///   获取 DistanceOperator 的单例实例.
   /// </summary>
   public static DistanceOperator Instance => _instance.Value;
 
