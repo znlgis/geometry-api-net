@@ -239,6 +239,17 @@ mp.Add(new Point(5, 5));
 mp.Add(new Point(12, 12));
 
 var difference = DifferenceOperator.Instance.Execute(mp, env1); // Returns Point(12, 12) - points outside env1
+
+// Symmetric Difference - points in either but not both
+var mp1 = new MultiPoint();
+mp1.Add(new Point(0, 0));
+mp1.Add(new Point(10, 10));
+
+var mp2 = new MultiPoint();
+mp2.Add(new Point(10, 10));
+mp2.Add(new Point(20, 20));
+
+var symDiff = SymmetricDifferenceOperator.Instance.Execute(mp1, mp2); // Returns MultiPoint with (0,0) and (20,20)
 ```
 
 ### WKB Import/Export
@@ -332,28 +343,32 @@ dotnet test --logger "console;verbosity=detailed"
 - [x] Boundary computation (OGC specification)
 - [x] Clip operator (Cohen-Sutherland line clipping)
 - [x] Geodesic distance (Vincenty's formula on WGS84 ellipsoid)
+- [x] Set operations (Union, Intersection, Difference, SymmetricDifference)
 
 ### Test Coverage
-- **152 tests passing** with comprehensive coverage
+- **157 tests passing** with comprehensive coverage
 - 28 geometry type tests
 - 14 spatial relationship operator tests
 - 13 additional operator tests (Simplify, Centroid, Boundary)
 - 12 geometry operation tests (Buffer, ConvexHull, Area, Length)
 - 11 advanced operator tests (Clip, GeodesicDistance)
-- 18 set operation tests (Union, Intersection, Difference)
+- 23 set operation tests (Union, Intersection, Difference, SymmetricDifference)
 - 17 WKT import/export tests
 - 10 WKB import/export tests
 - 4 JSON serialization tests
 
 ### Planned Features
-- [ ] SymmetricDifference operator
+- [ ] Generalize operator (different from Simplify, removes vertices within deviation threshold)
+- [ ] Densify operator (add vertices to long segments)
+- [ ] Offset operator (create offset curves/polygons)
+- [ ] Cut operator (cut geometries with polylines)
 - [ ] Enhanced GeoJSON import/export (beyond Point)
+- [ ] ESRI JSON import/export
 - [ ] Projection/transformation support
-- [ ] Geodesic area calculations
+- [ ] Geodesic area and length calculations
+- [ ] Relate operator (DE-9IM spatial relationships)
 - [ ] Performance optimizations using Span<T> and Memory<T>
 - [ ] Circular buffer generation (currently only square/rectangular)
-- [ ] Densify operator
-- [ ] Offset operator
 
 ## Contributing
 
