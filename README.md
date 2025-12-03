@@ -17,19 +17,35 @@ This library provides a complete set of geometry types and spatial operations co
 - **Line** - Line segment between two points
 
 ### Spatial Operators
-- **Distance** - Calculate distance between geometries
+
+#### Spatial Relationship Operators (9 operators)
 - **Contains** - Test if one geometry contains another
-- **Intersects** - Test if geometries intersect
-- More operators to be implemented...
+- **Intersects** - Test if geometries intersect  
+- **Distance** - Calculate distance between geometries
+- **Equals** - Test if two geometries are spatially equal
+- **Disjoint** - Test if geometries don't intersect
+- **Within** - Test if geometry1 is within geometry2
+- **Crosses** - Test if geometries cross
+- **Touches** - Test if geometries touch at boundaries
+- **Overlaps** - Test if geometries of same dimension overlap
+
+#### Geometry Operations
+- **Buffer** - Create buffer (offset polygon) around geometry
+- **ConvexHull** - Compute convex hull using Graham scan algorithm
+- **Area** - Calculate area of polygons and envelopes
+- **Length** - Calculate length/perimeter of geometries
+
+### Import/Export Formats
+- **WKT (Well-Known Text)** - Full import and export support for all geometry types
+- **JSON** - Point serialization with System.Text.Json
 
 ### Spatial Reference System
 - Support for well-known IDs (WKID)
 - Built-in support for WGS 84 (EPSG:4326) and Web Mercator (EPSG:3857)
-- Well-Known Text (WKT) support
 
 ### JSON Serialization
-- System.Text.Json converters for geometry types
-- Support for Esri JSON format
+- System.Text.Json converters for Point geometry
+- Support for X, Y, Z, and M coordinates
 
 ## Getting Started
 
@@ -111,6 +127,55 @@ Console.WriteLine($"WKID: {wgs84.Wkid}");
 var webMercator = SpatialReference.WebMercator();
 ```
 
+### WKT Import/Export
+
+```csharp
+using Esri.Geometry.Core.IO;
+
+// Export to WKT
+var point = new Point(10.5, 20.7);
+var wkt = WktExportOperator.ExportToWkt(point);
+// Result: "POINT (10.5 20.7)"
+
+// Import from WKT
+var geometry = WktImportOperator.ImportFromWkt("POLYGON ((0 0, 10 0, 10 10, 0 10, 0 0))");
+var polygon = (Polygon)geometry;
+```
+
+### Spatial Relationship Tests
+
+```csharp
+// Test various spatial relationships
+var env1 = new Envelope(0, 0, 10, 10);
+var env2 = new Envelope(5, 5, 15, 15);
+
+bool intersects = IntersectsOperator.Instance.Execute(env1, env2);  // true
+bool overlaps = OverlapsOperator.Instance.Execute(env1, env2);      // true
+bool disjoint = DisjointOperator.Instance.Execute(env1, env2);      // false
+bool equals = EqualsOperator.Instance.Execute(env1, env1);          // true
+```
+
+### Geometry Operations
+
+```csharp
+// Create a buffer around a point
+var point = new Point(10, 20);
+var buffer = BufferOperator.Instance.Execute(point, 5.0);
+
+// Compute convex hull
+var multiPoint = new MultiPoint();
+multiPoint.Add(new Point(0, 0));
+multiPoint.Add(new Point(10, 0));
+multiPoint.Add(new Point(5, 10));
+var hull = ConvexHullOperator.Instance.Execute(multiPoint);
+
+// Calculate area and length
+var polygon = new Polygon();
+// ... add rings to polygon
+double area = AreaOperator.Instance.Execute(polygon);
+double perimeter = LengthOperator.Instance.Execute(polygon);
+```
+
 ## Project Structure
 
 ```
@@ -120,7 +185,7 @@ Esri.Geometry.Api/
 │   │   ├── Geometries/               # Geometry types
 │   │   ├── Operators/                # Geometry operators
 │   │   ├── SpatialReference/         # Spatial reference system
-│   │   └── IO/                       # I/O support (future)
+│   │   └── IO/                       # WKT import/export
 │   └── Esri.Geometry.Json/           # JSON serialization support
 ├── tests/
 │   └── Esri.Geometry.Tests/          # Unit tests (xUnit)
@@ -173,16 +238,23 @@ dotnet test --logger "console;verbosity=detailed"
 
 ## Roadmap
 
+### Completed Features ✅
+- [x] All 9 spatial relationship operators (Contains, Intersects, Distance, Equals, Disjoint, Within, Crosses, Touches, Overlaps)
+- [x] WKT (Well-Known Text) import/export for all geometry types
+- [x] Buffer operator (simplified square/rectangular buffers)
+- [x] Convex hull computation (Graham scan algorithm)
+- [x] Area and Length calculation operators
+
 ### Planned Features
-- [ ] Additional spatial operators (Buffer, Union, Intersection, Difference, etc.)
-- [ ] WKT (Well-Known Text) import/export
+- [ ] Union, Intersection, Difference, SymmetricDifference (requires polygon clipping algorithms)
 - [ ] WKB (Well-Known Binary) import/export
+- [ ] Enhanced GeoJSON import/export
 - [ ] Projection/transformation support
 - [ ] Simplification and generalization algorithms
-- [ ] Spatial relationship operators (Touches, Within, Overlaps, Crosses, Disjoint)
-- [ ] Convex hull computation
+- [ ] Clip operator
 - [ ] Geodesic calculations
 - [ ] Performance optimizations using Span<T> and Memory<T>
+- [ ] Circular buffer generation
 
 ## Contributing
 
