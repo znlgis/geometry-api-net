@@ -4,7 +4,7 @@ using Esri.Geometry.Core.Geometries;
 namespace Esri.Geometry.Core.Operators;
 
 /// <summary>
-///   Operator for computing the union of two geometries.
+///   用于计算两个几何对象并集的操作符.
 ///   Returns a geometry that represents all points in either geometry.
 ///   Uses envelope-based union for simple cases and point aggregation for complex cases.
 /// </summary>

@@ -4,7 +4,7 @@ using Esri.Geometry.Core.Geometries;
 namespace Esri.Geometry.Core.Operators;
 
 /// <summary>
-///   Operator for testing if two geometries intersect.
+///   用于测试两个几何对象是否相交的操作符。
 /// </summary>
 public class IntersectsOperator : IBinaryGeometryOperator<bool>
 {
@@ -15,7 +15,7 @@ public class IntersectsOperator : IBinaryGeometryOperator<bool>
   }
 
   /// <summary>
-  ///   Gets the singleton instance of the intersects operator.
+  ///   获取 IntersectsOperator 的单例实例。
   /// </summary>
   public static IntersectsOperator Instance => _instance.Value;
 
@@ -26,10 +26,10 @@ public class IntersectsOperator : IBinaryGeometryOperator<bool>
     if (geometry1 == null) throw new ArgumentNullException(nameof(geometry1));
     if (geometry2 == null) throw new ArgumentNullException(nameof(geometry2));
 
-    // Simple implementation for envelope-envelope intersection
+    // 包络-包络相交的简单实现
     if (geometry1 is Envelope env1 && geometry2 is Envelope env2) return env1.Intersects(env2);
 
-    // For other geometry types, this would require more complex implementations
+    // 对于其他几何类型，需要更复杂的实现
     throw new NotImplementedException(
       $"Intersects test between {geometry1.Type} and {geometry2.Type} is not yet implemented.");
   }

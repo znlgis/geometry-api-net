@@ -4,7 +4,7 @@ using Esri.Geometry.Core.Geometries;
 namespace Esri.Geometry.Core.Operators;
 
 /// <summary>
-///   Operator for computing the intersection of two geometries.
+///   用于计算两个几何对象交集的操作符.
 ///   Returns a geometry that represents all points in both geometries.
 ///   Implements intersection for basic geometry types.
 /// </summary>

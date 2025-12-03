@@ -5,8 +5,8 @@ using Esri.Geometry.Core.Geometries;
 namespace Esri.Geometry.Core.Operators;
 
 /// <summary>
-///   Operator for creating a buffer (offset polygon) around a geometry.
-///   Note: This is a simplified implementation. Full buffer requires complex algorithms.
+///   用于在几何对象周围创建缓冲区（偏移多边形）的操作符。
+///   注意：这是一个简化实现。完整的缓冲区需要复杂的算法。
 /// </summary>
 public class BufferOperator : IGeometryOperator<Polygon>
 {
@@ -17,7 +17,7 @@ public class BufferOperator : IGeometryOperator<Polygon>
   }
 
   /// <summary>
-  ///   Gets the singleton instance of the buffer operator.
+  ///   获取 BufferOperator 的单例实例。
   /// </summary>
   public static BufferOperator Instance => _instance.Value;
 
@@ -29,12 +29,12 @@ public class BufferOperator : IGeometryOperator<Polygon>
   }
 
   /// <summary>
-  ///   Creates a buffer polygon around the geometry.
+  ///   围绕几何对象创建缓冲区多边形。
   /// </summary>
-  /// <param name="geometry">The geometry to buffer.</param>
-  /// <param name="distance">The buffer distance.</param>
-  /// <param name="spatialRef">Optional spatial reference.</param>
-  /// <returns>A polygon representing the buffered area.</returns>
+  /// <param name="geometry">要缓冲的几何对象。</param>
+  /// <param name="distance">缓冲距离。</param>
+  /// <param name="spatialRef">可选的空间参考。</param>
+  /// <returns>表示缓冲区域的多边形。</returns>
   public Polygon Execute(Geometries.Geometry geometry, double distance,
     SpatialReference.SpatialReference? spatialRef = null)
   {
@@ -57,8 +57,8 @@ public class BufferOperator : IGeometryOperator<Polygon>
 
   private Polygon BufferPoint(Point point, double distance)
   {
-    // Create a simple square buffer around the point
-    // In a full implementation, this would create a circular or multi-sided polygon
+    // 在点周围创建简单的正方形缓冲区
+    // 在完整实现中，这将创建圆形或多边形
     var polygon = new Polygon();
     var ring = new List<Point>
     {
@@ -74,7 +74,7 @@ public class BufferOperator : IGeometryOperator<Polygon>
 
   private Polygon BufferEnvelope(Envelope envelope, double distance)
   {
-    // Expand the envelope by the distance in all directions
+    // 在各个方向上按距离扩展包络
     var polygon = new Polygon();
     var ring = new List<Point>
     {

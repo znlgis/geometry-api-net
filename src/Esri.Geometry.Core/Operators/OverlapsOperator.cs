@@ -16,7 +16,7 @@ public class OverlapsOperator : IBinaryGeometryOperator<bool>
   }
 
   /// <summary>
-  ///   Gets the singleton instance of the overlaps operator.
+  ///   获取 OverlapsOperator 的单例实例.
   /// </summary>
   public static OverlapsOperator Instance => _instance.Value;
 

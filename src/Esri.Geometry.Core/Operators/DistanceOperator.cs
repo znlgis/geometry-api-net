@@ -15,7 +15,7 @@ public class DistanceOperator : IBinaryGeometryOperator<double>
   }
 
   /// <summary>
-  ///   Gets the singleton instance of the distance operator.
+  ///   获取 DistanceOperator 的单例实例.
   /// </summary>
   public static DistanceOperator Instance => _instance.Value;
 

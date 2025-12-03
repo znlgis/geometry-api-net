@@ -15,7 +15,7 @@ public class WithinOperator : IBinaryGeometryOperator<bool>
   }
 
   /// <summary>
-  ///   Gets the singleton instance of the within operator.
+  ///   获取 WithinOperator 的单例实例.
   /// </summary>
   public static WithinOperator Instance => _instance.Value;
 

@@ -21,7 +21,7 @@ public class GeodesicDistanceOperator : IBinaryGeometryOperator<double>
   }
 
   /// <summary>
-  ///   Gets the singleton instance of the geodesic distance operator.
+  ///   获取 GeodesicDistanceOperator 的单例实例.
   /// </summary>
   public static GeodesicDistanceOperator Instance => _instance.Value;
 

@@ -3,7 +3,7 @@ using System;
 namespace Esri.Geometry.Core.Operators;
 
 /// <summary>
-///   Operator for testing if two geometries cross.
+///   用于测试两个几何对象是否交叉的操作符.
 ///   Geometries cross if they have some but not all interior points in common.
 /// </summary>
 public class CrossesOperator : IBinaryGeometryOperator<bool>
@@ -15,7 +15,7 @@ public class CrossesOperator : IBinaryGeometryOperator<bool>
   }
 
   /// <summary>
-  ///   Gets the singleton instance of the crosses operator.
+  ///   获取 CrossesOperator 的单例实例.
   /// </summary>
   public static CrossesOperator Instance => _instance.Value;
 

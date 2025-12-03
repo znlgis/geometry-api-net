@@ -4,8 +4,8 @@ using Esri.Geometry.Core.Geometries;
 namespace Esri.Geometry.Core.Operators;
 
 /// <summary>
-///   Result of a 2D proximity operation.
-///   Contains information about the nearest coordinate or vertex found.
+///   2D 邻近操作的结果。
+///   包含找到的最近坐标或顶点的信息。
 /// </summary>
 public class Proximity2DResult
 {
@@ -14,7 +14,7 @@ public class Proximity2DResult
   private readonly int _vertexIndex;
 
   /// <summary>
-  ///   Creates an empty Proximity2DResult.
+  ///   创建空的 Proximity2DResult。
   /// </summary>
   public Proximity2DResult()
   {
@@ -26,11 +26,11 @@ public class Proximity2DResult
   }
 
   /// <summary>
-  ///   Creates a Proximity2DResult with the specified values.
+  ///   使用指定的值创建 Proximity2DResult。
   /// </summary>
-  /// <param name="coordinate">The nearest coordinate.</param>
-  /// <param name="vertexIndex">The vertex index.</param>
-  /// <param name="distance">The distance to the nearest point.</param>
+  /// <param name="coordinate">最近的坐标。</param>
+  /// <param name="vertexIndex">顶点索引。</param>
+  /// <param name="distance">到最近点的距离。</param>
   public Proximity2DResult(Point coordinate, int vertexIndex, double distance)
   {
     _coordinate = coordinate;
@@ -41,16 +41,15 @@ public class Proximity2DResult
   }
 
   /// <summary>
-  ///   Gets whether this result is empty.
-  ///   This only happens if the geometry passed to the proximity operator is empty.
+  ///   获取此结果是否为空。
+  ///   仅当传递给邻近操作符的几何对象为空时才会发生这种情况。
   /// </summary>
   public bool IsEmpty { get; }
 
   /// <summary>
-  ///   Gets the closest coordinate for getNearestCoordinate or the vertex coordinates
-  ///   for getNearestVertex and getNearestVertices.
+  ///   获取 getNearestCoordinate 的最近坐标，或 getNearestVertex 和 getNearestVertices 的顶点坐标。
   /// </summary>
-  /// <exception cref="InvalidOperationException">Thrown when the result is empty.</exception>
+  /// <exception cref="InvalidOperationException">当结果为空时抛出。</exception>
   public Point Coordinate
   {
     get
@@ -62,16 +61,16 @@ public class Proximity2DResult
   }
 
   /// <summary>
-  ///   Gets the vertex index.
-  ///   For getNearestCoordinate the behavior is:
-  ///   - When the input is a polygon or envelope and bTestPolygonInterior is true, the value is zero.
-  ///   - When the input is a polygon or envelope and bTestPolygonInterior is false,
-  ///   the value is the start vertex index of a segment with the closest coordinate.
-  ///   - When the input is a polyline, the value is the start vertex index of a segment with the closest coordinate.
-  ///   - When the input is a point, the value is 0.
-  ///   - When the input is a multipoint, the value is the closest vertex.
+  ///   获取顶点索引。
+  ///   对于 getNearestCoordinate，行为如下：
+  ///   - 当输入是多边形或包络且 bTestPolygonInterior 为 true 时，值为零。
+  ///   - 当输入是多边形或包络且 bTestPolygonInterior 为 false 时，
+  ///   值是具有最近坐标的线段的起始顶点索引。
+  ///   - 当输入是折线时，值是具有最近坐标的线段的起始顶点索引。
+  ///   - 当输入是点时，值为 0。
+  ///   - 当输入是多点时，值是最近的顶点。
   /// </summary>
-  /// <exception cref="InvalidOperationException">Thrown when the result is empty.</exception>
+  /// <exception cref="InvalidOperationException">当结果为空时抛出。</exception>
   public int VertexIndex
   {
     get
@@ -83,9 +82,9 @@ public class Proximity2DResult
   }
 
   /// <summary>
-  ///   Gets the distance to the closest vertex or coordinate.
+  ///   获取到最近顶点或坐标的距离。
   /// </summary>
-  /// <exception cref="InvalidOperationException">Thrown when the result is empty.</exception>
+  /// <exception cref="InvalidOperationException">当结果为空时抛出。</exception>
   public double Distance
   {
     get
@@ -97,16 +96,15 @@ public class Proximity2DResult
   }
 
   /// <summary>
-  ///   Gets whether the closest coordinate is to the right of the geometry.
-  ///   This is only meaningful when the proximity operator was called with
-  ///   bCalculateLeftRightSide set to true for MultiPath geometries.
+  ///   获取最近的坐标是否在几何对象的右侧。
+  ///   仅当对 MultiPath 几何对象调用邻近操作符时，bCalculateLeftRightSide 设置为 true 时，此值才有意义。
   /// </summary>
   public bool IsRightSide { get; private set; }
 
   /// <summary>
-  ///   Sets whether the coordinate is on the right side.
+  ///   设置坐标是否在右侧。
   /// </summary>
-  /// <param name="isRight">True if on the right side, false otherwise.</param>
+  /// <param name="isRight">如果在右侧则为 true，否则为 false。</param>
   internal void SetRightSide(bool isRight)
   {
     IsRightSide = isRight;

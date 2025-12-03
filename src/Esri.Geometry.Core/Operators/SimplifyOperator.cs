@@ -6,7 +6,7 @@ using Esri.Geometry.Core.Geometries;
 namespace Esri.Geometry.Core.Operators;
 
 /// <summary>
-///   Operator for simplifying geometries using the Douglas-Peucker algorithm.
+///   用于简化几何对象的操作符 using the Douglas-Peucker algorithm.
 /// </summary>
 public class SimplifyOperator : IGeometryOperator<Geometries.Geometry>
 {
@@ -17,7 +17,7 @@ public class SimplifyOperator : IGeometryOperator<Geometries.Geometry>
   }
 
   /// <summary>
-  ///   Gets the singleton instance of the simplify operator.
+  ///   获取 SimplifyOperator 的单例实例.
   /// </summary>
   public static SimplifyOperator Instance => _instance.Value;
 

@@ -15,7 +15,7 @@ public class AreaOperator : IGeometryOperator<double>
   }
 
   /// <summary>
-  ///   Gets the singleton instance of the area operator.
+  ///   获取 AreaOperator 的单例实例.
   /// </summary>
   public static AreaOperator Instance => _instance.Value;
 
@@ -49,7 +49,7 @@ public class LengthOperator : IGeometryOperator<double>
   }
 
   /// <summary>
-  ///   Gets the singleton instance of the length operator.
+  ///   获取 LengthOperator 的单例实例.
   /// </summary>
   public static LengthOperator Instance => _instance.Value;
 
