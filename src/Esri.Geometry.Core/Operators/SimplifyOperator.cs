@@ -10,6 +10,7 @@ namespace Esri.Geometry.Core.Operators
     /// </summary>
     public class SimplifyOperator : IGeometryOperator<Geometries.Geometry>
     {
+        private const double EPSILON = 1e-10;
         private static readonly Lazy<SimplifyOperator> _instance = new Lazy<SimplifyOperator>(() => new SimplifyOperator());
 
         /// <summary>
@@ -161,7 +162,7 @@ namespace Esri.Geometry.Core.Operators
 
             // Normalize
             double mag = Math.Sqrt(dx * dx + dy * dy);
-            if (mag < 1e-10)
+            if (mag < EPSILON)
             {
                 return point.Distance(lineStart);
             }

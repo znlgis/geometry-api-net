@@ -163,6 +163,7 @@ namespace Esri.Geometry.Core.IO
         private static int ReadInt32(BinaryReader reader, bool bigEndian)
         {
             var bytes = reader.ReadBytes(4);
+            // Reverse bytes if endianness doesn't match system endianness
             if (bigEndian != BitConverter.IsLittleEndian)
             {
                 Array.Reverse(bytes);
@@ -173,6 +174,7 @@ namespace Esri.Geometry.Core.IO
         private static double ReadDouble(BinaryReader reader, bool bigEndian)
         {
             var bytes = reader.ReadBytes(8);
+            // Reverse bytes if endianness doesn't match system endianness
             if (bigEndian != BitConverter.IsLittleEndian)
             {
                 Array.Reverse(bytes);

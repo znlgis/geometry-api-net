@@ -155,6 +155,7 @@ namespace Esri.Geometry.Core.IO
         private static void WriteInt32(BinaryWriter writer, int value, bool bigEndian)
         {
             var bytes = BitConverter.GetBytes(value);
+            // Reverse bytes if endianness doesn't match system endianness
             if (bigEndian != BitConverter.IsLittleEndian)
             {
                 Array.Reverse(bytes);
@@ -165,6 +166,7 @@ namespace Esri.Geometry.Core.IO
         private static void WriteDouble(BinaryWriter writer, double value, bool bigEndian)
         {
             var bytes = BitConverter.GetBytes(value);
+            // Reverse bytes if endianness doesn't match system endianness
             if (bigEndian != BitConverter.IsLittleEndian)
             {
                 Array.Reverse(bytes);
