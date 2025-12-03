@@ -4,7 +4,7 @@ using Esri.Geometry.Core.Geometries;
 namespace Esri.Geometry.Core.Operators;
 
 /// <summary>
-///   Operator for testing if two geometries overlap.
+///   用于测试两个几何对象是否重叠的操作符.
 ///   Geometries overlap if they have the same dimension and their interiors intersect.
 /// </summary>
 public class OverlapsOperator : IBinaryGeometryOperator<bool>

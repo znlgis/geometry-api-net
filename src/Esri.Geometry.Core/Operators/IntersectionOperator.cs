@@ -5,7 +5,7 @@ namespace Esri.Geometry.Core.Operators;
 
 /// <summary>
 ///   用于计算两个几何对象交集的操作符.
-///   Returns a geometry that represents all points in both geometries.
+///   返回表示两个几何对象中所有点的几何对象.
 ///   Implements intersection for basic geometry types.
 /// </summary>
 public sealed class IntersectionOperator : IBinaryGeometryOperator<Geometries.Geometry>
@@ -22,7 +22,7 @@ public sealed class IntersectionOperator : IBinaryGeometryOperator<Geometries.Ge
   public static IntersectionOperator Instance => _instance.Value;
 
   /// <summary>
-  ///   Computes the intersection of two geometries.
+  ///   计算两个几何对象的交集.
   /// </summary>
   /// <param name="geometry1">First geometry</param>
   /// <param name="geometry2">Second geometry</param>

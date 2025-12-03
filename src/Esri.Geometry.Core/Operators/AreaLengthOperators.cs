@@ -4,7 +4,7 @@ using Esri.Geometry.Core.Geometries;
 namespace Esri.Geometry.Core.Operators;
 
 /// <summary>
-///   Operator for calculating the area of a geometry.
+///   用于计算几何对象面积的操作符.
 /// </summary>
 public class AreaOperator : IGeometryOperator<double>
 {
@@ -38,7 +38,7 @@ public class AreaOperator : IGeometryOperator<double>
 }
 
 /// <summary>
-///   Operator for calculating the length of a geometry.
+///   用于计算几何对象长度的操作符.
 /// </summary>
 public class LengthOperator : IGeometryOperator<double>
 {

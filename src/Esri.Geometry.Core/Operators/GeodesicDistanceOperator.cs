@@ -4,7 +4,7 @@ using Esri.Geometry.Core.Geometries;
 namespace Esri.Geometry.Core.Operators;
 
 /// <summary>
-///   Operator for calculating geodesic (great circle) distances on the WGS84 ellipsoid.
+///   用于计算 WGS84 椭球上大地测量（大圆）距离的操作符.
 ///   Points are expected to be in geographic coordinates (longitude, latitude) in degrees.
 ///   X coordinate = Longitude (-180 to 180), Y coordinate = Latitude (-90 to 90).
 /// </summary>
@@ -45,7 +45,7 @@ public class GeodesicDistanceOperator : IBinaryGeometryOperator<double>
   }
 
   /// <summary>
-  ///   Calculates the geodesic distance between two points on the WGS84 ellipsoid using Vincenty's formula.
+  ///   使用 Vincenty 公式计算 WGS84 椭球上两点之间的大地测量距离.
   /// </summary>
   /// <param name="point1">First point with coordinates in degrees (X=Longitude, Y=Latitude).</param>
   /// <param name="point2">Second point with coordinates in degrees (X=Longitude, Y=Latitude).</param>
@@ -122,7 +122,7 @@ public class GeodesicDistanceOperator : IBinaryGeometryOperator<double>
   }
 
   /// <summary>
-  ///   Calculates distance using the Haversine formula (simpler, less accurate for long distances).
+  ///   使用 Haversine 公式计算距离（更简单，但对长距离精度较低）.
   /// </summary>
   private static double HaversineDistance(Point point1, Point point2)
   {

@@ -4,7 +4,7 @@ using Esri.Geometry.Core.Geometries;
 namespace Esri.Geometry.Core.Operators;
 
 /// <summary>
-///   Computes the symmetric difference of two geometries.
+///   计算两个几何对象的对称差.
 ///   The symmetric difference is the set of points that are in either geometry but not in both.
 ///   Equivalent to (A - B) ∪ (B - A) or (A ∪ B) - (A ∩ B).
 /// </summary>
@@ -20,7 +20,7 @@ public sealed class SymmetricDifferenceOperator : IBinaryGeometryOperator<Geomet
   public static SymmetricDifferenceOperator Instance { get; } = new();
 
   /// <summary>
-  ///   Computes the symmetric difference of two geometries.
+  ///   计算两个几何对象的对称差.
   /// </summary>
   /// <param name="geometry1">First geometry.</param>
   /// <param name="geometry2">Second geometry.</param>

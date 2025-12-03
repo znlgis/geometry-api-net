@@ -4,7 +4,7 @@ namespace Esri.Geometry.Core.Operators;
 
 /// <summary>
 ///   用于测试两个几何对象是否交叉的操作符.
-///   Geometries cross if they have some but not all interior points in common.
+///   如果几何对象有一些但不是全部内部点相同，则它们交叉.
 /// </summary>
 public class CrossesOperator : IBinaryGeometryOperator<bool>
 {

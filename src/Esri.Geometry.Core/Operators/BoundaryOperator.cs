@@ -6,7 +6,7 @@ namespace Esri.Geometry.Core.Operators;
 
 /// <summary>
 ///   用于计算几何对象边界的操作符.
-///   The boundary is defined according to the OGC Simple Features specification.
+///   边界根据 OGC Simple Features 规范定义.
 /// </summary>
 public class BoundaryOperator : IGeometryOperator<Geometries.Geometry>
 {

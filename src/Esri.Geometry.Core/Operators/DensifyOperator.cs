@@ -5,8 +5,8 @@ using Esri.Geometry.Core.Geometries;
 namespace Esri.Geometry.Core.Operators;
 
 /// <summary>
-///   Densify operator - adds vertices to geometries
-///   Inserts additional vertices along line segments to ensure no segment exceeds the specified length
+///   密化操作符 - 向几何对象添加顶点
+///   沿线段插入额外的顶点以确保没有线段超过指定长度
 /// </summary>
 public class DensifyOperator : IGeometryOperator<Geometries.Geometry>
 {

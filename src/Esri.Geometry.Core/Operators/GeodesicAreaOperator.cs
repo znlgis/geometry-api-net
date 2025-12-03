@@ -5,7 +5,7 @@ using Esri.Geometry.Core.Geometries;
 namespace Esri.Geometry.Core.Operators;
 
 /// <summary>
-///   Calculates geodesic area on WGS84 ellipsoid using spherical excess formula.
+///   使用球面过量公式计算 WGS84 椭球上的大地测量面积.
 ///   For accurate area calculations on Earth's surface.
 /// </summary>
 public class GeodesicAreaOperator : IGeometryOperator<double>

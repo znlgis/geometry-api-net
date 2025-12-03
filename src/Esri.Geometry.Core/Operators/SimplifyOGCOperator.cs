@@ -26,7 +26,7 @@ public class SimplifyOGCOperator : IGeometryOperator<Geometries.Geometry>
   /// </summary>
   /// <param name="geometry">The geometry to be simplified.</param>
   /// <param name="spatialRef">Spatial reference to obtain the tolerance from. When null, a default tolerance is used.</param>
-  /// <returns>Returns a simple geometry that should be visually equivalent to the input geometry.</returns>
+  /// <returns>返回一个在视觉上应与输入几何对象等效的简单几何对象.</returns>
   public Geometries.Geometry Execute(Geometries.Geometry geometry, SpatialReference.SpatialReference? spatialRef = null)
   {
     return Execute(geometry, spatialRef, false);
@@ -38,7 +38,7 @@ public class SimplifyOGCOperator : IGeometryOperator<Geometries.Geometry>
   /// <param name="geometry">The geometry to be simplified.</param>
   /// <param name="spatialRef">Spatial reference to obtain the tolerance from. When null, a default tolerance is used.</param>
   /// <param name="forceSimplify">When true, the geometry will be simplified regardless of its current state.</param>
-  /// <returns>Returns a simple geometry that should be visually equivalent to the input geometry.</returns>
+  /// <returns>返回一个在视觉上应与输入几何对象等效的简单几何对象.</returns>
   public Geometries.Geometry Execute(Geometries.Geometry geometry, SpatialReference.SpatialReference? spatialRef,
     bool forceSimplify)
   {
@@ -67,7 +67,7 @@ public class SimplifyOGCOperator : IGeometryOperator<Geometries.Geometry>
   }
 
   /// <summary>
-  ///   Tests if the geometry is simple according to OGC specification.
+  ///   根据 OGC 规范测试几何对象是否简单.
   /// </summary>
   /// <param name="geometry">The geometry to be tested.</param>
   /// <param name="spatialRef">Spatial reference to obtain the tolerance from.</param>
