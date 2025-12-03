@@ -5,8 +5,26 @@ using Esri.Geometry.Core.Geometries;
 namespace Esri.Geometry.Core.Operators;
 
 /// <summary>
-///   Operator for clipping geometries to an envelope.
+///   Operator for clipping geometries to an envelope using the Cohen-Sutherland algorithm.
+///   Clipping removes geometry portions outside the specified envelope boundary.
 /// </summary>
+/// <remarks>
+///   Implements the Cohen-Sutherland line clipping algorithm for efficient line segment clipping:
+///   1. Assigns region codes to endpoints (inside/left/right/top/bottom)
+///   2. Trivially accepts/rejects lines based on region codes
+///   3. Iteratively clips lines at envelope boundaries
+///   
+///   Supported geometry types:
+///   - Point: Returns point if inside, empty otherwise
+///   - MultiPoint: Returns only points inside the envelope
+///   - Envelope: Returns intersection of envelopes
+///   - Line: Returns clipped line segment(s)
+///   - Polyline: Returns clipped paths
+///   - Polygon: Not yet implemented (requires Sutherland-Hodgman algorithm)
+///   
+///   Time Complexity: O(n) where n is the number of line segments
+///   Space Complexity: O(n) for storing clipped geometry
+/// </remarks>
 public class ClipOperator : IGeometryOperator<Geometries.Geometry>
 {
   private static readonly Lazy<ClipOperator> _instance = new(() => new ClipOperator());
@@ -28,12 +46,27 @@ public class ClipOperator : IGeometryOperator<Geometries.Geometry>
   }
 
   /// <summary>
-  ///   Clips a geometry to the specified envelope.
+  ///   Clips a geometry to the specified envelope, removing portions outside the boundary.
   /// </summary>
-  /// <param name="geometry">The geometry to clip.</param>
-  /// <param name="clipEnvelope">The envelope to clip to.</param>
-  /// <param name="spatialRef">Optional spatial reference.</param>
-  /// <returns>The clipped geometry.</returns>
+  /// <param name="geometry">The geometry to clip. Supports Point, MultiPoint, Envelope, Line, and Polyline.</param>
+  /// <param name="clipEnvelope">The envelope defining the clipping boundary.</param>
+  /// <param name="spatialRef">Optional spatial reference (currently not used).</param>
+  /// <returns>
+  ///   The clipped geometry. Returns:
+  ///   - Original geometry if completely inside the envelope
+  ///   - Empty geometry if completely outside the envelope
+  ///   - Clipped geometry for partial intersections
+  /// </returns>
+  /// <exception cref="ArgumentNullException">Thrown when geometry or clipEnvelope is null.</exception>
+  /// <exception cref="NotImplementedException">Thrown for unsupported geometry types (Polygon).</exception>
+  /// <example>
+  ///   <code>
+  ///   var line = new Line(new Point(-10, 0), new Point(10, 0));
+  ///   var clipEnv = new Envelope(0, -5, 5, 5);
+  ///   var clipped = ClipOperator.Instance.Execute(line, clipEnv);
+  ///   // Result: Line from (0, 0) to (5, 0)
+  ///   </code>
+  /// </example>
   public Geometries.Geometry Execute(Geometries.Geometry geometry, Envelope clipEnvelope,
     SpatialReference.SpatialReference? spatialRef = null)
   {
@@ -177,16 +210,33 @@ public class ClipOperator : IGeometryOperator<Geometries.Geometry>
   }
 
   /// <summary>
-  ///   Cohen-Sutherland line clipping algorithm.
+  ///   Implements the Cohen-Sutherland line clipping algorithm.
+  ///   This algorithm efficiently clips line segments to a rectangular envelope.
   /// </summary>
+  /// <param name="p1">Start point of the line segment.</param>
+  /// <param name="p2">End point of the line segment.</param>
+  /// <param name="env">The clipping envelope.</param>
+  /// <returns>
+  ///   A list of 2 points representing the clipped line segment if it intersects the envelope,
+  ///   null if the line is completely outside the envelope.
+  /// </returns>
+  /// <remarks>
+  ///   Algorithm steps:
+  ///   1. Compute region codes for both endpoints (9-region division)
+  ///   2. If both points are inside (code 0), accept the line
+  ///   3. If both points share an outside region, reject the line
+  ///   4. Otherwise, clip at envelope boundary and repeat with new endpoint
+  /// </remarks>
   private List<Point>? CohenSutherlandClip(Point p1, Point p2, Envelope env)
   {
-    const int INSIDE = 0; // 0000
-    const int LEFT = 1; // 0001
-    const int RIGHT = 2; // 0010
-    const int BOTTOM = 4; // 0100
-    const int TOP = 8; // 1000
+    // Region codes for Cohen-Sutherland algorithm
+    const int INSIDE = 0; // 0000 - inside the envelope
+    const int LEFT = 1;   // 0001 - left of envelope
+    const int RIGHT = 2;  // 0010 - right of envelope
+    const int BOTTOM = 4; // 0100 - below envelope
+    const int TOP = 8;    // 1000 - above envelope
 
+    // Compute region code for a point relative to the envelope
     int ComputeOutCode(double x, double y)
     {
       var code = INSIDE;
@@ -208,40 +258,46 @@ public class ClipOperator : IGeometryOperator<Geometries.Geometry>
     {
       if ((outcode1 | outcode2) == 0)
       {
-        // Both points inside
+        // Both points inside the envelope - accept entire line
         accept = true;
         break;
       }
 
       if ((outcode1 & outcode2) != 0)
-        // Both points outside same region
+        // Both points share an outside region - line is completely outside
         break;
 
-      // Calculate intersection
+      // Line crosses boundary - clip at intersection point
       double x = 0, y = 0;
       var outcodeOut = outcode1 != 0 ? outcode1 : outcode2;
 
+      // Find intersection point with envelope boundary
       if ((outcodeOut & TOP) != 0)
       {
+        // Intersection with top boundary
         x = x1 + (x2 - x1) * (env.YMax - y1) / (y2 - y1);
         y = env.YMax;
       }
       else if ((outcodeOut & BOTTOM) != 0)
       {
+        // Intersection with bottom boundary
         x = x1 + (x2 - x1) * (env.YMin - y1) / (y2 - y1);
         y = env.YMin;
       }
       else if ((outcodeOut & RIGHT) != 0)
       {
+        // Intersection with right boundary
         y = y1 + (y2 - y1) * (env.XMax - x1) / (x2 - x1);
         x = env.XMax;
       }
       else if ((outcodeOut & LEFT) != 0)
       {
+        // Intersection with left boundary
         y = y1 + (y2 - y1) * (env.XMin - x1) / (x2 - x1);
         x = env.XMin;
       }
 
+      // Replace outside point with intersection point
       if (outcodeOut == outcode1)
       {
         x1 = x;

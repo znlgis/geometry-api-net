@@ -8,7 +8,24 @@ namespace Esri.Geometry.Core.IO;
 
 /// <summary>
 ///   Operator for exporting geometries to GeoJSON format.
+///   GeoJSON is a geospatial data interchange format based on JSON (RFC 7946).
 /// </summary>
+/// <remarks>
+///   Supports all geometry types:
+///   - Point → GeoJSON Point
+///   - MultiPoint → GeoJSON MultiPoint
+///   - Line → GeoJSON LineString
+///   - Polyline → GeoJSON LineString (single path) or MultiLineString (multiple paths)
+///   - Polygon → GeoJSON Polygon
+///   - Envelope → GeoJSON Polygon (converted to 5-point rectangle)
+///   
+///   GeoJSON coordinate format: [longitude, latitude, elevation]
+///   - Coordinates are represented as arrays: [x, y] or [x, y, z]
+///   - Z values (elevation) are included when present
+///   - M values (measure) are not supported in standard GeoJSON
+///   
+///   Output format conforms to RFC 7946 (GeoJSON specification).
+/// </remarks>
 public class GeoJsonExportOperator : IGeometryOperator<string>
 {
   private GeoJsonExportOperator()
@@ -21,11 +38,20 @@ public class GeoJsonExportOperator : IGeometryOperator<string>
   public static GeoJsonExportOperator Instance { get; } = new();
 
   /// <summary>
-  ///   Exports a geometry to GeoJSON format.
+  ///   Exports a geometry to GeoJSON format conforming to RFC 7946.
   /// </summary>
-  /// <param name="geometry">The geometry to export.</param>
-  /// <param name="spatialReference">Optional spatial reference (not used in basic GeoJSON).</param>
-  /// <returns>GeoJSON string representation of the geometry.</returns>
+  /// <param name="geometry">The geometry to export. Supports all geometry types.</param>
+  /// <param name="spatialReference">Optional spatial reference (not included in basic GeoJSON output).</param>
+  /// <returns>A GeoJSON string representation of the geometry.</returns>
+  /// <exception cref="ArgumentNullException">Thrown when geometry is null.</exception>
+  /// <exception cref="ArgumentException">Thrown for unsupported geometry types.</exception>
+  /// <example>
+  ///   <code>
+  ///   var point = new Point(10.5, 20.3, 30.7);
+  ///   string geoJson = GeoJsonExportOperator.ExportToGeoJson(point);
+  ///   // Result: {"type":"Point","coordinates":[10.5,20.3,30.7]}
+  ///   </code>
+  /// </example>
   public string Execute(Geometries.Geometry geometry, SpatialReference.SpatialReference? spatialReference = null)
   {
     if (geometry == null)
@@ -35,10 +61,12 @@ public class GeoJsonExportOperator : IGeometryOperator<string>
   }
 
   /// <summary>
-  ///   Exports a geometry to GeoJSON format.
+  ///   Exports a geometry to GeoJSON format (static method for convenience).
   /// </summary>
   /// <param name="geometry">The geometry to export.</param>
-  /// <returns>GeoJSON string representation.</returns>
+  /// <returns>A GeoJSON string representation conforming to RFC 7946.</returns>
+  /// <exception cref="ArgumentNullException">Thrown when geometry is null.</exception>
+  /// <exception cref="ArgumentException">Thrown for unsupported geometry types.</exception>
   public static string ExportToGeoJson(Geometries.Geometry geometry)
   {
     if (geometry == null)
