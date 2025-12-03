@@ -25,7 +25,8 @@ Console.WriteLine("3. Testing Containment:");
 var testPoint = new Point(50, 50);
 Console.WriteLine($"   Does envelope contain point ({testPoint.X}, {testPoint.Y})? {envelope.Contains(testPoint)}");
 var outsidePoint = new Point(150, 150);
-Console.WriteLine($"   Does envelope contain point ({outsidePoint.X}, {outsidePoint.Y})? {envelope.Contains(outsidePoint)}\n");
+Console.WriteLine(
+  $"   Does envelope contain point ({outsidePoint.X}, {outsidePoint.Y})? {envelope.Contains(outsidePoint)}\n");
 
 // 4. Create a multi-point geometry
 Console.WriteLine("4. Working with MultiPoint:");
@@ -76,4 +77,3 @@ var webMercator = SpatialReference.WebMercator();
 Console.WriteLine($"   Web Mercator WKID: {webMercator.Wkid}\n");
 
 Console.WriteLine("===== Sample Complete =====");
-
