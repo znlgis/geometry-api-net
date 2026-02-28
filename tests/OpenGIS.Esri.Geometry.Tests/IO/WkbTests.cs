@@ -162,4 +162,36 @@ public class WkbTests
         var ring = polygon.GetRing(0);
         Assert.Equal(5, ring.Count); // 4 corners + closing point
     }
+
+    [Fact]
+    public void WkbExport_LittleEndian_ByteOrderMatchesData()
+    {
+        var point = new Point(1.0, 2.0);
+        var wkb = WkbExportOperator.ExportToWkb(point, false);
+
+        // Byte order marker is 1 (little-endian)
+        Assert.Equal(1, wkb[0]);
+
+        // Geometry type (int32 = 1 for Point) should be in little-endian: 01 00 00 00
+        Assert.Equal(1, wkb[1]);
+        Assert.Equal(0, wkb[2]);
+        Assert.Equal(0, wkb[3]);
+        Assert.Equal(0, wkb[4]);
+    }
+
+    [Fact]
+    public void WkbExport_BigEndian_ByteOrderMatchesData()
+    {
+        var point = new Point(1.0, 2.0);
+        var wkb = WkbExportOperator.ExportToWkb(point, true);
+
+        // Byte order marker is 0 (big-endian)
+        Assert.Equal(0, wkb[0]);
+
+        // Geometry type (int32 = 1 for Point) should be in big-endian: 00 00 00 01
+        Assert.Equal(0, wkb[1]);
+        Assert.Equal(0, wkb[2]);
+        Assert.Equal(0, wkb[3]);
+        Assert.Equal(1, wkb[4]);
+    }
 }

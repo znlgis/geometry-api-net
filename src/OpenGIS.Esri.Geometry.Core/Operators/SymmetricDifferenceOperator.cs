@@ -65,7 +65,7 @@ public sealed class SymmetricDifferenceOperator : IBinaryGeometryOperator<Geomet
             for (var i = 0; i < mp2.Count; i++)
             {
                 var p = mp2.GetPoint(i);
-                if (Math.Abs(p.X - point.X) < 1e-10 && Math.Abs(p.Y - point.Y) < 1e-10)
+                if (Math.Abs(p.X - point.X) < GeometryConstants.DefaultTolerance && Math.Abs(p.Y - point.Y) < GeometryConstants.DefaultTolerance)
                     pointFound = true;
                 else
                     result.Add(p);
@@ -95,7 +95,7 @@ public sealed class SymmetricDifferenceOperator : IBinaryGeometryOperator<Geomet
                 for (var j = 0; j < mp2A.Count; j++)
                 {
                     var p2Test = mp2A.GetPoint(j);
-                    if (Math.Abs(p1Test.X - p2Test.X) < 1e-10 && Math.Abs(p1Test.Y - p2Test.Y) < 1e-10)
+                    if (Math.Abs(p1Test.X - p2Test.X) < GeometryConstants.DefaultTolerance && Math.Abs(p1Test.Y - p2Test.Y) < GeometryConstants.DefaultTolerance)
                     {
                         foundInMp2 = true;
                         break;
@@ -115,7 +115,7 @@ public sealed class SymmetricDifferenceOperator : IBinaryGeometryOperator<Geomet
                 for (var i = 0; i < mp1A.Count; i++)
                 {
                     var p1Test = mp1A.GetPoint(i);
-                    if (Math.Abs(p2Test.X - p1Test.X) < 1e-10 && Math.Abs(p2Test.Y - p1Test.Y) < 1e-10)
+                    if (Math.Abs(p2Test.X - p1Test.X) < GeometryConstants.DefaultTolerance && Math.Abs(p2Test.Y - p1Test.Y) < GeometryConstants.DefaultTolerance)
                     {
                         foundInMp1 = true;
                         break;

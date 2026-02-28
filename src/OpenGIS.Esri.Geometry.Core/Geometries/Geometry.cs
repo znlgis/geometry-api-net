@@ -178,6 +178,6 @@ public abstract class Geometry
   /// </summary>
   public virtual bool IsValid()
     {
-        return this != null && !IsEmpty;
+        return !IsEmpty;
     }
 }

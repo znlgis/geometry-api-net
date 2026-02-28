@@ -69,7 +69,7 @@ public class MultiPoint : Geometry
     /// <returns>点的可枚举集合。</returns>
     public IEnumerable<Point> GetPoints()
     {
-        return _points;
+        return _points.AsReadOnly();
     }
 
     /// <inheritdoc />

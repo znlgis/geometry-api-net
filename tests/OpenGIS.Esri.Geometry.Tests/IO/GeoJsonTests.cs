@@ -170,4 +170,18 @@ public class GeoJsonTests
         // Envelope is exported as a rectangular polygon
         Assert.Contains("\"coordinates\":", geoJson);
     }
+
+    [Fact]
+    public void TestEnvelopeGeoJsonRoundTrip()
+    {
+        var envelope = new Envelope(0, 0, 10, 10);
+        var geoJson = GeoJsonExportOperator.ExportToGeoJson(envelope);
+
+        // Verify the GeoJSON is valid and can be imported back
+        var imported = GeoJsonImportOperator.ImportFromGeoJson(geoJson);
+        Assert.IsType<Polygon>(imported);
+        var polygon = (Polygon)imported;
+        Assert.Equal(1, polygon.RingCount);
+        Assert.Equal(5, polygon.GetRing(0).Count);
+    }
 }
