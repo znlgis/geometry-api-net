@@ -9,7 +9,6 @@ namespace OpenGIS.Esri.Geometry.Core.Operators;
 /// </summary>
 public class CentroidOperator : IGeometryOperator<Point>
 {
-    private const double EPSILON = 1e-10;
     private static readonly Lazy<CentroidOperator> _instance = new(() => new CentroidOperator());
 
     private CentroidOperator()
@@ -127,7 +126,7 @@ public class CentroidOperator : IGeometryOperator<Point>
 
         area /= 2.0;
 
-        if (Math.Abs(area) < EPSILON)
+        if (Math.Abs(area) < GeometryConstants.Epsilon)
         {
             // Degenerate polygon, return average of vertices
             double sumX = 0, sumY = 0;

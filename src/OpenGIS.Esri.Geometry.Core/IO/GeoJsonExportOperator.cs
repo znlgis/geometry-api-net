@@ -182,7 +182,7 @@ public class GeoJsonExportOperator : IGeometryOperator<string>
         // Close ring (back to bottom-left)
         sb.Append($"[{FormatCoord(envelope.XMin)},{FormatCoord(envelope.YMin)}]");
 
-        sb.Append("]}");
+        sb.Append("]]}");
         return sb.ToString();
     }
 

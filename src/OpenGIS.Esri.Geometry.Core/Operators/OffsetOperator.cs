@@ -37,7 +37,10 @@ public class OffsetOperator : IGeometryOperator<Geometries.Geometry>
     /// <returns>The offset geometry</returns>
     public Geometries.Geometry Execute(Geometries.Geometry geometry, double distance)
     {
-        if (geometry == null || geometry.IsEmpty)
+        if (geometry == null)
+            throw new ArgumentNullException(nameof(geometry));
+
+        if (geometry.IsEmpty)
             return geometry;
 
         switch (geometry)

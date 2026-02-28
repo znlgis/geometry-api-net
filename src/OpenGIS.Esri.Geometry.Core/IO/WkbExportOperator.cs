@@ -161,6 +161,6 @@ public static class WkbExportOperator
 
     private static bool ShouldReverseBytes(bool bigEndian)
     {
-        return bigEndian != BitConverter.IsLittleEndian;
+        return bigEndian == BitConverter.IsLittleEndian;
     }
 }
