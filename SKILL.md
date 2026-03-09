@@ -519,7 +519,7 @@ dotnet run --project samples/OpenGIS.Esri.Geometry.Samples
 ## 注意事项
 
 1. **Polygon 环必须闭合**：首尾点必须相同
-2. **浮点容差**：内部使用 `GeometryConstants.DefaultTolerance`（1e-10）进行浮点比较
+2. **浮点容差**：内部使用 `GeometryConstants.DefaultTolerance`（1e-10）进行浮点比较，该值为内部常量，不可外部配置
 3. **返回类型需转换**：集合运算返回 `Geometry` 基类，需根据实际类型做类型转换
 4. **Operator 使用 Lazy 单例**：所有 Operator 类通过 `Instance` 属性获取单例实例
 5. **集合 getter 返回只读视图**：`GetRing()`, `GetPath()` 等返回 `IReadOnlyList<Point>`
