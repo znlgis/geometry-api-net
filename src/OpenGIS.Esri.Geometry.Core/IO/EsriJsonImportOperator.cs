@@ -39,7 +39,9 @@ public static class EsriJsonImportOperator
             if (root.TryGetProperty("rings", out var ringsElement)) return ParsePolygon(ringsElement);
 
             // Check for Envelope (has xmin, ymin, xmax, ymax)
-            if (root.TryGetProperty("xmin", out _) && root.TryGetProperty("ymin", out _)) return ParseEnvelope(root);
+            if (root.TryGetProperty("xmin", out _) && root.TryGetProperty("ymin", out _) &&
+                root.TryGetProperty("xmax", out _) && root.TryGetProperty("ymax", out _))
+                return ParseEnvelope(root);
 
             throw new ArgumentException("Unrecognized Esri JSON geometry format");
         }

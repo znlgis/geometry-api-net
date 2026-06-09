@@ -1,3 +1,4 @@
+using System;
 using OpenGIS.Esri.Geometry.Core.Geometries;
 using OpenGIS.Esri.Geometry.Core.IO;
 
@@ -121,5 +122,15 @@ public class EsriJsonTests
         Assert.Contains("\"y\":", esriJson);
         Assert.DoesNotContain("coordinates", esriJson);
         Assert.DoesNotContain("type", esriJson);
+    }
+
+    [Fact]
+    public void TestPartialEnvelopeThrowsArgumentException()
+    {
+        // An object with only xmin/ymin (no xmax/ymax) is not a valid envelope and
+        // must be reported as an unrecognized format rather than throwing KeyNotFoundException.
+        var json = "{\"xmin\":0,\"ymin\":0}";
+
+        Assert.Throws<ArgumentException>(() => EsriJsonImportOperator.ImportFromEsriJson(json));
     }
 }
