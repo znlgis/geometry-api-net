@@ -36,6 +36,9 @@ public static class WkbImportOperator
     private static Geometries.Geometry ReadGeometry(BinaryReader reader)
     {
         // Read byte order
+        if (reader.BaseStream.Position >= reader.BaseStream.Length)
+            throw new FormatException("Unexpected end of WKB stream while reading byte order.");
+
         var byteOrder = reader.ReadByte();
         var bigEndian = byteOrder == 0;
 
@@ -157,6 +160,8 @@ public static class WkbImportOperator
     private static int ReadInt32(BinaryReader reader, bool bigEndian)
     {
         var bytes = reader.ReadBytes(4);
+        if (bytes.Length != 4)
+            throw new FormatException("Unexpected end of WKB stream while reading a 32-bit integer.");
         if (ShouldReverseBytes(bigEndian)) Array.Reverse(bytes);
         return BitConverter.ToInt32(bytes, 0);
     }
@@ -164,6 +169,8 @@ public static class WkbImportOperator
     private static double ReadDouble(BinaryReader reader, bool bigEndian)
     {
         var bytes = reader.ReadBytes(8);
+        if (bytes.Length != 8)
+            throw new FormatException("Unexpected end of WKB stream while reading a double.");
         if (ShouldReverseBytes(bigEndian)) Array.Reverse(bytes);
         return BitConverter.ToDouble(bytes, 0);
     }

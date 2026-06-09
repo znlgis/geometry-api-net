@@ -1,3 +1,4 @@
+using System;
 using OpenGIS.Esri.Geometry.Core.Geometries;
 using OpenGIS.Esri.Geometry.Core.IO;
 
@@ -193,5 +194,27 @@ public class WkbTests
         Assert.Equal(0, wkb[2]);
         Assert.Equal(0, wkb[3]);
         Assert.Equal(1, wkb[4]);
+    }
+
+    [Fact]
+    public void WkbImport_TruncatedData_ThrowsFormatException()
+    {
+        var point = new Point(10.5, 20.7);
+        var wkb = WkbExportOperator.ExportToWkb(point);
+
+        // Truncate the WKB payload so a coordinate read runs past the end of the stream.
+        var truncated = new byte[wkb.Length - 4];
+        Array.Copy(wkb, truncated, truncated.Length);
+
+        Assert.Throws<FormatException>(() => WkbImportOperator.ImportFromWkb(truncated));
+    }
+
+    [Fact]
+    public void WkbImport_OnlyByteOrderByte_ThrowsFormatException()
+    {
+        // A single byte (byte order) with no geometry type/payload following.
+        var wkb = new byte[] { 1 };
+
+        Assert.Throws<FormatException>(() => WkbImportOperator.ImportFromWkb(wkb));
     }
 }
