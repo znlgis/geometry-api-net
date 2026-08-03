@@ -257,4 +257,48 @@ public class SetOperatorTests
         Assert.Equal(5, envelope.XMax);
         Assert.Equal(5, envelope.YMax);
     }
+
+    [Fact]
+    public void DifferenceOperator_IntersectingEnvelopes_ReturnsFirstEnvelope()
+    {
+        var env1 = new Envelope(0, 0, 10, 10);
+        var env2 = new Envelope(5, 5, 15, 15);
+
+        // Previously threw NotImplementedException because ContainsOperator did not
+        // support Envelope-Envelope; now returns the (simplified) first envelope.
+        var result = DifferenceOperator.Instance.Execute(env1, env2);
+
+        Assert.IsType<Envelope>(result);
+        var envelope = (Envelope)result;
+        Assert.Equal(0, envelope.XMin);
+        Assert.Equal(0, envelope.YMin);
+        Assert.Equal(10, envelope.XMax);
+        Assert.Equal(10, envelope.YMax);
+    }
+
+    [Fact]
+    public void DifferenceOperator_SecondEnvelopeContainsFirst_ReturnsEmpty()
+    {
+        var env1 = new Envelope(2, 2, 4, 4);
+        var env2 = new Envelope(0, 0, 10, 10);
+
+        var result = DifferenceOperator.Instance.Execute(env1, env2);
+
+        Assert.True(result.IsEmpty);
+    }
+
+    [Fact]
+    public void DifferenceOperator_TwoPolylines_DoesNotThrow()
+    {
+        var line1 = new Polyline();
+        line1.AddPath(new[] { new Point(0, 0), new Point(10, 0) });
+
+        var line2 = new Polyline();
+        line2.AddPath(new[] { new Point(0, 5), new Point(10, 5) });
+
+        // Generic fallback previously threw NotImplementedException; now returns geometry1.
+        var result = DifferenceOperator.Instance.Execute(line1, line2);
+
+        Assert.IsType<Polyline>(result);
+    }
 }

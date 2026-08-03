@@ -60,6 +60,28 @@ public class EsriJsonTests
     }
 
     [Fact]
+    public void TestLineEsriJsonExport_ProducesPathsAndRoundTrips()
+    {
+        var line = new Line(new Point(0, 0), new Point(10, 5));
+
+        var esriJson = EsriJsonExportOperator.Instance.Execute(line);
+
+        // Esri JSON represents a line as a single path with two vertices.
+        Assert.Contains("\"paths\"", esriJson);
+
+        var parsed = EsriJsonImportOperator.ImportFromEsriJson(esriJson);
+        var parsedPolyline = Assert.IsType<Polyline>(parsed);
+        Assert.Equal(1, parsedPolyline.PathCount);
+
+        var path = parsedPolyline.GetPath(0);
+        Assert.Equal(2, path.Count);
+        Assert.Equal(0, path[0].X, 10);
+        Assert.Equal(0, path[0].Y, 10);
+        Assert.Equal(10, path[1].X, 10);
+        Assert.Equal(5, path[1].Y, 10);
+    }
+
+    [Fact]
     public void TestPolygonEsriJsonRoundTrip()
     {
         var polygon = new Polygon();

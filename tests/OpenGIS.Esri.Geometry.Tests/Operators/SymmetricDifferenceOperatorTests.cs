@@ -75,4 +75,24 @@ public class SymmetricDifferenceOperatorTests
         Assert.NotNull(result);
         Assert.False(result.IsEmpty);
     }
+
+    [Fact]
+    public void TestSymmetricDifference_NullFirstArgument_ThrowsWithCorrectParamName()
+    {
+        var p = new Point(10, 20);
+
+        var ex = Assert.Throws<ArgumentNullException>(() =>
+            SymmetricDifferenceOperator.Instance.Execute(null!, p));
+        Assert.Equal("geometry1", ex.ParamName);
+    }
+
+    [Fact]
+    public void TestSymmetricDifference_NullSecondArgument_ThrowsWithCorrectParamName()
+    {
+        var p = new Point(10, 20);
+
+        var ex = Assert.Throws<ArgumentNullException>(() =>
+            SymmetricDifferenceOperator.Instance.Execute(p, null!));
+        Assert.Equal("geometry2", ex.ParamName);
+    }
 }

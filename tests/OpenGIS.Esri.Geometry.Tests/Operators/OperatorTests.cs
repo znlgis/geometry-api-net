@@ -36,6 +36,26 @@ public class OperatorTests
     }
 
     [Fact]
+    public void ContainsOperator_EnvelopeContainsEnvelope_ReturnsTrue()
+    {
+        var outer = new Envelope(0, 0, 10, 10);
+        var inner = new Envelope(2, 2, 8, 8);
+
+        var contains = ContainsOperator.Instance.Execute(outer, inner);
+        Assert.True(contains);
+    }
+
+    [Fact]
+    public void ContainsOperator_EnvelopeDoesNotContainEnvelope_ReturnsFalse()
+    {
+        var outer = new Envelope(0, 0, 10, 10);
+        var partiallyOutside = new Envelope(5, 5, 15, 15);
+
+        var contains = ContainsOperator.Instance.Execute(outer, partiallyOutside);
+        Assert.False(contains);
+    }
+
+    [Fact]
     public void IntersectsOperator_OverlappingEnvelopes_ReturnsTrue()
     {
         var envelope1 = new Envelope(0, 0, 10, 10);

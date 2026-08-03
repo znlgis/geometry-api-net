@@ -94,6 +94,26 @@ public class GeodesicAreaAndOffsetOperatorTests
     }
 
     [Fact]
+    public void TestOffsetPolyline_2DInput_DoesNotFabricateZ()
+    {
+        var polyline = new Polyline();
+        polyline.AddPath(new List<Point>
+        {
+            new(0, 0),
+            new(10, 0),
+            new(10, 10)
+        });
+
+        var offset = OffsetOperator.Instance.Execute(polyline, 2.0);
+
+        var offsetPolyline = Assert.IsType<Polyline>(offset);
+        foreach (var path in offsetPolyline.GetPaths())
+        foreach (var point in path)
+            Assert.False(point.Z.HasValue,
+                "Offset of a 2D polyline must not fabricate a Z coordinate.");
+    }
+
+    [Fact]
     public void TestOffsetEnvelope()
     {
         var envelope = new Envelope(0, 0, 10, 10);
