@@ -103,8 +103,15 @@ public class OffsetOperator : IGeometryOperator<Geometries.Geometry>
         return offsetPolyline;
     }
 
-    private List<Point> OffsetRing(IReadOnlyList<Point> ring, double distance)
+    /// <summary>
+    ///     创建偏移点，仅在源点具有 Z 值时才保留 Z 坐标（避免为二维几何生成 NaN 的 Z 值）。
+    /// </summary>
+    private static Point CreateOffsetPoint(double x, double y, double? sourceZ)
     {
+        return sourceZ.HasValue ? new Point(x, y, sourceZ.Value) : new Point(x, y);
+    }
+
+    private List<Point> OffsetRing(IReadOnlyList<Point> ring, double distance)    {
         // Simplified offset using perpendicular displacement
         var offsetPoints = new List<Point>();
         var n = ring.Count;
@@ -129,17 +136,17 @@ public class OffsetOperator : IGeometryOperator<Geometries.Geometry>
                 var perpY = dx / length;
 
                 // Offset point
-                offsetPoints.Add(new Point(
+                offsetPoints.Add(CreateOffsetPoint(
                     current.X + perpX * distance,
                     current.Y + perpY * distance,
-                    current.Z ?? double.NaN
+                    current.Z
                 ));
             }
         }
 
         // Close the ring
         if (offsetPoints.Count > 0)
-            offsetPoints.Add(new Point(offsetPoints[0].X, offsetPoints[0].Y, offsetPoints[0].Z ?? double.NaN));
+            offsetPoints.Add(CreateOffsetPoint(offsetPoints[0].X, offsetPoints[0].Y, offsetPoints[0].Z));
 
         return offsetPoints;
     }
@@ -170,10 +177,10 @@ public class OffsetOperator : IGeometryOperator<Geometries.Geometry>
                 var perpY = dx / length;
 
                 // Offset point
-                offsetPoints.Add(new Point(
+                offsetPoints.Add(CreateOffsetPoint(
                     current.X + perpX * distance,
                     current.Y + perpY * distance,
-                    current.Z ?? double.NaN
+                    current.Z
                 ));
             }
         }
@@ -192,10 +199,10 @@ public class OffsetOperator : IGeometryOperator<Geometries.Geometry>
                 var perpX = -dy / length;
                 var perpY = dx / length;
 
-                offsetPoints.Add(new Point(
+                offsetPoints.Add(CreateOffsetPoint(
                     last.X + perpX * distance,
                     last.Y + perpY * distance,
-                    last.Z ?? double.NaN
+                    last.Z
                 ));
             }
         }

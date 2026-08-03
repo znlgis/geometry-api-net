@@ -217,4 +217,13 @@ public class WkbTests
 
         Assert.Throws<FormatException>(() => WkbImportOperator.ImportFromWkb(wkb));
     }
+
+    [Fact]
+    public void WkbImport_InvalidByteOrderMarker_ThrowsFormatException()
+    {
+        // Byte-order marker must be 0 (big-endian) or 1 (little-endian); 2 is invalid.
+        var wkb = new byte[] { 2, 0, 0, 0, 1 };
+
+        Assert.Throws<FormatException>(() => WkbImportOperator.ImportFromWkb(wkb));
+    }
 }

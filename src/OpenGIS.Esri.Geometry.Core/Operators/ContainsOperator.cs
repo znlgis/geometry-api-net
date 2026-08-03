@@ -29,12 +29,27 @@ public class ContainsOperator : IBinaryGeometryOperator<bool>
         // Simple implementation for envelope-point containment
         if (geometry1 is Envelope env && geometry2 is Point p) return env.Contains(p);
 
+        // Envelope-envelope containment: env1 contains env2 if env2's bounds are fully inside env1.
+        if (geometry1 is Envelope outer && geometry2 is Envelope inner) return EnvelopeContainsEnvelope(outer, inner);
+
         // Point in Polygon test using ray casting algorithm
         if (geometry1 is Polygon poly && geometry2 is Point pt) return IsPointInPolygon(poly, pt);
 
         // For other geometry types, this would require more complex implementations
         throw new NotImplementedException(
             $"Contains test between {geometry1.Type} and {geometry2.Type} is not yet implemented.");
+    }
+
+    /// <summary>
+    ///     测试第一个包络是否完全包含第二个包络。
+    /// </summary>
+    private static bool EnvelopeContainsEnvelope(Envelope outer, Envelope inner)
+    {
+        if (outer.IsEmpty || inner.IsEmpty)
+            return false;
+
+        return inner.XMin >= outer.XMin && inner.XMax <= outer.XMax &&
+               inner.YMin >= outer.YMin && inner.YMax <= outer.YMax;
     }
 
     /// <summary>

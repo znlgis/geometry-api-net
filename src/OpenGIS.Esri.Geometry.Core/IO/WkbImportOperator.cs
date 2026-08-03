@@ -40,6 +40,9 @@ public static class WkbImportOperator
             throw new FormatException("Unexpected end of WKB stream while reading byte order.");
 
         var byteOrder = reader.ReadByte();
+        if (byteOrder != 0 && byteOrder != 1)
+            throw new FormatException($"Invalid WKB byte order marker: {byteOrder}. Expected 0 (big-endian) or 1 (little-endian).");
+
         var bigEndian = byteOrder == 0;
 
         // Read geometry type

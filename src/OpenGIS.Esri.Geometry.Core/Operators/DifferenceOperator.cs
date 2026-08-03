@@ -132,8 +132,16 @@ public sealed class DifferenceOperator : IBinaryGeometryOperator<Geometries.Geom
 
         // For other complex cases, if geometry2 contains geometry1, return empty
         // Otherwise return geometry1 (simplified implementation)
-        if (ContainsOperator.Instance.Execute(geometry2, geometry1))
-            return new Point(double.NaN, double.NaN);
+        try
+        {
+            if (ContainsOperator.Instance.Execute(geometry2, geometry1))
+                return new Point(double.NaN, double.NaN);
+        }
+        catch (NotImplementedException)
+        {
+            // Containment cannot be determined for this geometry combination;
+            // fall back to the simplified behavior of returning the first geometry.
+        }
 
         return geometry1;
     }
