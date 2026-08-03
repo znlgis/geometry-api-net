@@ -37,6 +37,8 @@ public class EsriJsonExportOperator : IGeometryOperator<string>
                 return ExportPoint(point);
             case MultiPoint multiPoint:
                 return ExportMultiPoint(multiPoint);
+            case Line line:
+                return ExportLine(line);
             case Polyline polyline:
                 return ExportPolyline(polyline);
             case Polygon polygon:
@@ -46,6 +48,25 @@ public class EsriJsonExportOperator : IGeometryOperator<string>
             default:
                 throw new ArgumentException($"Unsupported geometry type: {geometry.GetType().Name}");
         }
+    }
+
+    private string ExportLine(Line line)
+    {
+        // Esri JSON represents a line/polyline as a single path with two vertices.
+        var sb = new StringBuilder();
+        sb.Append("{\"paths\":[[");
+        AppendVertex(sb, line.Start);
+        sb.Append(",");
+        AppendVertex(sb, line.End);
+        sb.Append("]]}");
+        return sb.ToString();
+    }
+
+    private void AppendVertex(StringBuilder sb, Point point)
+    {
+        sb.Append($"[{FormatNumber(point.X)},{FormatNumber(point.Y)}");
+        if (point.Z.HasValue) sb.Append($",{FormatNumber(point.Z.Value)}");
+        sb.Append("]");
     }
 
     private string ExportPoint(Point point)

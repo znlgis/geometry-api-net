@@ -29,8 +29,8 @@ public sealed class SymmetricDifferenceOperator : IBinaryGeometryOperator<Geomet
     public Geometries.Geometry Execute(Geometries.Geometry geometry1, Geometries.Geometry geometry2,
         SpatialReference.SpatialReference? spatialReference = null)
     {
-        if (geometry1 == null || geometry2 == null)
-            throw new ArgumentNullException("Geometries cannot be null");
+        if (geometry1 == null) throw new ArgumentNullException(nameof(geometry1));
+        if (geometry2 == null) throw new ArgumentNullException(nameof(geometry2));
 
         if (geometry1.IsEmpty && geometry2.IsEmpty)
             return new Point(double.NaN, double.NaN);
