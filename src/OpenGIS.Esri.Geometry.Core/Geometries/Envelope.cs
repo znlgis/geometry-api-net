@@ -86,7 +86,7 @@ public class Envelope : Geometry
     /// <inheritdoc />
     public override Envelope GetEnvelope()
     {
-        return this;
+        return new Envelope(XMin, YMin, XMax, YMax);
     }
 
     /// <summary>

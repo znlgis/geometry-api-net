@@ -7,6 +7,8 @@ namespace OpenGIS.Esri.Geometry.Core.Operators;
 /// <summary>
 ///     用于在几何对象周围创建缓冲区（偏移多边形）的操作符。
 ///     注意：这是一个简化实现。完整的缓冲区需要复杂的算法。
+///     当前实现仅支持 <see cref="Point" /> 和 <see cref="Envelope" />，
+///     且生成的是轴对齐的矩形（正方形）缓冲区，而非圆形缓冲区。
 /// </summary>
 public class BufferOperator : IGeometryOperator<Polygon>
 {
@@ -30,11 +32,14 @@ public class BufferOperator : IGeometryOperator<Polygon>
 
     /// <summary>
     ///     围绕几何对象创建缓冲区多边形。
+    ///     注意：当前实现生成的是轴对齐的矩形（正方形）缓冲区，而非圆形缓冲区。
+    ///     仅支持 <see cref="Point" /> 和 <see cref="Envelope" /> 输入。
     /// </summary>
     /// <param name="geometry">要缓冲的几何对象。</param>
     /// <param name="distance">缓冲距离。</param>
     /// <param name="spatialRef">可选的空间参考。</param>
     /// <returns>表示缓冲区域的多边形。</returns>
+    /// <exception cref="NotImplementedException">当几何类型不受支持时抛出。</exception>
     public Polygon Execute(Geometries.Geometry geometry, double distance,
         SpatialReference.SpatialReference? spatialRef = null)
     {

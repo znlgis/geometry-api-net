@@ -288,7 +288,7 @@ public class SetOperatorTests
     }
 
     [Fact]
-    public void DifferenceOperator_TwoPolylines_DoesNotThrow()
+    public void DifferenceOperator_TwoPolylines_ThrowsNotSupported()
     {
         var line1 = new Polyline();
         line1.AddPath(new[] { new Point(0, 0), new Point(10, 0) });
@@ -296,9 +296,8 @@ public class SetOperatorTests
         var line2 = new Polyline();
         line2.AddPath(new[] { new Point(0, 5), new Point(10, 5) });
 
-        // Generic fallback previously threw NotImplementedException; now returns geometry1.
-        var result = DifferenceOperator.Instance.Execute(line1, line2);
-
-        Assert.IsType<Polyline>(result);
+        // Polyline difference is not implemented. The operator must surface the gap
+        // rather than silently returning geometry1 (which would be a wrong result).
+        Assert.Throws<NotSupportedException>(() => DifferenceOperator.Instance.Execute(line1, line2));
     }
 }

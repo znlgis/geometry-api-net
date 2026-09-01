@@ -139,8 +139,11 @@ public sealed class DifferenceOperator : IBinaryGeometryOperator<Geometries.Geom
         }
         catch (NotImplementedException)
         {
-            // Containment cannot be determined for this geometry combination;
-            // fall back to the simplified behavior of returning the first geometry.
+            // Containment cannot be determined for this geometry combination.
+            // Returning geometry1 would silently produce a wrong result (the whole
+            // first geometry as if nothing was subtracted), so surface the gap instead.
+            throw new NotSupportedException(
+                $"Difference between {geometry1.Type} and {geometry2.Type} is not yet implemented.");
         }
 
         return geometry1;

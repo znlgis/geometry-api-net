@@ -102,4 +102,32 @@ public class Point : Geometry
 
         return Math.Abs(X - other.X) <= tolerance && Math.Abs(Y - other.Y) <= tolerance;
     }
+
+    /// <summary>
+    ///     判断此点是否等于另一个点（使用默认容差）。
+    /// </summary>
+    /// <param name="other">另一个点。</param>
+    /// <returns>如果点在默认容差范围内相等则返回 true，否则返回 false。</returns>
+    public bool Equals(Point? other)
+    {
+        return other != null && Equals(other, GeometryConstants.DefaultTolerance);
+    }
+
+    /// <inheritdoc />
+    public override bool Equals(object? obj)
+    {
+        return Equals(obj as Point);
+    }
+
+    /// <inheritdoc />
+    public override int GetHashCode()
+    {
+        unchecked
+        {
+            var hash = 17;
+            hash = hash * 31 + X.GetHashCode();
+            hash = hash * 31 + Y.GetHashCode();
+            return hash;
+        }
+    }
 }
