@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using OpenGIS.Esri.Geometry.Core.Geometries;
 using OpenGIS.Esri.Geometry.Core.IO;
 
@@ -225,5 +226,83 @@ public class WkbTests
         var wkb = new byte[] { 2, 0, 0, 0, 1 };
 
         Assert.Throws<FormatException>(() => WkbImportOperator.ImportFromWkb(wkb));
+    }
+    [Fact]
+    public void WkbImport_EwkbPointZ_PreservesZ()
+    {
+        // PostGIS EWKB: little-endian POINT with Z flag (0x80000000)
+        var wkb = new List<byte> { 1 };
+        wkb.AddRange(BitConverter.GetBytes(0x80000001u)); // Z | POINT
+        wkb.AddRange(BitConverter.GetBytes(1.0));
+        wkb.AddRange(BitConverter.GetBytes(2.0));
+        wkb.AddRange(BitConverter.GetBytes(3.0));
+        var p = (Point)WkbImportOperator.ImportFromWkb(wkb.ToArray());
+        Assert.Equal(1, p.X);
+        Assert.Equal(3, p.Z);
+    }
+
+    [Fact]
+    public void WkbImport_EwkbLinestringSridStripsSridAndKeepsZ()
+    {
+        // EWKB: Z|SRID|LINESTRING, SRID=4326, two XYZ points
+        var wkb = new List<byte> { 1 };
+        wkb.AddRange(BitConverter.GetBytes(0xA0000002u));
+        wkb.AddRange(BitConverter.GetBytes(4326));
+        wkb.AddRange(BitConverter.GetBytes(2));
+        foreach (var (x, y, z) in new[] { (0.0, 0.0, 1.0), (5.0, 5.0, 2.0) })
+        {
+            wkb.AddRange(BitConverter.GetBytes(x));
+            wkb.AddRange(BitConverter.GetBytes(y));
+            wkb.AddRange(BitConverter.GetBytes(z));
+        }
+        var line = (Polyline)WkbImportOperator.ImportFromWkb(wkb.ToArray());
+        Assert.Equal(2, line.GetPath(0).Count);
+        Assert.Equal(1.0, line.GetPath(0)[0].Z);
+        Assert.Equal(2.0, line.GetPath(0)[1].Z);
+    }
+
+    [Fact]
+    public void WkbImport_IsoZmLinstring_Parses32BytePoints()
+    {
+        // ISO WKB type 3002 = LineStringZM: each point X,Y,Z,M
+        var wkb = new List<byte> { 1 };
+        wkb.AddRange(BitConverter.GetBytes(3002u));
+        wkb.AddRange(BitConverter.GetBytes(1));
+        wkb.AddRange(BitConverter.GetBytes(2.0)); // x
+        wkb.AddRange(BitConverter.GetBytes(3.0)); // y
+        wkb.AddRange(BitConverter.GetBytes(4.0)); // z
+        wkb.AddRange(BitConverter.GetBytes(5.0)); // m (ignored)
+        var line = (Polyline)WkbImportOperator.ImportFromWkb(wkb.ToArray());
+        Assert.Equal(2.0, line.GetPath(0)[0].X);
+        Assert.Equal(4.0, line.GetPath(0)[0].Z);
+    }
+
+    [Fact]
+    public void WkbImport_MultiPolygonWkb_ImportsAllParts()
+    {
+        // 标准 WKB MULTIPOLYGON(type 6)：两个正方形部件
+        static IEnumerable<byte> Ring(params (double x, double y)[] pts)
+        {
+            foreach (var b in BitConverter.GetBytes(pts.Length)) yield return b;
+            foreach (var (x, y) in pts)
+            {
+                foreach (var b in BitConverter.GetBytes(x)) yield return b;
+                foreach (var b in BitConverter.GetBytes(y)) yield return b;
+            }
+        }
+        var wkb = new List<byte> { 1 };
+        wkb.AddRange(BitConverter.GetBytes(6));
+        wkb.AddRange(BitConverter.GetBytes(2)); // 两个 polygon
+        foreach (var offset in new[] { 0.0, 2.0 })
+        {
+            wkb.Add(1); // 子几何字节序
+            wkb.AddRange(BitConverter.GetBytes(3)); // POLYGON
+            wkb.AddRange(BitConverter.GetBytes(1)); // 1 环
+            foreach (var b in Ring((offset, 0), (offset + 1, 0), (offset + 1, 1), (offset, 1), (offset, 0)))
+                wkb.Add(b);
+        }
+        var poly = (Polygon)WkbImportOperator.ImportFromWkb(wkb.ToArray());
+        Assert.Equal(2, poly.RingCount);
+        Assert.Equal(2.0, poly.CalculateArea2D(), 9);
     }
 }

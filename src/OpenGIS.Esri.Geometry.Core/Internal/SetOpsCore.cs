@@ -36,9 +36,10 @@ internal static class SetOpsCore
         }
         if (IsLinear(a) && IsLinear(b))
         {
+            // 对齐 GEOS：在一切交点处拆段，A/B 重叠区间去重（保留 B 侧）
             var pl = new Polyline();
-            foreach (var path in PathsOf(a)) pl.AddPath(path);
-            foreach (var path in PathsOf(b)) pl.AddPath(path);
+            foreach (var path in SplitLineUnion(ToCoordPaths(PathsOf(a)), ToCoordPaths(PathsOf(b))))
+                pl.AddPath(path.Select(c => new Point(c[0], c[1])).ToList());
             return pl;
         }
         throw new NotSupportedException($"Union 不支持的几何组合：{a.Type} + {b.Type}");
@@ -297,6 +298,132 @@ internal static class SetOpsCore
         Line l => new List<List<Point>> { new() { l.Start, l.End } },
         _ => new(),
     };
+
+
+    private static List<List<double[]>> ToCoordPaths(List<List<Point>> paths) =>
+        paths.Select(p => p.Select(pt => new[] { pt.X, pt.Y }).ToList()).ToList();
+
+    /// <summary>
+    /// 线并集拆段：A、B 全部段在交点处互相分裂；A 上与 B 共线重叠的区间丢弃（去重），
+    /// 相邻共端点子段链接回路径。
+    /// </summary>
+    private static List<List<double[]>> SplitLineUnion(List<List<double[]>> aParts, List<List<double[]>> bParts)
+    {
+        var segs = new List<(int side, int part, int seq, double ax, double ay, double bx, double by)>();
+        void AddAll(List<List<double[]>> parts, int side)
+        {
+            for (int pi = 0; pi < parts.Count; pi++)
+                for (int si = 0; si + 1 < parts[pi].Count; si++)
+                {
+                    var a = parts[pi][si]; var b = parts[pi][si + 1];
+                    if (a[0] == b[0] && a[1] == b[1]) continue;
+                    segs.Add((side, pi, si, a[0], a[1], b[0], b[1]));
+                }
+        }
+        AddAll(aParts, 0);
+        AddAll(bParts, 1);
+        if (segs.Count == 0) return new List<List<double[]>>();
+
+        var grid = SegGrid.Build(segs.Select(x => (x.ax, x.ay, x.bx, x.by)).ToList());
+        var splits = new Dictionary<int, List<double>>();
+        var drops = new Dictionary<int, List<(double, double)>>(); // A 侧待丢弃参数区间
+        void AddSplit(int i, double t)
+        {
+            if (t <= 1e-12) return;
+            if (t >= 1 - 1e-12) return;
+            if (!splits.TryGetValue(i, out var l)) splits[i] = l = new List<double>();
+            l.Add(t);
+        }
+        void AddDrop(int i, double t0, double t1)
+        {
+            if (!drops.TryGetValue(i, out var l)) drops[i] = l = new List<(double, double)>();
+            l.Add((Math.Min(t0, t1), Math.Max(t0, t1)));
+        }
+
+        for (int i = 0; i < segs.Count; i++)
+        {
+            var si = segs[i];
+            foreach (int j in grid.Query(Math.Min(si.ax, si.bx), Math.Min(si.ay, si.by), Math.Max(si.ax, si.bx), Math.Max(si.ay, si.by)))
+            {
+                if (j <= i) continue;
+                var sj = segs[j];
+                bool adjacentSamePath = si.side == sj.side && si.part == sj.part && Math.Abs(si.seq - sj.seq) == 1;
+                if (adjacentSamePath) continue;
+                int kind = GeoMath.SegIntersect(si.ax, si.ay, si.bx, si.by, sj.ax, sj.ay, sj.bx, sj.by,
+                    out double ta, out double tb, out double ta0, out double ta1, out double tc0, out double tc1);
+                if (kind == 1)
+                {
+                    // 端点接触只在需要时分裂（保持路径整洁：仅在真穿越时分裂两侧）
+                    bool touchEnd = (ta <= 1e-9 || ta >= 1 - 1e-9) && (tb <= 1e-9 || tb >= 1 - 1e-9);
+                    if (touchEnd) continue;
+                    AddSplit(i, ta);
+                    AddSplit(j, tb);
+                }
+                else if (kind == 2)
+                {
+                    AddSplit(i, ta0); AddSplit(i, ta1);
+                    AddSplit(j, tc0); AddSplit(j, tc1);
+                    // 重叠区间：A 侧丢弃（保留 B 侧表示）
+                    if (si.side == 0) AddDrop(i, ta0, ta1);
+                    if (sj.side == 0) AddDrop(j, tc0, tc1);
+                }
+            }
+        }
+
+        // 生成子段并链接路径
+        var result = new List<List<double[]>>();
+        for (int side = 0; side < 2; side++)
+        {
+            var parts = side == 0 ? aParts : bParts;
+            for (int pi = 0; pi < parts.Count; pi++)
+            {
+                var p = parts[pi];
+                var piece = new List<double[]> { p[0] };
+                for (int si = 0; si + 1 < p.Count; si++)
+                {
+                    var key = side * 1_000_000_000 + pi * 1_000_000 + si;
+                    if (!segsExists(segs, side, pi, si))
+                    {
+                        // 零长度段：仅闭合点
+                        if (side == 1) { }
+                        continue;
+                    }
+                    var ts = new List<double> { 0, 1 };
+                    if (splits.TryGetValue((int)key, out var sp)) ts.AddRange(sp);
+                    ts.Sort();
+                    drops.TryGetValue((int)key, out var dropList);
+                    for (int k = 0; k < ts.Count - 1; k++)
+                    {
+                        if (ts[k + 1] - ts[k] < 1e-12) continue;
+                        double tm = (ts[k] + ts[k + 1]) / 2;
+                        if (dropList != null && dropList.Any(d => tm >= d.Item1 - 1e-12 && tm <= d.Item2 + 1e-12))
+                            continue; // A 侧重叠丢弃
+                        var q = At2(p[si], p[si + 1], ts[k]);
+                        var r = At2(p[si], p[si + 1], ts[k + 1]);
+                        if (piece.Count > 0 && (piece[piece.Count - 1][0] != q[0] || piece[piece.Count - 1][1] != q[1]))
+                        {
+                            result.Add(piece);
+                            piece = new List<double[]> { q };
+                        }
+                        else if (piece.Count > 0)
+                        {
+                            // 延续当前 piece
+                        }
+                        else piece.Add(q);
+                        piece.Add(r);
+                    }
+                }
+                if (piece.Count >= 2) result.Add(piece);
+                else if (piece.Count == 1 && parts[pi].Count == 1 && side == 1) result.Add(piece);
+            }
+        }
+        return result.Where(x => x.Count >= 2).ToList();
+
+        bool segsExists(List<(int side, int part, int seq, double ax, double ay, double bx, double by)> all, int s2, int p2, int q2)
+            => all.Any(x => x.side == s2 && x.part == p2 && x.seq == q2);
+    }
+
+    private static double[] At2(double[] a, double[] b, double t) => new[] { a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t };
 
     private static Geometry EmptyLike(Geometry a, Geometry b)
     {

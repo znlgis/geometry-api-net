@@ -32,6 +32,15 @@ public static class WktImportOperator
         if (wkt.Length > MaxInputLength)
             throw new FormatException($"WKT input exceeds the maximum allowed length of {MaxInputLength} characters.");
 
+        // EWKT 前缀（如 "SRID=4326;"）：剥离并忽略，SRID 属空间参考层职责
+        if (wkt.Length > 5 && wkt.StartsWith("SRID=", StringComparison.OrdinalIgnoreCase))
+        {
+            var semi = wkt.IndexOf(';');
+            if (semi <= 5)
+                throw new FormatException("Invalid SRID prefix in WKT input.");
+            wkt = wkt.Substring(semi + 1);
+        }
+
         var parser = new WktParser(wkt);
         return parser.Parse();
     }

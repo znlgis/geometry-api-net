@@ -173,4 +173,19 @@ public class WktTests
         Assert.IsType<Point>(geometry);
         Assert.True(geometry.IsEmpty);
     }
+
+    [Fact]
+    public void WktImport_EwktSridPrefix_IsStrippedAndParsed()
+    {
+        var g = WktImportOperator.ImportFromWkt("SRID=4326;POINT(1 2)");
+        Assert.Equal(GeometryType.Point, g.Type);
+        Assert.Equal(1.0, ((Point)g).X);
+        Assert.Equal(2.0, ((Point)g).Y);
+    }
+
+    [Fact]
+    public void WktImport_InvalidSridPrefix_Throws()
+    {
+        Assert.Throws<FormatException>(() => WktImportOperator.ImportFromWkt("SRID=;POINT(1 2)"));
+    }
 }

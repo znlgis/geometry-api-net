@@ -1,3 +1,4 @@
+using System.Linq;
 using OpenGIS.Esri.Geometry.Core.Geometries;
 using OpenGIS.Esri.Geometry.Core.Operators;
 
@@ -293,5 +294,34 @@ public class SetOperatorTests
 
         Assert.IsType<Polyline>(result);
         Assert.Equal(10, result.CalculateLength2D(), 6);
+    }
+
+    [Fact]
+    public void Union_TwoCrossingPolylines_SplitsAtIntersection()
+    {
+        var a = new Polyline();
+        a.AddPath(new[] { new Point(0, 0), new Point(10, 0) });
+        var b = new Polyline();
+        b.AddPath(new[] { new Point(5, -5), new Point(5, 5) });
+
+        var u = UnionOperator.Instance.Execute(a, b);
+
+        // 对齐 GEOS：并集总长 20（交点处拆分，无线段重复计长）
+        Assert.Equal(20, u.CalculateLength2D(), 9);
+        var paths = ((Polyline)u).GetPaths().ToList();
+        Assert.True(paths.Count >= 2, " crossing lines must split at intersection");
+    }
+
+    [Fact]
+    public void Union_TwoOverlappingPolylines_DedupsOverlap()
+    {
+        var a = new Polyline();
+        a.AddPath(new[] { new Point(0, 0), new Point(10, 0) });
+        var b = new Polyline();
+        b.AddPath(new[] { new Point(5, 0), new Point(15, 0) });
+
+        var u = UnionOperator.Instance.Execute(a, b);
+
+        Assert.Equal(15, u.CalculateLength2D(), 9);
     }
 }

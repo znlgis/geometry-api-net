@@ -6,21 +6,35 @@ using OpenGIS.Esri.Geometry.Core.Geometries;
 namespace OpenGIS.Esri.Geometry.Core.IO;
 
 /// <summary>
-///     Imports geometries from Well-Known Binary (WKB) format.
+///     Imports geometries from Well-Known Binary (WKB) and Extended WKB (EWKB) formats.
+///     支持 PostGIS 高位标志（Z=0x80000000，M=0x40000000，SRID=0x20000000）与
+///     ISO WKB 维度型别（*1000=Z、*2000=M、*3000=ZM）；Z 坐标保留到 Point，
+///     M 与 SRID 读取后忽略（SRID 属空间参考层职责）。
 /// </summary>
 public static class WkbImportOperator
 {
-    private const byte WKB_POINT = 1;
-    private const byte WKB_LINESTRING = 2;
-    private const byte WKB_POLYGON = 3;
-    private const byte WKB_MULTIPOINT = 4;
-    private const byte WKB_MULTILINESTRING = 5;
-    private const byte WKB_MULTIPOLYGON = 6;
+    private const int WKB_POINT = 1;
+    private const int WKB_LINESTRING = 2;
+    private const int WKB_POLYGON = 3;
+    private const int WKB_MULTIPOINT = 4;
+    private const int WKB_MULTILINESTRING = 5;
+    private const int WKB_MULTIPOLYGON = 6;
+
+    private const uint EWKB_Z = 0x80000000;
+    private const uint EWKB_M = 0x40000000;
+    private const uint EWKB_SRID = 0x20000000;
+
+    /// <summary>坐标维度描述。</summary>
+    private sealed class Dims
+    {
+        public bool HasZ;
+        public bool HasM;
+    }
 
     /// <summary>
-    ///     从 WKB 格式导入几何对象.
+    ///     从 WKB/EWKB 格式导入几何对象.
     /// </summary>
-    /// <param name="wkb">The WKB byte array to parse.</param>
+    /// <param name="wkb">The WKB (or EWKB) byte array to parse.</param>
     /// <returns>The parsed geometry.</returns>
     public static Geometries.Geometry ImportFromWkb(byte[] wkb)
     {
@@ -36,7 +50,6 @@ public static class WkbImportOperator
 
     private static Geometries.Geometry ReadGeometry(BinaryReader reader)
     {
-        // Read byte order
         if (reader.BaseStream.Position >= reader.BaseStream.Length)
             throw new FormatException("Unexpected end of WKB stream while reading byte order.");
 
@@ -45,62 +58,77 @@ public static class WkbImportOperator
             throw new FormatException($"Invalid WKB byte order marker: {byteOrder}. Expected 0 (big-endian) or 1 (little-endian).");
 
         var bigEndian = byteOrder == 0;
+        var raw = ReadUInt32(reader, bigEndian);
+        return ReadBody(reader, bigEndian, raw);
+    }
 
-        // Read geometry type
-        var geometryType = ReadInt32(reader, bigEndian);
+    /// <summary>解析已读取的类型字（含 EWKB/ISO 维度与 SRID 标志）之后的几何主体。</summary>
+    private static Geometries.Geometry ReadBody(BinaryReader reader, bool bigEndian, uint raw)
+    {
+        var dims = new Dims();
+        var baseType = (int)(raw & 0x0FFFFFFF);
 
-        return geometryType switch
+        // PostGIS EWKB 高位标志
+        if ((raw & EWKB_Z) != 0) dims.HasZ = true;
+        if ((raw & EWKB_M) != 0) dims.HasM = true;
+        if ((raw & EWKB_SRID) != 0) _ = ReadInt32(reader, bigEndian); // SRID：读取并忽略
+
+        // ISO WKB 维度型别：1000+T=Z、2000+T=M、3000+T=ZM
+        if (baseType is >= 1000 and <= 3999)
         {
-            WKB_POINT => ReadPoint(reader, bigEndian),
-            WKB_LINESTRING => ReadLineString(reader, bigEndian),
-            WKB_POLYGON => ReadPolygon(reader, bigEndian),
+            var family = baseType / 1000;
+            baseType %= 1000;
+            if (family is 1 or 3) dims.HasZ = true;
+            if (family is 2 or 3) dims.HasM = true;
+        }
+
+        return baseType switch
+        {
+            WKB_POINT => ReadPoint(reader, bigEndian, dims),
+            WKB_LINESTRING => ReadLineString(reader, bigEndian, dims),
+            WKB_POLYGON => ReadPolygon(reader, bigEndian, dims),
             WKB_MULTIPOINT => ReadMultiPoint(reader, bigEndian),
             WKB_MULTILINESTRING => ReadMultiLineString(reader, bigEndian),
             WKB_MULTIPOLYGON => ReadMultiPolygon(reader, bigEndian),
-            _ => throw new FormatException($"Unsupported WKB geometry type: {geometryType}")
+            _ => throw new FormatException($"Unsupported WKB geometry type: {raw}")
         };
     }
 
-    private static Point ReadPoint(BinaryReader reader, bool bigEndian)
+    private static Point ReadPoint(BinaryReader reader, bool bigEndian, Dims dims)
     {
         var x = ReadDouble(reader, bigEndian);
         var y = ReadDouble(reader, bigEndian);
-        return new Point(x, y);
+        double? z = null;
+        if (dims.HasZ) z = ReadDouble(reader, bigEndian);
+        if (dims.HasM) _ = ReadDouble(reader, bigEndian); // M 值读取后忽略
+        return z.HasValue ? new Point(x, y, z.Value) : new Point(x, y);
     }
 
-    private static Polyline ReadLineString(BinaryReader reader, bool bigEndian)
+    private static Polyline ReadLineString(BinaryReader reader, bool bigEndian, Dims dims)
     {
-        var numPoints = ReadCount(reader, bigEndian, bytesPerElement: 16);
+        var numPoints = ReadCount(reader, bigEndian);
         var points = new List<Point>(numPoints);
 
         for (var i = 0; i < numPoints; i++)
-        {
-            var x = ReadDouble(reader, bigEndian);
-            var y = ReadDouble(reader, bigEndian);
-            points.Add(new Point(x, y));
-        }
+            points.Add(ReadPoint(reader, bigEndian, dims));
 
         var polyline = new Polyline();
         polyline.AddPath(points);
         return polyline;
     }
 
-    private static Polygon ReadPolygon(BinaryReader reader, bool bigEndian)
+    private static Polygon ReadPolygon(BinaryReader reader, bool bigEndian, Dims dims)
     {
-        var numRings = ReadCount(reader, bigEndian, bytesPerElement: 4);
+        var numRings = ReadCount(reader, bigEndian);
         var polygon = new Polygon();
 
         for (var i = 0; i < numRings; i++)
         {
-            var numPoints = ReadCount(reader, bigEndian, bytesPerElement: 16);
+            var numPoints = ReadCount(reader, bigEndian);
             var ring = new List<Point>(numPoints);
 
             for (var j = 0; j < numPoints; j++)
-            {
-                var x = ReadDouble(reader, bigEndian);
-                var y = ReadDouble(reader, bigEndian);
-                ring.Add(new Point(x, y));
-            }
+                ring.Add(ReadPoint(reader, bigEndian, dims));
 
             polygon.AddRing(ring);
         }
@@ -110,20 +138,15 @@ public static class WkbImportOperator
 
     private static Polygon ReadMultiPolygon(BinaryReader reader, bool bigEndian)
     {
-        var numPolygons = ReadCount(reader, bigEndian, bytesPerElement: 4);
+        var numPolygons = ReadCount(reader, bigEndian);
         var polygon = new Polygon();
 
         for (var i = 0; i < numPolygons; i++)
         {
-            var byteOrder = reader.ReadByte();
-            if (byteOrder != 0 && byteOrder != 1)
-                throw new FormatException($"Invalid WKB byte order marker: {byteOrder}.");
-            var subBigEndian = byteOrder == 0;
-            var subType = ReadInt32(reader, subBigEndian);
-            if (subType != WKB_POLYGON)
-                throw new FormatException($"Expected POLYGON inside MULTIPOLYGON, got {subType}.");
-            var inner = ReadPolygon(reader, subBigEndian);
-            foreach (var ring in inner.GetRings())
+            var inner = ReadSubGeometry(reader);
+            if (inner is not Polygon sub)
+                throw new FormatException($"Expected POLYGON inside MULTIPOLYGON, got {inner.Type}.");
+            foreach (var ring in sub.GetRings())
                 polygon.AddRing(ring);
         }
 
@@ -132,24 +155,15 @@ public static class WkbImportOperator
 
     private static MultiPoint ReadMultiPoint(BinaryReader reader, bool bigEndian)
     {
-        var numPoints = ReadCount(reader, bigEndian, bytesPerElement: 21);
+        var numPoints = ReadCount(reader, bigEndian);
         var multiPoint = new MultiPoint();
 
         for (var i = 0; i < numPoints; i++)
         {
-            // Each point has its own byte order and type
-            var pointByteOrder = reader.ReadByte();
-            if (pointByteOrder != 0 && pointByteOrder != 1)
-                throw new FormatException($"Invalid WKB byte order marker: {pointByteOrder}. Expected 0 (big-endian) or 1 (little-endian).");
-            var pointBigEndian = pointByteOrder == 0;
-            var pointType = ReadInt32(reader, pointBigEndian);
-
-            if (pointType != WKB_POINT)
-                throw new FormatException($"Expected point type in multipoint, got {pointType}");
-
-            var x = ReadDouble(reader, pointBigEndian);
-            var y = ReadDouble(reader, pointBigEndian);
-            multiPoint.Add(new Point(x, y));
+            var p = ReadSubGeometry(reader);
+            if (p is not Point pt)
+                throw new FormatException($"Expected POINT inside MULTIPOINT, got {p.Type}.");
+            multiPoint.Add(pt);
         }
 
         return multiPoint;
@@ -157,71 +171,62 @@ public static class WkbImportOperator
 
     private static Polyline ReadMultiLineString(BinaryReader reader, bool bigEndian)
     {
-        var numLineStrings = ReadCount(reader, bigEndian, bytesPerElement: 4);
+        var numLines = ReadCount(reader, bigEndian);
         var polyline = new Polyline();
 
-        for (var i = 0; i < numLineStrings; i++)
+        for (var i = 0; i < numLines; i++)
         {
-            // Each linestring has its own byte order and type
-            var lsByteOrder = reader.ReadByte();
-            if (lsByteOrder != 0 && lsByteOrder != 1)
-                throw new FormatException($"Invalid WKB byte order marker: {lsByteOrder}. Expected 0 (big-endian) or 1 (little-endian).");
-            var lsBigEndian = lsByteOrder == 0;
-            var lsType = ReadInt32(reader, lsBigEndian);
-
-            if (lsType != WKB_LINESTRING)
-                throw new FormatException($"Expected linestring type in multilinestring, got {lsType}");
-
-            var numPoints = ReadCount(reader, lsBigEndian, bytesPerElement: 16);
-            var points = new List<Point>(numPoints);
-
-            for (var j = 0; j < numPoints; j++)
-            {
-                var x = ReadDouble(reader, lsBigEndian);
-                var y = ReadDouble(reader, lsBigEndian);
-                points.Add(new Point(x, y));
-            }
-
-            polyline.AddPath(points);
+            var sub = ReadSubGeometry(reader);
+            if (sub is not Polyline line)
+                throw new FormatException($"Expected LINESTRING inside MULTILINESTRING, got {sub.Type}.");
+            foreach (var path in line.GetPaths())
+                polyline.AddPath(path);
         }
 
         return polyline;
     }
 
-    private static int ReadCount(BinaryReader reader, bool bigEndian, int bytesPerElement)
+    /// <summary>multi 子几何：自带完整（EWKB）字节序与类型头。</summary>
+    private static Geometries.Geometry ReadSubGeometry(BinaryReader reader)
+    {
+        var byteOrder = reader.ReadByte();
+        if (byteOrder != 0 && byteOrder != 1)
+            throw new FormatException($"Invalid WKB byte order marker: {byteOrder}. Expected 0 (big-endian) or 1 (little-endian).");
+        var bigEndian = byteOrder == 0;
+        var raw = ReadUInt32(reader, bigEndian);
+        return ReadBody(reader, bigEndian, raw);
+    }
+
+    private static int ReadCount(BinaryReader reader, bool bigEndian)
     {
         var count = ReadInt32(reader, bigEndian);
-        if (count < 0)
-            throw new FormatException($"Invalid negative element count in WKB stream: {count}.");
-
         var remaining = reader.BaseStream.Length - reader.BaseStream.Position;
-        if (count > remaining / bytesPerElement)
-            throw new FormatException(
-                $"WKB element count {count} exceeds the remaining stream length ({remaining} bytes).");
-
+        if (count < 0 || (long)count * 8 > remaining)
+            throw new FormatException($"WKB component count {count} exceeds remaining stream length.");
         return count;
     }
 
     private static int ReadInt32(BinaryReader reader, bool bigEndian)
     {
         var bytes = reader.ReadBytes(4);
-        if (bytes.Length != 4)
-            throw new FormatException("Unexpected end of WKB stream while reading a 32-bit integer.");
-        if (ShouldReverseBytes(bigEndian)) Array.Reverse(bytes);
+        if (bytes.Length != 4) throw new FormatException("Unexpected end of WKB stream while reading int32.");
+        if (bigEndian == BitConverter.IsLittleEndian) Array.Reverse(bytes);
         return BitConverter.ToInt32(bytes, 0);
+    }
+
+    private static uint ReadUInt32(BinaryReader reader, bool bigEndian)
+    {
+        var bytes = reader.ReadBytes(4);
+        if (bytes.Length != 4) throw new FormatException("Unexpected end of WKB stream while reading uint32.");
+        if (bigEndian == BitConverter.IsLittleEndian) Array.Reverse(bytes);
+        return BitConverter.ToUInt32(bytes, 0);
     }
 
     private static double ReadDouble(BinaryReader reader, bool bigEndian)
     {
         var bytes = reader.ReadBytes(8);
-        if (bytes.Length != 8)
-            throw new FormatException("Unexpected end of WKB stream while reading a double.");
-        if (ShouldReverseBytes(bigEndian)) Array.Reverse(bytes);
+        if (bytes.Length != 8) throw new FormatException("Unexpected end of WKB stream while reading double.");
+        if (bigEndian == BitConverter.IsLittleEndian) Array.Reverse(bytes);
         return BitConverter.ToDouble(bytes, 0);
-    }
-
-    private static bool ShouldReverseBytes(bool bigEndian)
-    {
-        return bigEndian == BitConverter.IsLittleEndian;
     }
 }

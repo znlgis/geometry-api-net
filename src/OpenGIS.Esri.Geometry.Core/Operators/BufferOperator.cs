@@ -177,6 +177,14 @@ public class BufferOperator : IGeometryOperator<Polygon>
 
     /// <summary>两两归并树求并：O(n log n) 次布尔，避免顺序折叠的 O(n²)。</summary>
     internal static List<PolygonClipper.Ring> DebugTournament(List<PolygonClipper.Ring> rings, System.IO.TextWriter log) => TournamentUnionLogged(rings, log);
+    internal static List<PolygonClipper.Ring> OffsetOne(List<PolygonClipper.Ring> rings, double r)
+    {
+        var o = new List<PolygonClipper.Ring>();
+        foreach (var ring in PolygonClipper.OrientRings(rings)) o.Add(OffsetRing(ring, r, DefaultCircleSegments));
+        o.RemoveAll(x => x.Count < 3);
+        return o;
+    }
+
     internal static List<PolygonClipper.Ring> DebugPieces(List<PolygonClipper.Ring> rings, double r, int seg) => BufferPieces(rings, r, seg);
 
     private static List<PolygonClipper.Ring> TournamentUnion(List<PolygonClipper.Ring> rings)

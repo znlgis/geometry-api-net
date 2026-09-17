@@ -38,7 +38,16 @@
 | S2 | 多部件 Polygon 导出为非法 `POLYGON((a),(b))`（GEOS 解读为洞） | WKT/GeoJSON/WKB 按嵌套分组导出 MULTIPOLYGON/MultiPolygon；往返矩阵全绿 |
 | S3 | WKB 缺 MULTIPOLYGON(6) 读写 | 补齐（LE/BE 双字节序验证） |
 | S4 | WKT 导入 1MB 上限拒真实大国（Russia≈4MB） | 上限默认 64M + `GEOM_WKT_MAX_LEN` 可调（保留 DoS 防护） |
-| S5 | EWKB Z/M 变体（ST_AsEWKT 类输入）无测试路径 | 已覆盖常规 WKT/WKB；EWKB 记入未支持清单（§6-W2） |
+| S5 | EWKB（PostGIS Z/M/SRID 高位标志、ISO 1000/2000/3000 维度）与 EWKT `SRID=…;` 前缀均不支持 | WkbImportOperator 重写支持全部 EWKB 变体（Z 保留到 Point、M/SRID 读取后忽略）；WktImport 剥离 SRID 前缀；PG ST_AsEWKB 真值 + 4 项单测锁定 |
+
+### 2.4 追加修复（终验后）：EWKB/EWKT 与线并集拆段
+- `WkbImportOperator` 重写：PostGIS EWKB `0x80000000(Z)/0x40000000(M)/0x20000000(SRID)` 标志、ISO WKB `*1000=Z/*2000=M/*3000=ZM` 维度、multi 子几何独立头；Z 保留、M/SRID 按语义忽略；坏计数（`count*8 > 剩余字节`）防护保留。
+- `WktImportOperator`：剥离 `SRID=4326;` EWKT 前缀。
+- `SetOpsCore.Union(线,线)`：交点拆段 + 共线重叠去重（原先简单拼接导致长度重复计）。
+- 新增 8 项回归单测（EWKB×4 / EWKT×2 / 线并集×2），总数 859 → **867/867 全绿**；harness 复跑 17,534 项 Pass=17529 / Fail=0 / Warn=5 / Exit=0。
+
+### 2.5 D-1 深度实验记录（未收敛项的已尝试路径）
+面拓扑法 MakeValid（全半边图 → DCEL 面遍历 → 面级绕数分类 → 边界 XOR）已实现并通过简单用例（两正方形并、POINT/POLYGON EWKB、bowtie 部分形态），但 lake#74（638 个尖角 butt 跳变引发桥边双向遍历）产生非简单面环，导致拆分回归。**结论**：GEOS 对 offset 自交处理采用专用弧段构造器（非通用 overlay），通用裁剪器路线无法在本轮预算内收敛；D-1 保留为已文档化边界，复现样本：`countries#74 / #148`。
 
 ### 2.3 harness 自身缺陷（同样修复，防止假绿）
 - `LibGeo.Upload` 的 `using var conn` 提前关闭连接（PG 数值检查曾整批静默跳过）；
@@ -78,8 +87,8 @@ dotnet run --project tools/OpenGIS.Esri.Geometry.RealDataHarness -- \
 ## 6. 遗留缺陷与边界（诚实清单）
 - **D-1（中）**：顶点数 >300 的超复杂峡湾多边形（复现样本：countries#74、#148 等 3 例——库缓冲输出与 GEOS 的 Hausdorff 距离超差、面积偏小），偏移环在几乎相切的自交点处装配仍可碎裂。已在 xunit（结构健全性降级断言）与 harness（WARN + 深检样本上限）文档化；其余缓冲场景（点/线/包络/凸/一般凹形/真实湖泊等）均与 GEOS 对拍通过。修复方向：顶点微扰 + 稳健事件排序、或缓冲专用"外环重入"扫描。
 - **W1（低）**：Envelope 与相邻部件共享角点直接拼接环列表会产生 winding=2 双绕非法体——凡参与布尔/缓冲/合法化的路径均已强制经 `MakeValid` 归一（带缝/拆分由嵌套树保证）；但 `Geometry.Copy`/直接拼接类 API 仍可能构造此类非简单多边形，属 Esri 数据模型固有宽松性，建议上层避免手工拼环。
-- **W2（低）**：EWKB（`0x80...` Z/M 标志）与 PostGIS 扩展 `MULTISURFACE` 类 WKT 未支持（标准 WKT/WKB 全覆盖）。
-- **W3（低）**：混合维度集合运算（面∪线等）按设计显式 `NotSupportedException`（Esri 用 GeometryBag，本库无对应类型）；`Union(线,线)` 不在交点处拆段（GEOS 会拆），记为语义差异。
+- ~~**W2**~~ **已解决（2026-09-17 追加）**：EWKB/EWKT 全格式支持（仅 MULTISURFACE/CURVE 类扩展 WKT 仍不支持，属 PostGIS 非标准几何型别，非本库模型范围）。
+- **W3（低）**：混合维度集合运算（面∪线等）按设计显式 `NotSupportedException`（Esri 用 GeometryBag，本库无对应类型）；~~`Union(线,线)` 不在交点处拆段~~ **已解决**：线并集现于全部交点处互相分裂、A/B 共线重叠区间去重（保留 B 侧），与 GEOS 对拍长度一致（交叉 20/重叠 15 两例单测）。
 - **W4（低）**：布尔运算/缓冲对 B 输入施加 1.2e-7°（≈1.3cm）确定性抖动以消除共边/共点退化，输出坐标存在同量级偏移（面积相对误差 ~1e-8，远小于所有断言容差）；对几何做逐位坐标一致性比对的调用方需知悉。
 - S-2：近自切环面积/凸包容差 1e-5（求和顺序差异），非算法错误。
 
