@@ -1,7 +1,9 @@
 using System;
 using System.Globalization;
 using System.Text;
+using System.Linq;
 using OpenGIS.Esri.Geometry.Core.Geometries;
+using OpenGIS.Esri.Geometry.Core.Internal;
 
 namespace OpenGIS.Esri.Geometry.Core.IO;
 
@@ -104,8 +106,54 @@ public static class WktExportOperator
 
     private static string ExportPolygon(Polygon polygon)
     {
-        var sb = new StringBuilder(256); // Pre-allocate reasonable capacity
-        sb.Append("POLYGON (");
+        var parts = RingNesting.Group(polygon.GetRings()
+            .Select(ring => ring.Select(pt => new[] { pt.X, pt.Y })));
+
+        var sb = new StringBuilder(256);
+        if (parts.Count <= 1)
+        {
+            sb.Append("POLYGON (");
+            AppendPartRings(sb, polygon);
+            sb.Append(')');
+            return sb.ToString();
+        }
+
+        sb.Append("MULTIPOLYGON (");
+        for (var pi = 0; pi < parts.Count; pi++)
+        {
+            if (pi > 0) sb.Append(", ");
+            sb.Append('(');
+            var part = parts[pi];
+            AppendRingCoords(sb, part.Shell);
+            foreach (var hole in part.Holes)
+            {
+                sb.Append(", ");
+                AppendRingCoords(sb, hole);
+            }
+
+            sb.Append(')');
+        }
+
+        sb.Append(')');
+        return sb.ToString();
+    }
+
+    private static void AppendRingCoords(StringBuilder sb, System.Collections.Generic.IReadOnlyList<double[]> ring)
+    {
+        sb.Append('(');
+        for (var i = 0; i < ring.Count; i++)
+        {
+            if (i > 0) sb.Append(", ");
+            sb.Append(FormatCoordinate(ring[i][0])).Append(' ').Append(FormatCoordinate(ring[i][1]));
+        }
+
+        // 闭合
+        sb.Append(", ").Append(FormatCoordinate(ring[0][0])).Append(' ').Append(FormatCoordinate(ring[0][1]));
+        sb.Append(')');
+    }
+
+    private static void AppendPartRings(StringBuilder sb, Polygon polygon)
+    {
         for (var ringIdx = 0; ringIdx < polygon.RingCount; ringIdx++)
         {
             if (ringIdx > 0) sb.Append(", ");
@@ -119,9 +167,6 @@ public static class WktExportOperator
 
             sb.Append(')');
         }
-
-        sb.Append(')');
-        return sb.ToString();
     }
 
     private static string ExportMultiPoint(MultiPoint multiPoint)
@@ -143,17 +188,16 @@ public static class WktExportOperator
 
     private static string ExportEnvelope(Envelope envelope)
     {
-        var sb = new StringBuilder(150); // Pre-allocate reasonable capacity
+        var sb = new StringBuilder(200);
         sb.Append("POLYGON ((");
-        AppendCoordinate(sb, envelope.XMin, envelope.YMin);
-        sb.Append(", ");
-        AppendCoordinate(sb, envelope.XMax, envelope.YMin);
-        sb.Append(", ");
-        AppendCoordinate(sb, envelope.XMax, envelope.YMax);
-        sb.Append(", ");
-        AppendCoordinate(sb, envelope.XMin, envelope.YMax);
-        sb.Append(", ");
-        AppendCoordinate(sb, envelope.XMin, envelope.YMin);
+        // 标准五点闭合环
+        var pts = new[] { new[] { envelope.XMin, envelope.YMin }, new[] { envelope.XMax, envelope.YMin }, new[] { envelope.XMax, envelope.YMax }, new[] { envelope.XMin, envelope.YMax }, new[] { envelope.XMin, envelope.YMin } };
+        for (var i = 0; i < pts.Length; i++)
+        {
+            if (i > 0) sb.Append(", ");
+            AppendCoordinate(sb, pts[i][0], pts[i][1]);
+        }
+
         sb.Append("))");
         return sb.ToString();
     }

@@ -1,5 +1,6 @@
 using System;
 using System.Globalization;
+using System.Linq;
 using System.Text;
 using OpenGIS.Esri.Geometry.Core.Geometries;
 using OpenGIS.Esri.Geometry.Core.Operators;
@@ -144,9 +145,49 @@ public class GeoJsonExportOperator : IGeometryOperator<string>
 
     private static string ExportPolygon(Polygon polygon)
     {
-        var sb = new StringBuilder();
-        sb.Append("{\"type\":\"Polygon\",\"coordinates\":[");
+        var parts = Internal.RingNesting.Group(polygon.GetRings()
+            .Select(ring => ring.Select(pt => new[] { pt.X, pt.Y }).ToList()));
 
+        var sb = new StringBuilder();
+        if (parts.Count <= 1)
+        {
+            sb.Append("{\"type\":\"Polygon\",\"coordinates\":[");
+            AppendPolygonRings(sb, polygon);
+            sb.Append("]}");
+            return sb.ToString();
+        }
+
+        sb.Append("{\"type\":\"MultiPolygon\",\"coordinates\":[");
+        for (var pi = 0; pi < parts.Count; pi++)
+        {
+            if (pi > 0) sb.Append(",");
+            sb.Append("[");
+            var part = parts[pi];
+            AppendCoordsRing(sb, part.Shell, first: true);
+            foreach (var hole in part.Holes)
+                AppendCoordsRing(sb, hole, first: false);
+            sb.Append("]");
+        }
+
+        sb.Append("]}");
+        return sb.ToString();
+    }
+
+    private static void AppendCoordsRing(StringBuilder sb, System.Collections.Generic.List<double[]> ring, bool first)
+    {
+        if (!first) sb.Append(",");
+        sb.Append("[");
+        for (var i = 0; i < ring.Count; i++)
+        {
+            if (i > 0) sb.Append(",");
+            sb.Append('[').Append(FormatCoord(ring[i][0])).Append(',').Append(FormatCoord(ring[i][1])).Append(']');
+        }
+
+        sb.Append(",[").Append(FormatCoord(ring[0][0])).Append(',').Append(FormatCoord(ring[0][1])).Append("]]");
+    }
+
+    private static void AppendPolygonRings(StringBuilder sb, Polygon polygon)
+    {
         for (var ringIdx = 0; ringIdx < polygon.RingCount; ringIdx++)
         {
             if (ringIdx > 0) sb.Append(",");
@@ -160,9 +201,6 @@ public class GeoJsonExportOperator : IGeometryOperator<string>
 
             sb.Append("]");
         }
-
-        sb.Append("]}");
-        return sb.ToString();
     }
 
     private static string ExportEnvelope(Envelope envelope)

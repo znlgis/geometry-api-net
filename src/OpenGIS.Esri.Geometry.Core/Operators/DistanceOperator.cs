@@ -1,10 +1,12 @@
 using System;
 using OpenGIS.Esri.Geometry.Core.Geometries;
+using OpenGIS.Esri.Geometry.Core.Internal;
 
 namespace OpenGIS.Esri.Geometry.Core.Operators;
 
 /// <summary>
-///     用于计算几何对象之间距离的操作符.
+///     用于计算几何对象之间最小平面距离的操作符。
+///     相交（含包含/相接）返回 0；空几何返回 NaN。
 /// </summary>
 public class DistanceOperator : IBinaryGeometryOperator<double>
 {
@@ -26,11 +28,6 @@ public class DistanceOperator : IBinaryGeometryOperator<double>
         if (geometry1 == null) throw new ArgumentNullException(nameof(geometry1));
         if (geometry2 == null) throw new ArgumentNullException(nameof(geometry2));
 
-        // Simple implementation for point-to-point distance
-        if (geometry1 is Point p1 && geometry2 is Point p2) return p1.Distance(p2);
-
-        // For other geometry types, this would require more complex implementations
-        throw new NotImplementedException(
-            $"Distance calculation between {geometry1.Type} and {geometry2.Type} is not yet implemented.");
+        return RelateOps.DistanceGeom(geometry1, geometry2);
     }
 }

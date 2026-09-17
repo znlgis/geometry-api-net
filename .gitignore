@@ -416,3 +416,9 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+
+# 真实数据语料目录（本地/CI 环境注入，不入库）
+realdata/
+
+# 终验日志工件
+.harness-final.log

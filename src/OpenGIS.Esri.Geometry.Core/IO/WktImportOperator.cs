@@ -10,7 +10,14 @@ namespace OpenGIS.Esri.Geometry.Core.IO;
 /// </summary>
 public static class WktImportOperator
 {
-    private const int MaxInputLength = 1_000_000;
+    /// <summary>
+    ///     WKT 输入长度上限（DoS 防护）。默认 64M 字符，可经环境变量 GEOM_WKT_MAX_LEN 调整。
+    ///     真实地理数据（如大国边界）WKT 常见数 MB，1M 上限会误伤。
+    /// </summary>
+    public static readonly int MaxInputLength =
+        int.TryParse(Environment.GetEnvironmentVariable("GEOM_WKT_MAX_LEN"), out var v) && v > 0
+            ? v
+            : 64_000_000;
 
     /// <summary>
     ///     从 WKT 格式导入几何对象.
@@ -68,6 +75,7 @@ public static class WktImportOperator
                 "POLYGON" => ParsePolygon(),
                 "MULTIPOINT" => ParseMultiPoint(),
                 "MULTILINESTRING" => ParseMultiLineString(),
+                "MULTIPOLYGON" => ParseMultiPolygon(),
                 _ => throw Error($"Unsupported or invalid WKT type '{type}'.")
             };
         }
@@ -112,6 +120,28 @@ public static class WktImportOperator
             return polyline;
         }
 
+        private Polygon ParseMultiPolygon()
+        {
+            var polygon = new Polygon();
+            Expect('(');
+            SkipWhitespace();
+            if (TryConsume(')'))
+                return polygon;
+
+            while (true)
+            {
+                foreach (var ring in ReadRingList())
+                    polygon.AddRing(ring);
+                SkipWhitespace();
+                if (TryConsume(')'))
+                    break;
+                Expect(',');
+                SkipWhitespace();
+            }
+
+            return polygon;
+        }
+
         private static Geometries.Geometry CreateEmpty(string type)
         {
             return type switch
@@ -121,6 +151,7 @@ public static class WktImportOperator
                 "POLYGON" => new Polygon(),
                 "MULTIPOINT" => new MultiPoint(),
                 "MULTILINESTRING" => new Polyline(),
+                "MULTIPOLYGON" => new Polygon(),
                 _ => throw new FormatException($"Unsupported or invalid WKT type '{type}'.")
             };
         }

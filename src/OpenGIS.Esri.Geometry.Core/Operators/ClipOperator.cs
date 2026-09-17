@@ -66,8 +66,94 @@ public class ClipOperator : IGeometryOperator<Geometries.Geometry>
 
         if (geometry is Polyline polyline) return ClipPolyline(polyline, clipEnvelope);
 
-        // For polygon, this would require complex polygon clipping (Sutherland-Hodgman or similar)
+        if (geometry is Polygon polygon) return ClipPolygon(polygon, clipEnvelope);
+
         throw new NotImplementedException($"Clip operation for {geometry.Type} is not yet implemented.");
+    }
+
+    /// <summary>
+    ///     多边形按包络裁剪：对每个环依次做 4 条轴对齐半平面的 Sutherland–Hodgman 裁剪；
+    ///     结果少于 3 点或零面积的环丢弃。
+    /// </summary>
+    private Geometries.Geometry ClipPolygon(Polygon polygon, Envelope clipEnvelope)
+    {
+        var result = new Polygon();
+        foreach (var ring in polygon.GetRings())
+        {
+            if (ring.Count < 3) continue;
+            var pts = new List<Point>(ring);
+            if (pts[pts.Count - 1].X == pts[0].X && pts[pts.Count - 1].Y == pts[0].Y) pts.RemoveAt(pts.Count - 1);
+            pts = ClipHalfPlaneX(pts, clipEnvelope.XMin, keepRight: true);
+            pts = ClipHalfPlaneX(pts, clipEnvelope.XMax, keepRight: false);
+            pts = ClipHalfPlaneY(pts, clipEnvelope.YMin, keepAbove: true);
+            pts = ClipHalfPlaneY(pts, clipEnvelope.YMax, keepAbove: false);
+            if (pts.Count < 3) continue;
+            double s2 = 0;
+            for (int i = 0, n = pts.Count; i < n; i++)
+            {
+                var a = pts[i]; var b = pts[(i + 1) % n];
+                s2 += a.X * b.Y - b.X * a.Y;
+            }
+            if (Math.Abs(s2) < 1e-30) continue;
+            pts.Add(pts[0]);
+            result.AddRing(pts);
+        }
+
+        return result;
+    }
+
+    private static List<Point> ClipHalfPlaneX(List<Point> input, double xv, bool keepRight)
+    {
+        if (input.Count == 0) return input;
+        var output = new List<Point>(input.Count + 2);
+        var s = input[input.Count - 1];
+        foreach (var e in input)
+        {
+            bool sIn = keepRight ? s.X >= xv : s.X <= xv;
+            bool eIn = keepRight ? e.X >= xv : e.X <= xv;
+            if (eIn)
+            {
+                if (!sIn) output.Add(CrossX(s, e, xv));
+                output.Add(e);
+            }
+            else if (sIn) output.Add(CrossX(s, e, xv));
+            s = e;
+        }
+
+        return output;
+    }
+
+    private static List<Point> ClipHalfPlaneY(List<Point> input, double yv, bool keepAbove)
+    {
+        if (input.Count == 0) return input;
+        var output = new List<Point>(input.Count + 2);
+        var s = input[input.Count - 1];
+        foreach (var e in input)
+        {
+            bool sIn = keepAbove ? s.Y >= yv : s.Y <= yv;
+            bool eIn = keepAbove ? e.Y >= yv : e.Y <= yv;
+            if (eIn)
+            {
+                if (!sIn) output.Add(CrossY(s, e, yv));
+                output.Add(e);
+            }
+            else if (sIn) output.Add(CrossY(s, e, yv));
+            s = e;
+        }
+
+        return output;
+    }
+
+    private static Point CrossX(Point s, Point e, double xv)
+    {
+        double t = (xv - s.X) / (e.X - s.X);
+        return new Point(xv, s.Y + t * (e.Y - s.Y));
+    }
+
+    private static Point CrossY(Point s, Point e, double yv)
+    {
+        double t = (yv - s.Y) / (e.Y - s.Y);
+        return new Point(s.X + t * (e.X - s.X), yv);
     }
 
     private Geometries.Geometry CreateEmptyGeometry(GeometryType type)

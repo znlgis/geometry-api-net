@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using OpenGIS.Esri.Geometry.Core.Geometries;
 
 namespace OpenGIS.Esri.Geometry.Core.IO;
@@ -15,6 +16,7 @@ public static class WkbExportOperator
     private const byte WKB_POLYGON = 3;
     private const byte WKB_MULTIPOINT = 4;
     private const byte WKB_MULTILINESTRING = 5;
+    private const byte WKB_MULTIPOLYGON = 6;
 
     /// <summary>
     ///     将几何对象导出为 WKB 格式.
@@ -103,19 +105,57 @@ public static class WkbExportOperator
 
     private static void WritePolygon(BinaryWriter writer, Polygon polygon, bool bigEndian)
     {
+        var parts = Internal.RingNesting.Group(polygon.GetRings()
+            .Select(r => r.Select(pt => new[] { pt.X, pt.Y }).ToList()));
+        if (parts.Count > 1)
+        {
+            WriteInt32(writer, WKB_MULTIPOLYGON, bigEndian);
+            WriteInt32(writer, parts.Count, bigEndian);
+            foreach (var part in parts)
+            {
+                writer.Write(bigEndian ? (byte)0 : (byte)1);
+                WriteInt32(writer, WKB_POLYGON, bigEndian);
+                var ringsOfPart = new System.Collections.Generic.List<System.Collections.Generic.List<double[]>> { part.Shell };
+                ringsOfPart.AddRange(part.Holes);
+                WriteInt32(writer, ringsOfPart.Count, bigEndian);
+                foreach (var ring in ringsOfPart)
+                {
+                    var closed = NormalizeClosed(ring);
+                    if (closed.Count < 2) continue;
+                    WriteInt32(writer, closed.Count, bigEndian);
+                    foreach (var p in closed)
+                    {
+                        WriteDouble(writer, p[0], bigEndian);
+                        WriteDouble(writer, p[1], bigEndian);
+                    }
+                }
+            }
+            return;
+        }
+
         WriteInt32(writer, WKB_POLYGON, bigEndian);
         WriteInt32(writer, polygon.RingCount, bigEndian);
 
         for (var i = 0; i < polygon.RingCount; i++)
         {
-            var ring = polygon.GetRing(i);
-            WriteInt32(writer, ring.Count, bigEndian);
-            foreach (var point in ring)
+            var closed = NormalizeClosed(polygon.GetRing(i).Select(ppt => new[] { ppt.X, ppt.Y }).ToList());
+            WriteInt32(writer, closed.Count, bigEndian);
+            foreach (var point in closed)
             {
-                WriteDouble(writer, point.X, bigEndian);
-                WriteDouble(writer, point.Y, bigEndian);
+                WriteDouble(writer, point[0], bigEndian);
+                WriteDouble(writer, point[1], bigEndian);
             }
         }
+    }
+
+    /// <summary>环闭合幂等归一：尾部所有与首点重复的点删除后，恰好补一个闭合点。</summary>
+    private static System.Collections.Generic.List<double[]> NormalizeClosed(System.Collections.Generic.IEnumerable<double[]> ring)
+    {
+        var list = ring.ToList();
+        while (list.Count > 1 && list[list.Count - 1][0] == list[0][0] && list[list.Count - 1][1] == list[0][1])
+            list.RemoveAt(list.Count - 1);
+        if (list.Count > 1) list.Add(list[0]);
+        return list;
     }
 
     private static void WriteMultiPoint(BinaryWriter writer, MultiPoint multiPoint, bool bigEndian)

@@ -53,6 +53,8 @@ public class GeoJsonImportOperator
                 return ParseMultiLineString(coordinatesElement);
             case "Polygon":
                 return ParsePolygon(coordinatesElement);
+            case "MultiPolygon":
+                return ParseMultiPolygon(coordinatesElement);
             default:
                 throw new ArgumentException($"Unsupported GeoJSON geometry type: {type}");
         }
@@ -119,6 +121,27 @@ public class GeoJsonImportOperator
         }
 
         return polyline;
+    }
+
+    private static Polygon ParseMultiPolygon(JsonElement coordinates)
+    {
+        var polygon = new Polygon();
+        foreach (var polyElement in coordinates.EnumerateArray())
+            foreach (var ringElement in polyElement.EnumerateArray())
+            {
+                var points = new List<Point>();
+                foreach (var coordElement in ringElement.EnumerateArray())
+                {
+                    var coords = ParseCoordinate(coordElement);
+                    points.Add(coords.Count == 3
+                        ? new Point(coords[0], coords[1], coords[2])
+                        : new Point(coords[0], coords[1]));
+                }
+
+                if (points.Count > 0) polygon.AddRing(points);
+            }
+
+        return polygon;
     }
 
     private static Polygon ParsePolygon(JsonElement coordinates)

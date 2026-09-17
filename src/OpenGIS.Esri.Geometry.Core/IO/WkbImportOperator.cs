@@ -15,6 +15,7 @@ public static class WkbImportOperator
     private const byte WKB_POLYGON = 3;
     private const byte WKB_MULTIPOINT = 4;
     private const byte WKB_MULTILINESTRING = 5;
+    private const byte WKB_MULTIPOLYGON = 6;
 
     /// <summary>
     ///     从 WKB 格式导入几何对象.
@@ -55,6 +56,7 @@ public static class WkbImportOperator
             WKB_POLYGON => ReadPolygon(reader, bigEndian),
             WKB_MULTIPOINT => ReadMultiPoint(reader, bigEndian),
             WKB_MULTILINESTRING => ReadMultiLineString(reader, bigEndian),
+            WKB_MULTIPOLYGON => ReadMultiPolygon(reader, bigEndian),
             _ => throw new FormatException($"Unsupported WKB geometry type: {geometryType}")
         };
     }
@@ -101,6 +103,28 @@ public static class WkbImportOperator
             }
 
             polygon.AddRing(ring);
+        }
+
+        return polygon;
+    }
+
+    private static Polygon ReadMultiPolygon(BinaryReader reader, bool bigEndian)
+    {
+        var numPolygons = ReadCount(reader, bigEndian, bytesPerElement: 4);
+        var polygon = new Polygon();
+
+        for (var i = 0; i < numPolygons; i++)
+        {
+            var byteOrder = reader.ReadByte();
+            if (byteOrder != 0 && byteOrder != 1)
+                throw new FormatException($"Invalid WKB byte order marker: {byteOrder}.");
+            var subBigEndian = byteOrder == 0;
+            var subType = ReadInt32(reader, subBigEndian);
+            if (subType != WKB_POLYGON)
+                throw new FormatException($"Expected POLYGON inside MULTIPOLYGON, got {subType}.");
+            var inner = ReadPolygon(reader, subBigEndian);
+            foreach (var ring in inner.GetRings())
+                polygon.AddRing(ring);
         }
 
         return polygon;

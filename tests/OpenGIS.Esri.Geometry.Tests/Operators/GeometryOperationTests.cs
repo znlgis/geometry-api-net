@@ -30,10 +30,11 @@ public class GeometryOperationTests
 
         Assert.NotNull(buffer);
         var resultEnv = buffer.GetEnvelope();
-        Assert.Equal(-5, resultEnv.XMin);
-        Assert.Equal(-5, resultEnv.YMin);
-        Assert.Equal(15, resultEnv.XMax);
-        Assert.Equal(15, resultEnv.YMax);
+        // 裁剪器确定性抖动引入 ~2e-7 误差（文档化），断言放宽到 4 位精度
+        Assert.Equal(-5, resultEnv.XMin, 4);
+        Assert.Equal(-5, resultEnv.YMin, 4);
+        Assert.Equal(15, resultEnv.XMax, 4);
+        Assert.Equal(15, resultEnv.YMax, 4);
     }
 
     [Fact]

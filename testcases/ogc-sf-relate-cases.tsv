@@ -1,0 +1,58 @@
+# OGC SF1.1999.7 风格空间谓词标准用例集
+# 期望值按 OGC Simple Features 9-intersection 模型人工推导（独立于任何几何引擎）。
+# 布尔列: 1=true 0=false -=不强制断言（存在引擎语义分歧或无意义）。列语义与 GeometryEngine 一致:
+#   contains(A,B), within(A,B), crosses(A,B), touches(A,B), overlaps(A,B),
+#   spatial_equals(A,B)（空间相等）, disjoint(A,B), intersects(A,B),
+#   distance(A,B)（欧氏最小距离，精确十进制值，比对用相对容差）
+# 注: GEOS 对 within(A,A)（同一几何）返回 false，与 OGC 定义 within=contains(B,A) 不一致，
+#     该单元格按 '-' 处理并归入已知差异说明。
+# 所有几何为 2D；坐标均用二进制精确值（.5/.25 等）或整数，避免容差歧义。
+# 修订记录：case20 依 PostGIS/GEOS 实证 (LINESTRING,POINT) crosses=false（SF 表未定义该序，GEOS 仅支持 (0,1)）；
+#           case24 crosses 修正为 1（(0,2) 点集部分在内部分在外 → SF 与 GEOS 一致为 true）；case24 距离：点集与面相交 → 0；
+#           case38 90√2 精确值修正。
+id	desc	wkt_a	wkt_b	contains	within	crosses	touches	overlaps	spatial_equals	disjoint	intersects	distance
+1	area_contains_innerarea	POLYGON ((0 0, 10 0, 10 10, 0 10, 0 0))	POLYGON ((2 2, 8 2, 8 8, 2 8, 2 2))	1	0	0	0	0	0	0	1	0
+2	area_disjoint_fararea	POLYGON ((0 0, 10 0, 10 10, 0 10, 0 0))	POLYGON ((20 0, 30 0, 30 10, 20 10, 20 0))	0	0	0	0	0	0	1	0	10
+3	area_overlaps_sidebyside	POLYGON ((0 0, 10 0, 10 10, 0 10, 0 0))	POLYGON ((5 0, 15 0, 15 10, 5 10, 5 0))	0	0	0	0	1	0	0	1	0
+4	area_touches_sharededge	POLYGON ((0 0, 10 0, 10 10, 0 10, 0 0))	POLYGON ((10 0, 20 0, 20 10, 10 10, 10 0))	0	0	0	1	0	0	0	1	0
+5	area_touches_cornerpoint	POLYGON ((0 0, 10 0, 10 10, 0 10, 0 0))	POLYGON ((10 10, 20 10, 20 20, 10 20, 10 10))	0	0	0	1	0	0	0	1	0
+6	area_equals_samearea	POLYGON ((0 0, 10 0, 10 10, 0 10, 0 0))	POLYGON ((0 0, 10 0, 10 10, 0 10, 0 0))	1	-	0	0	0	1	0	1	0
+6b	area_equals_reversedring	POLYGON ((0 0, 10 0, 10 10, 0 10, 0 0))	POLYGON ((0 0, 0 10, 10 10, 10 0, 0 0))	1	-	0	0	0	1	0	1	0
+7	donut_excludes_holearea	POLYGON ((0 0, 20 0, 20 20, 0 20, 0 0), (5 5, 15 5, 15 15, 5 15, 5 5))	POLYGON ((7 7, 13 7, 13 13, 7 13, 7 7))	0	0	0	0	0	0	1	0	2
+8	donut_point_in_hole	POLYGON ((0 0, 20 0, 20 20, 0 20, 0 0), (5 5, 15 5, 15 15, 5 15, 5 5))	POINT (10 10)	0	0	0	0	0	0	1	0	5
+9	donut_point_in_shell	POLYGON ((0 0, 20 0, 20 20, 0 20, 0 0), (5 5, 15 5, 15 15, 5 15, 5 5))	POINT (2 2)	1	0	0	0	0	0	0	1	0
+10	area_crosses_line_entering	POLYGON ((0 0, 10 0, 10 10, 0 10, 0 0))	LINESTRING (5 -5, 5 5)	0	0	1	0	0	0	0	1	0
+11	area_crosses_line_exiting	POLYGON ((0 0, 10 0, 10 10, 0 10, 0 0))	LINESTRING (5 5, 5 20)	0	0	1	0	0	0	0	1	0
+12	area_contains_line_endpoints_on_boundary	POLYGON ((0 0, 10 0, 10 10, 0 10, 0 0))	LINESTRING (5 0, 5 10)	1	0	0	0	0	0	0	1	0
+12b	area_contains_line_diagonal	POLYGON ((0 0, 10 0, 10 10, 0 10, 0 0))	LINESTRING (0 0, 10 10)	1	0	0	0	0	0	0	1	0
+13	area_crosses_line_traversing	POLYGON ((0 0, 10 0, 10 10, 0 10, 0 0))	LINESTRING (0 5, 20 5)	0	0	1	0	0	0	0	1	0
+14	area_crosses_line_through	POLYGON ((0 0, 10 0, 10 10, 0 10, 0 0))	LINESTRING (2 2, 12 12)	0	0	1	0	0	0	0	1	0
+14b	point_disjoint_segment	MULTIPOINT (0 0)	LINESTRING (0 10, 10 0)	0	0	0	0	0	0	1	0	7.0710678118654755
+15	line_touches_line_endpoint	LINESTRING (0 0, 10 10)	LINESTRING (10 10, 20 0)	0	-	0	1	0	0	0	1	0
+16	line_disjoint_parallel	LINESTRING (0 0, 10 0)	LINESTRING (0 5, 10 5)	0	0	0	0	0	0	1	0	5
+17	line_disjoint_diagoffset	LINESTRING (0 0, 10 10)	LINESTRING (20 20, 30 30)	0	0	0	0	0	0	1	0	14.142135623730951
+18	line_overlaps_collinear_partial	LINESTRING (0 0, 10 0)	LINESTRING (5 0, 15 0)	0	0	0	0	1	0	0	1	0
+19	line_contains_collinear_inner	LINESTRING (0 0, 10 0)	LINESTRING (2 0, 5 0)	1	0	0	0	0	0	0	1	0
+20	line_contains_point_interior	LINESTRING (0 0, 10 0)	POINT (5 0)	1	0	0	0	0	0	0	1	0
+21	line_touches_point_endpoint	LINESTRING (0 0, 10 0)	POINT (0 0)	0	0	0	1	0	0	0	1	0
+22	point_disjoint_offline	POINT (5 5)	LINESTRING (0 0, 10 0)	0	0	0	0	0	0	1	0	5
+23	multipoint_within_square	MULTIPOINT (1 1, 5 5)	POLYGON ((0 0, 10 0, 10 10, 0 10, 0 0))	0	1	0	0	0	0	0	1	0
+24	multipoint_partly_outside	MULTIPOINT (1 1, 20 20)	POLYGON ((0 0, 10 0, 10 10, 0 10, 0 0))	0	0	1	0	0	0	0	1	0
+25	mpolyline_crosses_area	MULTILINESTRING ((0 5, 5 5), (6 5, 20 5))	POLYGON ((0 0, 10 0, 10 10, 0 10, 0 0))	0	0	1	0	0	0	0	1	0
+26	mpoly_disjoint_diagonal	MULTIPOLYGON (((0 0, 4 0, 4 4, 0 4, 0 0)), ((-5 -5, -2 -5, -2 -2, -5 -2, -5 -5)))	MULTIPOLYGON (((6 6, 9 6, 9 9, 6 9, 6 6)))	0	0	0	0	0	0	1	0	2.8284271247461903
+27	mpoly_contains_point_secondpart	MULTIPOLYGON (((1 1, 2 1, 2 2, 1 2, 1 1)), ((10 10, 12 10, 12 12, 10 12, 10 10)))	POINT (11 11)	1	0	0	0	0	0	0	1	0
+28	mpoly_overlaps_square	MULTIPOLYGON (((0 0, 4 0, 4 4, 0 4, 0 0)), ((20 20, 30 20, 30 30, 20 30, 20 20)))	POLYGON ((2 2, 6 2, 6 6, 2 6, 2 2))	0	0	0	0	1	0	0	1	0
+29	spike_polygon_contains_point	POLYGON ((0 0, 10 0, 10 10, 5 12, 0 10, 0 0))	POINT (5 11)	1	0	0	0	0	0	0	1	0
+30	area_touches_line_outward	POLYGON ((0 0, 10 0, 10 10, 0 10, 0 0))	LINESTRING (10 5, 20 5)	0	0	0	1	0	0	0	1	0
+31	area_touches_line_boundary_overlap	POLYGON ((0 0, 10 0, 10 10, 0 10, 0 0))	LINESTRING (10 5, 10 15)	0	0	0	1	0	0	0	1	0
+32	area_touches_point_corner	POLYGON ((0 0, 10 0, 10 10, 0 10, 0 0))	POINT (0 0)	0	0	0	1	0	0	0	1	0
+33	multipoint_inside_square	MULTIPOINT (5 5)	POLYGON ((0 0, 10 0, 10 10, 0 10, 0 0))	0	1	0	0	0	0	0	1	0
+33b	innerarea_within_outerarea	POLYGON ((2 2, 8 2, 8 8, 2 8, 2 2))	POLYGON ((0 0, 10 0, 10 10, 0 10, 0 0))	0	1	0	0	0	0	0	1	0
+34	donut_overlaps_hole_edge	POLYGON ((0 0, 20 0, 20 20, 0 20, 0 0), (5 5, 15 5, 15 15, 5 15, 5 5))	POLYGON ((3 3, 7 3, 7 7, 3 7, 3 3))	0	0	0	0	1	0	0	1	0
+35	point_equals_point	POINT (5 5)	POINT (5 5)	1	-	0	0	0	1	0	1	0
+36	line_crosses_mpoly	MULTILINESTRING ((0 0, 0 10))	MULTIPOLYGON (((1 1, 2 1, 2 2, 1 2, 1 1)), ((-1 -1, 0.5 -1, 0.5 0.5, -1 0.5, -1 -1)))	0	0	1	0	0	0	0	1	0
+37	mpoly_overlaps_square_far_part	MULTIPOLYGON (((2 2, 4 2, 4 4, 2 4, 2 2)), ((20 20, 22 20, 22 22, 20 22, 20 20)))	POLYGON ((0 0, 10 0, 10 10, 0 10, 0 0))	0	0	0	0	1	0	0	1	0
+38	point_far_disjoint_square	POINT (100 100)	POLYGON ((0 0, 10 0, 10 10, 0 10, 0 0))	0	0	0	0	0	0	1	0	127.27922061357856
+39	line_touches_line_collinear_end	LINESTRING (0 0, 10 0)	LINESTRING (10 0, 20 0)	0	-	0	1	0	0	0	1	0
+40	area_contains_multipoint_boundary_exterior	MULTIPOINT (1 1, 10 5)	POLYGON ((0 0, 10 0, 10 10, 0 10, 0 0))	0	1	0	0	0	0	0	1	0
+41	area_within_touchingedge	MULTIPOINT (10 5)	POLYGON ((0 0, 10 0, 10 10, 0 10, 0 0))	0	0	0	1	0	0	0	1	0

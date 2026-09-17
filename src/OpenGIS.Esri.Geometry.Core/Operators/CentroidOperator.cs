@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using OpenGIS.Esri.Geometry.Core.Geometries;
+using OpenGIS.Esri.Geometry.Core.Internal;
 
 namespace OpenGIS.Esri.Geometry.Core.Operators;
 
@@ -99,49 +101,47 @@ public class CentroidOperator : IGeometryOperator<Point>
 
     private Point CalculatePolygonCentroid(Polygon polygon)
     {
-        // Using the formula for polygon centroid based on vertices
-        // This is a simplified implementation for the exterior ring only
-
+        // 多部件/带洞质心：环按嵌套树归一方向（壳 CCW、洞 CW）后做带符号面积积分求和，
+        // 洞以负面积参与加权 —— 与 GEOS ST_Centroid 语义一致。
         if (polygon.RingCount == 0) return new Point();
 
-        var ring = polygon.GetRing(0);
-        if (ring.Count < 3) return new Point();
-
-        double area = 0;
-        double cx = 0;
-        double cy = 0;
-
-        for (var i = 0; i < ring.Count - 1; i++)
+        var rings = new List<PolygonClipper.Ring>();
+        foreach (var ring in polygon.GetRings())
         {
-            var x0 = ring[i].X;
-            var y0 = ring[i].Y;
-            var x1 = ring[i + 1].X;
-            var y1 = ring[i + 1].Y;
-
-            var cross = x0 * y1 - x1 * y0;
-            area += cross;
-            cx += (x0 + x1) * cross;
-            cy += (y0 + y1) * cross;
+            var pts = ring.Select(p => new[] { p.X, p.Y }).ToList();
+            if (pts.Count >= 2 && pts[0][0] == pts[pts.Count - 1][0] && pts[0][1] == pts[pts.Count - 1][1])
+                pts.RemoveAt(pts.Count - 1);
+            if (pts.Count >= 3)
+                rings.Add(new PolygonClipper.Ring(pts));
         }
 
-        area /= 2.0;
+        if (rings.Count == 0) return new Point();
+        rings = PolygonClipper.OrientRings(rings);
 
-        if (Math.Abs(area) < GeometryConstants.Epsilon)
+        double area2 = 0, cx = 0, cy = 0;
+        foreach (var ring in rings)
         {
-            // Degenerate polygon, return average of vertices
-            double sumX = 0, sumY = 0;
-            foreach (var p in ring)
+            int n = ring.Count;
+            for (var i = 0; i < n; i++)
             {
-                sumX += p.X;
-                sumY += p.Y;
+                var x0 = ring[i][0]; var y0 = ring[i][1];
+                var x1 = ring[(i + 1) % n][0]; var y1 = ring[(i + 1) % n][1];
+                var cross = x0 * y1 - x1 * y0;
+                area2 += cross;
+                cx += (x0 + x1) * cross;
+                cy += (y0 + y1) * cross;
             }
-
-            return new Point(sumX / ring.Count, sumY / ring.Count);
         }
 
-        cx /= 6.0 * area;
-        cy /= 6.0 * area;
+        if (Math.Abs(area2) < GeometryConstants.Epsilon)
+        {
+            double sumX = 0, sumY = 0; int cnt = 0;
+            foreach (var ring in rings)
+                foreach (var p in ring) { sumX += p[0]; sumY += p[1]; cnt++; }
+            return cnt == 0 ? new Point() : new Point(sumX / cnt, sumY / cnt);
+        }
 
-        return new Point(cx, cy);
+        // cx 已累计 3·cross·(x0+x1)/2 形式：Cx = cx / (3·area2)，Cy 同理
+        return new Point(cx / (3.0 * area2), cy / (3.0 * area2));
     }
 }

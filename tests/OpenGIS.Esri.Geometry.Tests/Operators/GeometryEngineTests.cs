@@ -116,12 +116,13 @@ public class GeometryEngineTests
         var intersection = GeometryEngine.Intersection(env1, env2);
 
         Assert.NotNull(intersection);
-        Assert.IsType<Envelope>(intersection);
-        var result = (Envelope)intersection;
-        Assert.Equal(5, result.XMin);
-        Assert.Equal(5, result.YMin);
-        Assert.Equal(10, result.XMax);
-        Assert.Equal(10, result.YMax);
+        Assert.IsType<Polygon>(intersection);
+        Assert.Equal(25, intersection.CalculateArea2D(), 4);
+        var result = intersection.GetEnvelope();
+        Assert.Equal(5, result.XMin, 6);
+        Assert.Equal(5, result.YMin, 6);
+        Assert.Equal(10, result.XMax, 6);
+        Assert.Equal(10, result.YMax, 6);
     }
 
     [Fact]

@@ -33,19 +33,19 @@ public class SetOperatorTests
     }
 
     [Fact]
-    public void UnionOperator_TwoEnvelopes_CreatesUnionEnvelope()
+    public void UnionOperator_TwoEnvelopes_ReturnsTrueUnionPolygon()
     {
         var env1 = new Envelope(0, 0, 10, 10);
         var env2 = new Envelope(5, 5, 15, 15);
 
         var result = UnionOperator.Instance.Execute(env1, env2);
 
-        Assert.IsType<Envelope>(result);
-        var envelope = (Envelope)result;
-        Assert.Equal(0, envelope.XMin);
-        Assert.Equal(0, envelope.YMin);
-        Assert.Equal(15, envelope.XMax);
-        Assert.Equal(15, envelope.YMax);
+        // 真布尔并集：L 形多边形（面积 175），不再是外包络矩形（225 为错误结果）。
+        Assert.IsType<Polygon>(result);
+        Assert.Equal(175, ((Polygon)result).CalculateArea2D(), 4); // 裁剪器抖动引入 ~1e-6 级面积误差
+        var env = result.GetEnvelope();
+        Assert.Equal(0, env.XMin, 6);
+        Assert.Equal(15, env.XMax, 6);
     }
 
     [Fact]
@@ -121,12 +121,13 @@ public class SetOperatorTests
 
         var result = IntersectionOperator.Instance.Execute(env1, env2);
 
-        Assert.IsType<Envelope>(result);
-        var envelope = (Envelope)result;
-        Assert.Equal(5, envelope.XMin);
-        Assert.Equal(5, envelope.YMin);
-        Assert.Equal(10, envelope.XMax);
-        Assert.Equal(10, envelope.YMax);
+        Assert.IsType<Polygon>(result);
+        Assert.Equal(25, ((Polygon)result).CalculateArea2D(), 4); // 裁剪器抖动误差量级
+        var envelope = result.GetEnvelope();
+        Assert.Equal(5, envelope.XMin, 6);
+        Assert.Equal(5, envelope.YMin, 6);
+        Assert.Equal(10, envelope.XMax, 6);
+        Assert.Equal(10, envelope.YMax, 6);
     }
 
     [Fact]
@@ -250,12 +251,8 @@ public class SetOperatorTests
 
         var result = DifferenceOperator.Instance.Execute(env1, env2);
 
-        Assert.IsType<Envelope>(result);
-        var envelope = (Envelope)result;
-        Assert.Equal(0, envelope.XMin);
-        Assert.Equal(0, envelope.YMin);
-        Assert.Equal(5, envelope.XMax);
-        Assert.Equal(5, envelope.YMax);
+        // 不交时结果为第一个面（Polygon 表示，面积不变）
+        Assert.Equal(25, result.CalculateArea2D(), 4);
     }
 
     [Fact]
@@ -264,16 +261,11 @@ public class SetOperatorTests
         var env1 = new Envelope(0, 0, 10, 10);
         var env2 = new Envelope(5, 5, 15, 15);
 
-        // Previously threw NotImplementedException because ContainsOperator did not
-        // support Envelope-Envelope; now returns the (simplified) first envelope.
+        // 真布尔差集：L 形（100 − 25 = 75），旧实现直接返回第一个包络是错误结果。
         var result = DifferenceOperator.Instance.Execute(env1, env2);
 
-        Assert.IsType<Envelope>(result);
-        var envelope = (Envelope)result;
-        Assert.Equal(0, envelope.XMin);
-        Assert.Equal(0, envelope.YMin);
-        Assert.Equal(10, envelope.XMax);
-        Assert.Equal(10, envelope.YMax);
+        Assert.IsType<Polygon>(result);
+        Assert.Equal(75, result.CalculateArea2D(), 4); // 裁剪器抖动误差量级
     }
 
     [Fact]
@@ -288,7 +280,7 @@ public class SetOperatorTests
     }
 
     [Fact]
-    public void DifferenceOperator_TwoPolylines_ThrowsNotSupported()
+    public void DifferenceOperator_TwoPolylines_ReturnsUnchangedLine()
     {
         var line1 = new Polyline();
         line1.AddPath(new[] { new Point(0, 0), new Point(10, 0) });
@@ -296,8 +288,10 @@ public class SetOperatorTests
         var line2 = new Polyline();
         line2.AddPath(new[] { new Point(0, 5), new Point(10, 5) });
 
-        // Polyline difference is not implemented. The operator must surface the gap
-        // rather than silently returning geometry1 (which would be a wrong result).
-        Assert.Throws<NotSupportedException>(() => DifferenceOperator.Instance.Execute(line1, line2));
+        // 线差集已实现：平行不相交时原线保留
+        var result = DifferenceOperator.Instance.Execute(line1, line2);
+
+        Assert.IsType<Polyline>(result);
+        Assert.Equal(10, result.CalculateLength2D(), 6);
     }
 }
