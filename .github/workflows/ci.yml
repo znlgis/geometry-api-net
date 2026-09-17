@@ -63,7 +63,7 @@ jobs:
       - name: 生成真实数据语料（Natural Earth）
         run: |
           sudo apt-get update && sudo apt-get install -y --no-install-recommends gdal-bin unzip
-          ./scripts/prep-data.sh realdata
+          bash ./scripts/prep-data.sh realdata
 
       - name: 运行 harness + 单测
         env:
@@ -74,4 +74,4 @@ jobs:
           GEOM_TEST_PG_USER: postgres
           GEOM_TEST_PG_PASSWORD: postgres
           GEOM_HARNESS_SAMPLE: '150'
-        run: ./run-tests.sh
+        run: bash ./run-tests.sh
